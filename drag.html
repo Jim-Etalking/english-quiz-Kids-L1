@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Drag Bear Game</title>
+
+<style>
+
+body{
+    margin:0;
+    background:#f5f5f5;
+    font-family:Arial;
+    text-align:center;
+}
+
+h2{
+    margin:20px;
+}
+
+.scene{
+    position:relative;
+    width:900px;
+    margin:auto;
+}
+
+.scene img.bg{
+    width:100%;
+}
+
+#bear{
+    position:absolute;
+    width:140px;
+    left:360px;
+    top:700px;
+    touch-action:none;
+    cursor:grab;
+}
+
+</style>
+</head>
+<body>
+
+<h2>Put the bear on the rug.</h2>
+
+<div class="scene">
+
+    <img class="bg" src="room_background.png">
+
+    <img id="bear" src="bear.png">
+
+</div>
+
+<script>
+
+const bear = document.getElementById("bear");
+
+let dragging = false;
+let offsetX = 0;
+let offsetY = 0;
+
+bear.addEventListener("pointerdown",(e)=>{
+
+    dragging = true;
+
+    offsetX = e.offsetX;
+    offsetY = e.offsetY;
+
+});
+
+window.addEventListener("pointermove",(e)=>{
+
+    if(!dragging) return;
+
+    const rect =
+        document.querySelector(".scene")
+        .getBoundingClientRect();
+
+    bear.style.left =
+        (e.clientX - rect.left - offsetX) + "px";
+
+    bear.style.top =
+        (e.clientY - rect.top - offsetY) + "px";
+
+});
+
+window.addEventListener("pointerup",()=>{
+
+    dragging = false;
+
+    const x = parseFloat(bear.style.left);
+    const y = parseFloat(bear.style.top);
+
+    // rug area
+    if(
+        x > 20 &&
+        x < 260 &&
+        y > 450 &&
+        y < 650
+    ){
+
+        bear.style.left = "100px";
+        bear.style.top = "470px";
+
+        alert("⭐ Correct!");
+    }
+
+});
+
+</script>
+
+</body>
+</html>
