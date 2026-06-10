@@ -43,6 +43,7 @@ h1{
     user-select:none;
 
     transition:.25s;
+
 }
 
 #message{
@@ -114,21 +115,34 @@ window.addEventListener("pointerup",()=>{
     const x = parseFloat(bear.style.left);
     const y = parseFloat(bear.style.top);
 
-    // rug area (先粗略設定)
-    if(
-        x > 40 &&
-        x < 260 &&
-        y > 320 &&
-        y < 520
-    ){
+    // 🧸 地毯成功區（你可以微調）
+    const isOnRug =
+        x > 30 &&
+        x < 300 &&
+        y > 280 &&
+        y < 550;
 
-        // snap
-        bear.style.left = "110px";
-        bear.style.top  = "360px";
+    if(isOnRug){
 
-        msg.innerHTML = "⭐ Correct!";
+        // ⭐ 吸附到地毯中心位置
+        bear.style.left = "160px";
+        bear.style.top  = "380px";
+
+        // 🎯 成功提示
+        msg.innerHTML = "⭐ Great! The bear is on the rug!";
+
+        // 🔒 鎖定（避免再拖）
+        bear.style.cursor = "default";
+
+    }else{
+
+        // ❌ 沒放對 → 回原位（可選）
+        bear.style.left = "40%";
+        bear.style.top  = "82%";
+
+        msg.innerHTML = "";
+
     }
-
 });
 
 </script>
