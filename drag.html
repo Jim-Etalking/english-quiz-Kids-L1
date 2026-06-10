@@ -1,48 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Drag Bear Game</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Drag the Bear</title>
 
 <style>
 
 body{
     margin:0;
-    background:#f5f5f5;
-    font-family:Arial;
+    background:#f3f6fb;
+    font-family:Arial,sans-serif;
     text-align:center;
 }
 
-h2{
-    margin:20px;
+h1{
+    margin:20px 0;
+    color:#333;
 }
 
 .scene{
     position:relative;
-    width:900px;
+    width:90vw;
+    max-width:900px;
     margin:auto;
 }
 
-.scene img.bg{
+.bg{
     width:100%;
+    display:block;
 }
 
 #bear{
     position:absolute;
-    width:140px;
-    left:360px;
-    top:700px;
+    width:15%;
+    min-width:90px;
+    max-width:140px;
+
+    left:40%;
+    top:82%;
+
     touch-action:none;
     cursor:grab;
+    user-select:none;
+
+    transition:.25s;
+}
+
+#message{
+    font-size:28px;
+    font-weight:bold;
+    margin:20px;
+    color:#2a7d2e;
 }
 
 </style>
 </head>
 <body>
 
-<h2>Put the bear on the rug.</h2>
+<h1>Put the bear on the rug.</h1>
 
-<div class="scene">
+<div class="scene" id="scene">
 
     <img class="bg" src="room_background.png">
 
@@ -50,13 +68,19 @@ h2{
 
 </div>
 
+<div id="message"></div>
+
+
 <script>
 
 const bear = document.getElementById("bear");
+const scene = document.getElementById("scene");
+const msg = document.getElementById("message");
 
 let dragging = false;
 let offsetX = 0;
 let offsetY = 0;
+
 
 bear.addEventListener("pointerdown",(e)=>{
 
@@ -67,41 +91,44 @@ bear.addEventListener("pointerdown",(e)=>{
 
 });
 
+
 window.addEventListener("pointermove",(e)=>{
 
     if(!dragging) return;
 
-    const rect =
-        document.querySelector(".scene")
-        .getBoundingClientRect();
+    const rect = scene.getBoundingClientRect();
 
-    bear.style.left =
-        (e.clientX - rect.left - offsetX) + "px";
+    let x = e.clientX - rect.left - offsetX;
+    let y = e.clientY - rect.top - offsetY;
 
-    bear.style.top =
-        (e.clientY - rect.top - offsetY) + "px";
+    bear.style.left = x + "px";
+    bear.style.top  = y + "px";
 
 });
 
+
 window.addEventListener("pointerup",()=>{
+
+    if(!dragging) return;
 
     dragging = false;
 
     const x = parseFloat(bear.style.left);
     const y = parseFloat(bear.style.top);
 
-    // rug area
+    // rug area (先粗略設定)
     if(
-        x > 20 &&
+        x > 40 &&
         x < 260 &&
-        y > 450 &&
-        y < 650
+        y > 320 &&
+        y < 520
     ){
 
-        bear.style.left = "100px";
-        bear.style.top = "470px";
+        // snap
+        bear.style.left = "110px";
+        bear.style.top  = "360px";
 
-        alert("⭐ Correct!");
+        msg.innerHTML = "⭐ Correct!";
     }
 
 });
