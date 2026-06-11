@@ -228,7 +228,7 @@ const questions = [
         question: "Can you put the car on the table?",
         audio: "q2.mp3",
         zone: { left: 44, right: 70, top: 45, bottom: 65 },
-        snap: { left: 51, top: 53 },
+        snap: { left: 46, top: 55 },
     },
     {
         type: "drag",
@@ -510,9 +510,30 @@ window.addEventListener("resize", resizeItems);
 
 function resizeItems() {
     const w = scene.offsetWidth;
-    document.getElementById("bear").style.width = (w * 0.19) + "px";
-    document.getElementById("car").style.width  = (w * 0.10) + "px";
-    document.getElementById("ball").style.width = (w * 0.12) + "px";
+    const sizes = { bear: 0.19, car: 0.10, ball: 0.12 };
+    Object.entries(sizes).forEach(([id, ratio]) => {
+        const el = document.getElementById(id);
+        // 已放好的物件（cursor:default）只更新寬度，不動位置
+        const placed = el.style.cursor === "default";
+        const newW = w * ratio;
+        if (placed) {
+            // 暫時關閉 transition 避免位移動畫
+            el.style.transition = "none";
+            el.style.width = newW + "px";
+            // 重新計算 snap 位置保持正確
+            const q = questions.find(q => q.itemId === id);
+            if (q) {
+                el.style.left = (q.snap.left / 100 * w) + "px";
+                const h = scene.offsetHeight;
+                el.style.top  = (q.snap.top  / 100 * h) + "px";
+            }
+            requestAnimationFrame(() => {
+                el.style.transition = "";
+            });
+        } else {
+            el.style.width = newW + "px";
+        }
+    });
 }
 
 // START 按鈕：使用者點擊後解鎖音效，再載入第一題
