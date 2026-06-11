@@ -48,7 +48,7 @@ h1 {
     touch-action: none;
     cursor: grab;
     user-select: none;
-    transition: left 0.3s ease, top 0.3s ease;
+    transition: none;
     display: none;
 }
 .item.active { display: block; }
@@ -433,6 +433,7 @@ window.addEventListener("pointerup", () => {
     const inZone = cx > z.left && cx < z.right && cy > z.top && cy < z.bottom;
 
     if (inZone) {
+        activeItem.style.transition = "left 0.3s ease, top 0.3s ease";
         activeItem.style.left   = (q.snap.left / 100 * W) + "px";
         activeItem.style.top    = (q.snap.top  / 100 * H) + "px";
         activeItem.style.cursor = "default";
