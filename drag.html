@@ -148,6 +148,77 @@ h1 {
     margin: 10px;
     animation: pop 0.5s ease;
 }
+#data-btn {
+    display: none;
+    margin: 8px auto;
+    font-size: clamp(16px, 2vw, 22px);
+    font-weight: bold;
+    padding: 12px 36px;
+    border-radius: 50px;
+    border: none;
+    background: #3b82f6;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #1d4ed8;
+}
+#data-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #1d4ed8;
+}
+/* 數據面板 */
+#data-panel {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+}
+#data-panel.show { display: flex; }
+#data-inner {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 32px;
+    max-width: 500px;
+    width: 90vw;
+    max-height: 80dvh;
+    overflow-y: auto;
+}
+#data-inner h2 {
+    margin: 0 0 16px;
+    font-size: 20px;
+    color: #333;
+}
+#data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+#data-table th {
+    background: #f1f5f9;
+    padding: 8px 10px;
+    text-align: left;
+    color: #555;
+    font-weight: 600;
+}
+#data-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #333;
+}
+#data-table tr:last-child td { border-bottom: none; }
+#close-btn {
+    margin-top: 16px;
+    padding: 10px 28px;
+    border-radius: 50px;
+    border: none;
+    background: #e5e7eb;
+    color: #333;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
 @keyframes pop {
     0%   { transform: scale(0.5); opacity: 0; }
     70%  { transform: scale(1.15); }
@@ -187,6 +258,26 @@ h1 {
 <!-- 訊息 / 完成 -->
 <div id="message"></div>
 <div id="finish">🎉 Well done! You are so smart! 🎉</div>
+<button id="data-btn">📊 查看數據</button>
+
+<!-- 數據面板 -->
+<div id="data-panel">
+  <div id="data-inner">
+    <h2>📊 答題數據</h2>
+    <table id="data-table">
+      <thead>
+        <tr>
+          <th>題目</th>
+          <th>⏱ 秒數</th>
+          <th>🔄 嘗試次數</th>
+        </tr>
+      </thead>
+      <tbody id="data-tbody"></tbody>
+    </table>
+    <br>
+    <button id="close-btn">關閉</button>
+  </div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════════
@@ -222,7 +313,7 @@ const questions = [
         question: "Can you put the car on the table?",
         audio: "q2.mp3",
         zone: { left: 44, right: 70, top: 45, bottom: 65 },
-        snap: { left: 52, top: 54 },
+        snap: { left: 46, top: 55 },
     },
     {
         type: "drag",
@@ -302,7 +393,12 @@ let currentQ   = 0;
 let dragging   = false;
 let activeItem = null;
 let offsetX = 0, offsetY = 0;
-let tapLocked  = false; // 避免答對後連點
+let tapLocked  = false;
+
+// 答題數據記錄
+let qStartTime  = 0;
+let qAttempts   = 0;
+const qResults  = []; // { question, seconds, attempts }
 
 const scene      = document.getElementById("scene");
 const msgEl      = document.getElementById("message");
@@ -360,6 +456,7 @@ function loadQuestion(n) {
     if (n >= questions.length) {
         questionEl.style.display = "none";
         finishEl.style.display   = "block";
+        dataBtn.style.display    = "block";
         updateDots(questions.length);
         return;
     }
@@ -370,6 +467,10 @@ function loadQuestion(n) {
     updateDots(n);
     // 稍微延遲再播，避免切換動畫干擾
     setTimeout(() => playQuestion(n), 300);
+
+    // 開始計時 & 重設嘗試次數
+    qStartTime = Date.now();
+    qAttempts  = 0;
 
     if (q.type === "drag") {
         const el = document.getElementById(q.itemId);
@@ -435,12 +536,14 @@ window.addEventListener("pointerup", () => {
         activeItem.style.left   = (q.snap.left / 100 * W) + "px";
         activeItem.style.top    = (q.snap.top  / 100 * H) + "px";
         activeItem.style.cursor = "default";
+        recordResult(currentQ);
         playCorrect();
         msgEl.innerHTML = "⭐ Great job!";
         setTimeout(() => { currentQ++; loadQuestion(currentQ); }, 900);
     } else {
         activeItem.style.left = "";
         activeItem.style.top  = "";
+        qAttempts++;
         playWrong();
         msgEl.innerHTML = "❌ Try again!";
     }
@@ -463,11 +566,13 @@ document.querySelectorAll(".hotspot").forEach(hs => {
         if (isCorrect) {
             tapLocked = true;
             hs.classList.add("correct");
+            recordResult(currentQ);
             playCorrect();
             msgEl.innerHTML = "⭐ Great job!";
             setTimeout(() => { currentQ++; loadQuestion(currentQ); }, 900);
         } else {
             hs.classList.add("wrong");
+            qAttempts++;
             playWrong();
             msgEl.innerHTML = "❌ Try again!";
             setTimeout(() => {
@@ -485,6 +590,7 @@ document.querySelectorAll(".item").forEach(item => {
         if (q.type !== "tap") return;
         if (tapLocked) return;
         e.stopPropagation();
+        qAttempts++;
         item.style.outline = "5px solid #e74c3c";
         item.style.borderRadius = "12px";
         playWrong();
@@ -502,6 +608,39 @@ document.querySelectorAll(".item").forEach(item => {
 // ═══════════════════════════════════════════════
 buildDots();
 applyHotspotPositions();
+
+// 記錄單題結果
+function recordResult(n) {
+    const seconds = ((Date.now() - qStartTime) / 1000).toFixed(1);
+    qResults.push({
+        question: questions[n].question,
+        seconds:  parseFloat(seconds),
+        attempts: qAttempts,
+    });
+}
+
+// 顯示完成畫面 + 數據按鈕
+const dataBtn   = document.getElementById("data-btn");
+const dataPanel = document.getElementById("data-panel");
+const dataTbody = document.getElementById("data-tbody");
+
+dataBtn.addEventListener("click", () => {
+    dataTbody.innerHTML = "";
+    qResults.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td style="max-width:200px">${r.question}</td>
+            <td>${r.seconds}s</td>
+            <td>${r.attempts} 次錯誤</td>
+        `;
+        dataTbody.appendChild(tr);
+    });
+    dataPanel.classList.add("show");
+});
+
+document.getElementById("close-btn").addEventListener("click", () => {
+    dataPanel.classList.remove("show");
+});
 resizeItems();
 
 // 視窗大小改變時重新計算
@@ -515,7 +654,7 @@ function resizeItems() {
         ? w * (bgImg.naturalHeight / bgImg.naturalWidth)
         : scene.offsetHeight;
 
-    const sizes = { bear: 0.25, car: 0.10, ball: 0.12 };
+    const sizes = { bear: 0.19, car: 0.10, ball: 0.12 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
         const placed = el.style.cursor === "default";
