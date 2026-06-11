@@ -28,17 +28,13 @@ h1 {
 }
 .scene {
     position: relative;
-    /* 寬不超過螢幕，高不超過剩餘空間 */
-    width: 100vw;
-    max-height: 80dvh;
+    /* 寬跟高都限制，讓瀏覽器自動選小的那個 */
+    width: min(100vw, 80dvh * 1456 / 816);
     aspect-ratio: 1456 / 816;
-    flex-shrink: 1;
 }
 .bg {
     width: 100%;
-    height: 100%;
     display: block;
-    object-fit: fill;
 }
 
 /* ── 拖曳物件 ── */
