@@ -313,7 +313,7 @@ const questions = [
         question: "Can you put the car on the table?",
         audio: "q2.mp3",
         zone: { left: 44, right: 70, top: 45, bottom: 65 },
-        snap: { left: 46, top: 55 },
+        snap: { left: 51, top: 53 },
     },
     {
         type: "drag",
@@ -654,7 +654,7 @@ function resizeItems() {
         ? w * (bgImg.naturalHeight / bgImg.naturalWidth)
         : scene.offsetHeight;
 
-    const sizes = { bear: 0.19, car: 0.10, ball: 0.12 };
+    const sizes = { bear: 0.25, car: 0.10, ball: 0.12 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
         const placed = el.style.cursor === "default";
