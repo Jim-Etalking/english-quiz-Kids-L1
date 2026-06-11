@@ -142,28 +142,57 @@ h1 {
 /* ── 完成畫面 ── */
 #finish {
     display: none;
-    font-size: clamp(22px, 4vw, 38px);
-    font-weight: bold;
-    color: #e67e00;
-    margin: 10px;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+    margin-bottom: 0;
     animation: pop 0.5s ease;
+}
+
+.finish-title {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: bold;
+    color: #ff8c42;
+}
+
+.stars {
+    font-size: clamp(28px, 5vw, 50px);
+}
+
+.finish-text {
+    font-size: clamp(18px, 3vw, 28px);
+    color: #666;
+    font-weight: bold;
 }
 #data-btn {
     display: none;
-    margin: 8px auto;
-    font-size: clamp(16px, 2vw, 22px);
-    font-weight: bold;
-    padding: 12px 36px;
-    border-radius: 50px;
-    border: none;
-    background: #3b82f6;
+
+    background: linear-gradient(135deg,#ffb347,#ff8c42);
     color: white;
+
+    border: none;
+    border-radius: 999px;
+
+    padding: 16px 42px;
+
+    font-size: clamp(18px,2.5vw,24px);
+    font-weight: bold;
+
     cursor: pointer;
-    box-shadow: 0 4px 0 #1d4ed8;
+
+    box-shadow: 0 8px 18px rgba(255,140,66,.35);
+
+    transition: all .2s ease;
 }
+
+#data-btn:hover {
+    transform: translateY(-2px);
+}
+
 #data-btn:active {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 #1d4ed8;
+    transform: scale(0.96);
+    box-shadow: 0 4px 10px rgba(255,140,66,.35);
 }
 /* 數據面板 */
 #data-panel {
@@ -257,8 +286,13 @@ h1 {
 
 <!-- 訊息 / 完成 -->
 <div id="message"></div>
-<div id="finish">🎉 Well done! You are so smart! 🎉</div>
-<button id="data-btn">📊 查看數據</button>
+<div id="finish">
+    <div class="finish-title">🎉 Great Job! 🎉</div>
+    <div class="stars">⭐⭐⭐⭐⭐</div>
+    <div class="finish-text">You are so smart!</div>
+
+    <button id="data-btn">📈 Parent Report</button>
+</div>
 
 <!-- 數據面板 -->
 <div id="data-panel">
@@ -455,7 +489,7 @@ function loadQuestion(n) {
 
     if (n >= questions.length) {
         questionEl.style.display = "none";
-        finishEl.style.display   = "block";
+        finishEl.style.display   = "flex";
         dataBtn.style.display    = "block";
         updateDots(questions.length);
         return;
