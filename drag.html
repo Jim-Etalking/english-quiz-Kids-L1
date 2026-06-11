@@ -422,7 +422,11 @@ window.addEventListener("pointerup", () => {
 
     const q    = questions[currentQ];
     const rect = scene.getBoundingClientRect();
-    const W = rect.width, H = rect.height;
+    const W = rect.width;
+    const bgImg = scene.querySelector(".bg");
+    const H = bgImg.naturalWidth > 0
+        ? W * (bgImg.naturalHeight / bgImg.naturalWidth)
+        : rect.height;
 
     const itemL = parseFloat(activeItem.style.left) || 0;
     const itemT = parseFloat(activeItem.style.top)  || 0;
@@ -511,28 +515,23 @@ window.addEventListener("resize", resizeItems);
 
 function resizeItems() {
     const w = scene.offsetWidth;
+    // 用背景圖的實際比例算高度，不依賴 offsetHeight
+    const bgImg = scene.querySelector(".bg");
+    const h = bgImg.naturalWidth > 0
+        ? w * (bgImg.naturalHeight / bgImg.naturalWidth)
+        : scene.offsetHeight;
+
     const sizes = { bear: 0.19, car: 0.10, ball: 0.12 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
-        // 已放好的物件（cursor:default）只更新寬度，不動位置
         const placed = el.style.cursor === "default";
-        const newW = w * ratio;
+        el.style.width = (w * ratio) + "px";
         if (placed) {
-            // 暫時關閉 transition 避免位移動畫
-            el.style.transition = "none";
-            el.style.width = newW + "px";
-            // 重新計算 snap 位置保持正確
-            const q = questions.find(q => q.itemId === id);
+            const q = questions.find(q => q.type === "drag" && q.itemId === id);
             if (q) {
                 el.style.left = (q.snap.left / 100 * w) + "px";
-                const h = scene.offsetHeight;
                 el.style.top  = (q.snap.top  / 100 * h) + "px";
             }
-            requestAnimationFrame(() => {
-                el.style.transition = "";
-            });
-        } else {
-            el.style.width = newW + "px";
         }
     });
 }
