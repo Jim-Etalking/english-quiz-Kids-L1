@@ -15,15 +15,24 @@ body {
     height: 100dvh;
     overflow: hidden;
     display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 h1 {
-    margin: 10px 0 4px;
-    color: #333;
+    position: absolute;
+    top: 4%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    color: #fff;
     font-size: clamp(18px, 3vw, 34px);
-    flex-shrink: 0;
-    width: 100%;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.45);
+    padding: 10px 28px;
+    border-radius: 50px;
+    white-space: nowrap;
+    z-index: 10;
+    width: auto;
 }
 /* scene 撐滿剩餘高度，寬度自動 */
 .scene {
@@ -91,20 +100,34 @@ h1 {
 
 /* ── 訊息 ── */
 #message {
-    font-size: clamp(20px, 3vw, 28px);
+    position: absolute;
+    bottom: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: clamp(18px, 3vw, 28px);
     font-weight: bold;
-    margin: 8px;
-    min-height: 38px;
-    color: #2a7d2e;
+    color: #fff;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.4);
+    padding: 8px 28px;
+    border-radius: 50px;
+    white-space: nowrap;
+    z-index: 10;
+    display: none;
 }
+#message:not(:empty) { display: block; }
 
 /* ── 進度點 ── */
 #progress {
+    position: absolute;
+    top: 1.5%;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     justify-content: center;
     gap: 8px;
-    margin: 8px 0;
     flex-wrap: wrap;
+    z-index: 10;
 }
 .dot {
     width: 13px; height: 13px;
@@ -176,12 +199,6 @@ h1 {
     <button id="start-btn">START</button>
 </div>
 
-<!-- 進度 -->
-<div id="progress"></div>
-
-<!-- 題目 -->
-<h1 id="question"></h1>
-
 <!-- 場景 -->
 <div class="scene" id="scene">
     <img class="bg" src="room_background.png">
@@ -197,11 +214,11 @@ h1 {
     <div class="hotspot" id="hs-books"></div>
     <div class="hotspot" id="hs-window"></div>
     <div class="hotspot" id="hs-cloud"></div>
+  <div id="progress"></div>
+  <h1 id="question"></h1>
+  <div id="message"></div>
   <div id="finish">🎉 Well done! You are so smart! 🎉</div>
 </div>
-
-<!-- 訊息 -->
-<div id="message"></div>
 
 <script>
 // ═══════════════════════════════════════════════
