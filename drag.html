@@ -48,7 +48,7 @@ h1 {
 }
 #ball {
     width: clamp(100px, 13vw, 160px);
-    left: 30%; top: 57%;
+    left: 38%; top: 68%;
 }
 
 /* ── 圈選熱區 ── */
@@ -186,7 +186,7 @@ const questions = [
         itemId: "car",
         question: "Can you put the car on the table?",
         zone: { left: 44, right: 70, top: 45, bottom: 65 },
-        snap: { left: 55, top: 51 },
+        snap: { left: 46, top: 55 },
     },
     {
         type: "drag",
@@ -374,6 +374,8 @@ window.addEventListener("pointerup", () => {
 // ═══════════════════════════════════════════════
 // 圈選邏輯
 // ═══════════════════════════════════════════════
+
+// 熱區點擊
 document.querySelectorAll(".hotspot").forEach(hs => {
     hs.addEventListener("pointerdown", (e) => {
         e.stopPropagation();
@@ -382,7 +384,6 @@ document.querySelectorAll(".hotspot").forEach(hs => {
         if (tapLocked) return;
 
         const isCorrect = q.targets.includes(hs.id);
-
         if (isCorrect) {
             tapLocked = true;
             hs.classList.add("correct");
@@ -396,6 +397,24 @@ document.querySelectorAll(".hotspot").forEach(hs => {
                 msgEl.textContent = "";
             }, 600);
         }
+    });
+});
+
+// 畫面上的物件（bear / car / ball）在圈選題時也是干擾選項
+document.querySelectorAll(".item").forEach(item => {
+    item.addEventListener("pointerdown", (e) => {
+        const q = questions[currentQ];
+        if (q.type !== "tap") return;
+        if (tapLocked) return;
+        e.stopPropagation();
+        item.style.outline = "5px solid #e74c3c";
+        item.style.borderRadius = "12px";
+        msgEl.innerHTML = "❌ Try again!";
+        setTimeout(() => {
+            item.style.outline = "";
+            item.style.borderRadius = "";
+            msgEl.textContent = "";
+        }, 600);
     });
 });
 
