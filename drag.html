@@ -147,10 +147,19 @@ h1 {
 /* ── 完成畫面 ── */
 #finish {
     display: none;
+    position: absolute;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: clamp(22px, 4vw, 38px);
     font-weight: bold;
-    color: #e67e00;
-    margin: 24px;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.45);
+    padding: 14px 32px;
+    border-radius: 50px;
+    white-space: nowrap;
+    z-index: 10;
     animation: pop 0.5s ease;
 }
 @keyframes pop {
@@ -188,11 +197,11 @@ h1 {
     <div class="hotspot" id="hs-books"></div>
     <div class="hotspot" id="hs-window"></div>
     <div class="hotspot" id="hs-cloud"></div>
+  <div id="finish">🎉 Well done! You are so smart! 🎉</div>
 </div>
 
-<!-- 訊息 / 完成 -->
+<!-- 訊息 -->
 <div id="message"></div>
-<div id="finish">🎉 Well done! You are so smart! 🎉</div>
 
 <script>
 // ═══════════════════════════════════════════════
