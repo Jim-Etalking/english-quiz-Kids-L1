@@ -140,7 +140,7 @@ h1 {
 }
 
 /* =========================================
-   全新：完成畫面 (可愛立體獎狀風) 
+   完成畫面 (可愛立體獎狀風) 
    ========================================= */
 #finish {
     display: none;
@@ -217,7 +217,7 @@ h1 {
 }
 
 /* =========================================
-   全新：數據面板 (家長專業報表風)
+   數據面板 (家長專業報表風)
    ========================================= */
 #data-panel {
     display: none;
@@ -371,7 +371,7 @@ body.finished #message {
 <div id="data-panel">
   <div id="data-inner">
     <div class="report-header">
-        <h2>📝 幼兒英語聽力與認知分析</h2>
+        <h2>📝 局英語聽力與認知分析</h2>
         <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
     </div>
     <div class="table-container">
@@ -392,13 +392,8 @@ body.finished #message {
 
 <script>
 // ═══════════════════════════════════════════════
-// 題目資料
-// type: "drag" 或 "tap"
-//
-// drag: zone（判定區，%）, snap（吸附位置，%）
-// tap:  targets（正確熱區 id 陣列）, decoys（干擾熱區 id 陣列，之後可加）
-//
-// hotspots: 各熱區的位置（%: left, top, width, height）
+// 題目資料 (包含全新排序與 STAGE 2 顏色題)
+// 測試用：音檔欄位暫時保留空字串 "" 以防報錯
 // ═══════════════════════════════════════════════
 const HOTSPOT_DEFS = {
     "hs-sun":    { left: 2,  top: 5,  width: 18, height: 35 },
@@ -409,12 +404,78 @@ const HOTSPOT_DEFS = {
 };
 
 const questions = [
-    // ── 拖曳題 ──
+    // ═══════════════════════════════════════════════
+    // STAGE 1: Vocabulary (基礎詞彙認知 - 點擊題)
+    // ═══════════════════════════════════════════════
+    {
+        type: "tap",
+        question: "Can you find the sun? ☀️",
+        audio: "",
+        targets: ["hs-sun"],
+        decoys:  ["hs-door", "hs-books", "hs-window", "hs-cloud"],
+    },
+    {
+        type: "tap",
+        question: "Where is the door? 🚪",
+        audio: "",
+        targets: ["hs-door"],
+        decoys:  ["hs-sun", "hs-books", "hs-window", "hs-cloud"],
+    },
+    {
+        type: "tap",
+        question: "Can you find the books? 📚",
+        audio: "",
+        targets: ["hs-books"],
+        decoys:  ["hs-sun", "hs-door", "hs-window", "hs-cloud"],
+    },
+    {
+        type: "tap",
+        question: "Where is the window? 🪟",
+        audio: "",
+        targets: ["hs-window"],
+        decoys:  ["hs-sun", "hs-door", "hs-books", "hs-cloud"],
+    },
+    {
+        type: "tap",
+        question: "Can you find the cloud? ☁️",
+        audio: "",
+        targets: ["hs-cloud"],
+        decoys:  ["hs-sun", "hs-door", "hs-books", "hs-window"],
+    },
+
+    // ═══════════════════════════════════════════════
+    // STAGE 2: Color (顏色與視覺特徵辨識 - 點擊題)
+    // ═══════════════════════════════════════════════
+    {
+        type: "tap",
+        question: "Touch the BLUE bear! 🧸",
+        audio: "",
+        targets: ["bear"],
+        decoys:  ["car", "ball", "hs-sun", "hs-door"],
+    },
+    {
+        type: "tap",
+        question: "Can you find the RED ball? 🔴",
+        audio: "",
+        targets: ["ball"],
+        decoys:  ["bear", "car", "hs-window", "hs-cloud"],
+    },
+    {
+        type: "tap",
+        question: "Where is the YELLOW window? 🟨",
+        audio: "",
+        targets: ["hs-window"],
+        decoys:  ["hs-sun", "hs-door", "hs-books", "hs-cloud"],
+    },
+
+    // ═══════════════════════════════════════════════
+    // STAGE 3: Position (空間介系詞與複雜指令 - 拖曳題)
+    // ═══════════════════════════════════════════════
     {
         type: "drag",
         itemId: "bear",
         question: "Can you put the bear on the rug?",
-        audio: "q1.mp3",
+        audio: "",
         zone: { left: 0, right: 44, top: 60, bottom: 100 },
         snap: { left: 8, top: 68 },
     },
@@ -422,7 +483,7 @@ const questions = [
         type: "drag",
         itemId: "car",
         question: "Can you put the car on the table?",
-        audio: "q2.mp3",
+        audio: "",
         zone: { left: 44, right: 70, top: 45, bottom: 65 },
         snap: { left: 53, top: 54 },
     },
@@ -430,55 +491,21 @@ const questions = [
         type: "drag",
         itemId: "ball",
         question: "Can you put the ball in front of the table?",
-        audio: "q3.mp3",
+        audio: "",
         zone: { left: 48, right: 74, top: 66, bottom: 90 },
         snap: { left: 52, top: 70 },
-    },
-    // ── 圈選題 ──
-    {
-        type: "tap",
-        question: "Can you find the sun? ☀️",
-        audio: "q4.mp3",
-        targets: ["hs-sun"],
-        decoys:  ["hs-door", "hs-books", "hs-window", "hs-cloud"],
-    },
-    {
-        type: "tap",
-        question: "Where is the door? 🚪",
-        audio: "q5.mp3",
-        targets: ["hs-door"],
-        decoys:  ["hs-sun", "hs-books", "hs-window", "hs-cloud"],
-    },
-    {
-        type: "tap",
-        question: "Can you find the books? 📚",
-        audio: "q6.mp3",
-        targets: ["hs-books"],
-        decoys:  ["hs-sun", "hs-door", "hs-window", "hs-cloud"],
-    },
-    {
-        type: "tap",
-        question: "Where is the window? 🪟",
-        audio: "q7.mp3",
-        targets: ["hs-window"],
-        decoys:  ["hs-sun", "hs-door", "hs-books", "hs-cloud"],
-    },
-    {
-        type: "tap",
-        question: "Can you find the cloud? ☁️",
-        audio: "q8.mp3",
-        targets: ["hs-cloud"],
-        decoys:  ["hs-sun", "hs-door", "hs-books", "hs-window"],
-    },
+    }
 ];
 
 // ── 音效設定 ──
 const CORRECT_SOUNDS = ["correct1.mp3", "correct2.mp3", "correct3.mp3"];
 const WRONG_SOUNDS   = ["wrong1.mp3"];
 
+// 安全撥放機制：如果檔名為空字串或未定義，直接跳過不報錯
 function playSound(file) {
+    if (!file || file === "") return; 
     const audio = new Audio(file);
-    audio.play().catch(() => {}); // 忽略瀏覽器自動播放限制錯誤
+    audio.play().catch(() => {}); 
 }
 
 function playCorrect() {
@@ -533,6 +560,7 @@ function buildDots() {
 function updateDots(current) {
     questions.forEach((_, i) => {
         const dot = document.getElementById("dot" + i);
+        if (!dot) return;
         dot.className = "dot";
         if (i < current)   dot.classList.add("done");
         if (i === current) dot.classList.add("active");
@@ -545,19 +573,19 @@ function updateDots(current) {
 function applyHotspotPositions() {
     Object.entries(HOTSPOT_DEFS).forEach(([id, pos]) => {
         const el = document.getElementById(id);
-        el.style.left   = pos.left   + "%";
-        el.style.top    = pos.top    + "%";
-        el.style.width  = pos.width  + "%";
-        el.style.height = pos.height + "%";
+        if (el) {
+            el.style.left   = pos.left   + "%";
+            el.style.top    = pos.top    + "%";
+            el.style.width  = pos.width  + "%";
+            el.style.height = pos.height + "%";
+        }
     });
 }
 
-
 // ═══════════════════════════════════════════════
-// 載入第 n 題（已放好的物件留在畫面上）
+// 載入第 n 題
 // ═══════════════════════════════════════════════
 function loadQuestion(n) {
-    // 只清除熱區，已完成的拖曳物件保留
     document.querySelectorAll(".hotspot").forEach(el => {
         el.classList.remove("active", "correct", "wrong");
     });
@@ -577,23 +605,25 @@ function loadQuestion(n) {
     questionEl.style.display = "";
     questionEl.textContent   = q.question;
     updateDots(n);
-    // 稍微延遲再播，避免切換動畫干擾
+    
     setTimeout(() => playQuestion(n), 300);
 
-    // 開始計時 & 重設嘗試次數
     qStartTime = Date.now();
     qAttempts  = 0;
 
     if (q.type === "drag") {
         const el = document.getElementById(q.itemId);
-        el.classList.add("active");
-        if (el.style.cursor !== "default") {
-            el.style.left = "";
-            el.style.top  = "";
+        if (el) {
+            el.classList.add("active");
+            if (el.style.cursor !== "default") {
+                el.style.left = "";
+                el.style.top  = "";
+            }
         }
     } else {
         [...q.targets, ...q.decoys].forEach(id => {
-            document.getElementById(id).classList.add("active");
+            const el = document.getElementById(id);
+            if (el) el.classList.add("active");
         });
     }
 }
@@ -604,7 +634,7 @@ function loadQuestion(n) {
 document.querySelectorAll(".item").forEach(item => {
     item.addEventListener("pointerdown", (e) => {
         const q = questions[currentQ];
-        if (q.type !== "drag") return;
+        if (!q || q.type !== "drag") return;
         if (item.id !== q.itemId) return;
         if (item.style.cursor === "default") return;
 
@@ -665,13 +695,11 @@ window.addEventListener("pointerup", () => {
 // ═══════════════════════════════════════════════
 // 圈選邏輯
 // ═══════════════════════════════════════════════
-
-// 熱區點擊
 document.querySelectorAll(".hotspot").forEach(hs => {
     hs.addEventListener("pointerdown", (e) => {
         e.stopPropagation();
         const q = questions[currentQ];
-        if (q.type !== "tap") return;
+        if (!q || q.type !== "tap") return;
         if (tapLocked) return;
 
         const isCorrect = q.targets.includes(hs.id);
@@ -695,11 +723,10 @@ document.querySelectorAll(".hotspot").forEach(hs => {
     });
 });
 
-// 畫面上的物件（bear / car / ball）在圈選題時也是干擾選項
 document.querySelectorAll(".item").forEach(item => {
     item.addEventListener("pointerdown", (e) => {
         const q = questions[currentQ];
-        if (q.type !== "tap") return;
+        if (!q || q.type !== "tap") return;
         if (tapLocked) return;
         e.stopPropagation();
         qAttempts++;
@@ -716,12 +743,11 @@ document.querySelectorAll(".item").forEach(item => {
 });
 
 // ═══════════════════════════════════════════════
-// 初始化
+// 初始化呼叫
 // ═══════════════════════════════════════════════
 buildDots();
 applyHotspotPositions();
 
-// 記錄單題結果
 function recordResult(n) {
     const seconds = ((Date.now() - qStartTime) / 1000).toFixed(1);
     qResults.push({
@@ -738,7 +764,6 @@ const dataBtn   = document.getElementById("data-btn");
 const dataPanel = document.getElementById("data-panel");
 const dataTbody = document.getElementById("data-tbody");
 
-// 工具函式：傳入數字 1~5，回傳對應的星星字串
 function getStars(num) {
     let stars = "";
     for (let i = 1; i <= 5; i++) {
@@ -748,14 +773,12 @@ function getStars(num) {
 }
 
 dataBtn.addEventListener("click", () => {
-    // 隱藏完成獎狀，顯示報表
     finishEl.style.display = "none";
     dataTbody.innerHTML = "";
     
-    // --- 1. 數據統計基礎 ---
     let totalSeconds = 0;
     let totalAttempts = 0;
-    let dragAttempts = 0; // 專門統計拖曳題的錯誤
+    let dragAttempts = 0;
     let dragCount = 0;
     
     questions.forEach((q, idx) => {
@@ -773,9 +796,6 @@ dataBtn.addEventListener("click", () => {
     const totalQuestions = qResults.length || 1;
     const avgTime = totalSeconds / totalQuestions;
 
-    // --- 2. 星星演算法判定 ---
-    
-    // [Vocabulary & Listening] 依據總錯誤次數判定
     let vocRating = 5;
     if (totalAttempts > 0 && totalAttempts <= 2) vocRating = 4;
     else if (totalAttempts > 2 && totalAttempts <= 4) vocRating = 3;
@@ -783,19 +803,16 @@ dataBtn.addEventListener("click", () => {
 
     let listeningRating = vocRating; 
 
-    // [Response Speed] 依據平均秒數判定
     let speedRating = 5;
     if (avgTime > 3 && avgTime <= 6) speedRating = 4;
     else if (avgTime > 6 && avgTime <= 10) speedRating = 3;
     else if (avgTime > 10) speedRating = 2;
 
-    // [Following Directions] 依據拖曳題的錯誤次數判定
     let directionRating = 5;
     if (dragAttempts === 1) directionRating = 4;
     else if (dragAttempts > 1 && dragAttempts <= 3) directionRating = 3;
     else if (dragAttempts > 3) directionRating = 2;
 
-    // --- 3. 動態渲染家長報告 UI ---
     const reportHeader = document.querySelector('.report-header');
     reportHeader.innerHTML = `
         <h2>📝 幼兒英語聽力與認知分析</h2>
@@ -826,7 +843,6 @@ dataBtn.addEventListener("click", () => {
         </div>
     `;
 
-    // --- 4. 產出下方逐題明細 (純數據版) ---
     qResults.forEach(r => {
         const tr = document.createElement("tr");
         
@@ -853,10 +869,9 @@ document.getElementById("close-btn").addEventListener("click", () => {
 });
 
 // ═══════════════════════════════════════════════
-// 視窗縮放與響應式物件大小計算 (修正：補回漏掉的程式碼)
+// 視窗縮放與響應式物件大小計算 
 // ═══════════════════════════════════════════════
 resizeItems();
-
 window.addEventListener("resize", resizeItems);
 
 function resizeItems() {
@@ -882,7 +897,7 @@ function resizeItems() {
     });
 }
 
-// START 按鈕：使用者點擊後解鎖音效，再載入第一題
+// START 按鈕
 document.getElementById("start-btn").addEventListener("click", () => {
     document.getElementById("start-screen").style.display = "none";
     loadQuestion(0);
