@@ -3,149 +3,287 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Drag the Bear</title>
-
+<title>Drag the Toys</title>
 <style>
-
-body{
-    margin:0;
-    background:#f3f6fb;
-    font-family:Arial,sans-serif;
-    text-align:center;
+body {
+    margin: 0;
+    background: #f3f6fb;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+h1 {
+    margin: 20px 0;
+    color: #333;
+    font-size: clamp(20px, 3vw, 32px);
+}
+.scene {
+    position: relative;
+    width: 90vw;
+    max-width: 900px;
+    margin: auto;
+}
+.bg {
+    width: 100%;
+    display: block;
 }
 
-h1{
-    margin:20px 0;
-    color:#333;
-}
-
-.scene{
-    position:relative;
-    width:90vw;
-    max-width:900px;
-    margin:auto;
-}
-
-.bg{
-    width:100%;
-    display:block;
-}
-
-#bear{
-    position:absolute;
-    width:clamp(150px, 20vw, 240px);
-
-    left:40%;
-    top:82%;
-
-    touch-action:none;
-    cursor:grab;
-    user-select:none;
-
+/* 物件共用樣式 */
+.item {
+    position: absolute;
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
     transition: left 0.3s ease, top 0.3s ease;
-
+    display: none; /* 預設隱藏，由 JS 控制顯示 */
+}
+.item.active {
+    display: block;
 }
 
-#message{
-    font-size:28px;
-    font-weight:bold;
-    margin:20px;
-    color:#2a7d2e;
+#bear {
+    width: clamp(120px, 16vw, 200px);
+    left: 40%;
+    top: 75%;
+}
+#car {
+    width: clamp(100px, 14vw, 170px);
+    left: 42%;
+    top: 70%;
+}
+#ball {
+    width: clamp(80px, 10vw, 130px);
+    left: 42%;
+    top: 72%;
 }
 
+#message {
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: bold;
+    margin: 16px;
+    min-height: 40px;
+    color: #2a7d2e;
+}
+
+/* 進度點點 */
+#progress {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+.dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ccc;
+    transition: background 0.3s;
+}
+.dot.done   { background: #2a7d2e; }
+.dot.active { background: #f5a623; }
+
+/* 完成畫面 */
+#finish {
+    display: none;
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: bold;
+    color: #e67e00;
+    margin: 24px;
+    animation: pop 0.5s ease;
+}
+@keyframes pop {
+    0%   { transform: scale(0.5); opacity: 0; }
+    70%  { transform: scale(1.15); }
+    100% { transform: scale(1);   opacity: 1; }
+}
 </style>
 </head>
 <body>
 
-<h1>Put the bear on the rug.</h1>
-
-<div class="scene" id="scene">
-
-    <img class="bg" src="room_background.png">
-
-    <img id="bear" src="bear_v3.png">
-
+<!-- 進度指示 -->
+<div id="progress">
+    <div class="dot active" id="dot0"></div>
+    <div class="dot"        id="dot1"></div>
+    <div class="dot"        id="dot2"></div>
 </div>
 
-<div id="message"></div>
+<!-- 題目文字 -->
+<h1 id="question">Put the bear on the rug.</h1>
 
+<!-- 場景 -->
+<div class="scene" id="scene">
+    <img class="bg" src="room_background.png">
+    <img id="bear" class="item active" src="bear_v3.png">
+    <img id="car"  class="item"        src="car.png">
+    <img id="ball" class="item"        src="ball.png">
+</div>
+
+<!-- 訊息 / 完成 -->
+<div id="message"></div>
+<div id="finish">🎉 Well done! You are so smart! 🎉</div>
 
 <script>
+// ─────────────────────────────────────────────
+// 題目設定（座標以 scene 的百分比表示，方便響應式）
+// snap: 吸附到的位置（百分比）
+// zone: 判定成功的區域（百分比 left/top/right/bottom）
+// ─────────────────────────────────────────────
+const questions = [
+    {
+        id:       "bear",
+        question: "Put the bear on the rug.",
+        // 彩色拼圖地墊：左下角，約佔圖的左側 0~42%，高度 62%~100%
+        zone:  { left: 0, right: 42, top: 62, bottom: 100 },
+        snap:  { left: 14, top: 72 },
+    },
+    {
+        id:       "car",
+        question: "Put the car on the table.",
+        // 矮桌桌面：約 47%~72% 水平，50%~65% 垂直
+        zone:  { left: 47, right: 72, top: 48, bottom: 68 },
+        snap:  { left: 50, top: 50 },
+    },
+    {
+        id:       "ball",
+        question: "Put the ball in front of the table.",
+        // 桌子前方地板（小白墊）：約 52%~72% 水平，70%~90% 垂直
+        zone:  { left: 50, right: 73, top: 68, bottom: 90 },
+        snap:  { left: 55, top: 72 },
+    },
+];
 
-const bear = document.getElementById("bear");
-const scene = document.getElementById("scene");
-const msg = document.getElementById("message");
+// ─────────────────────────────────────────────
+// 狀態
+// ─────────────────────────────────────────────
+let currentQ   = 0;
+let dragging   = false;
+let activeItem = null;
+let offsetX    = 0;
+let offsetY    = 0;
 
-let dragging = false;
-let offsetX = 0;
-let offsetY = 0;
+const scene   = document.getElementById("scene");
+const msgEl   = document.getElementById("message");
+const finishEl= document.getElementById("finish");
+const questionEl = document.getElementById("question");
 
+// ─────────────────────────────────────────────
+// 更新進度點
+// ─────────────────────────────────────────────
+function updateDots(current) {
+    questions.forEach((_, i) => {
+        const dot = document.getElementById("dot" + i);
+        dot.className = "dot";
+        if (i < current)  dot.classList.add("done");
+        if (i === current) dot.classList.add("active");
+    });
+}
 
-bear.addEventListener("pointerdown",(e)=>{
+// ─────────────────────────────────────────────
+// 載入第 n 題
+// ─────────────────────────────────────────────
+function loadQuestion(n) {
+    if (n >= questions.length) {
+        // 全部完成
+        questionEl.style.display = "none";
+        finishEl.style.display   = "block";
+        updateDots(questions.length); // 全亮綠
+        questions.forEach(q => {
+            const el = document.getElementById(q.id);
+            el.style.cursor = "default";
+        });
+        return;
+    }
 
-    dragging = true;
+    const q  = questions[n];
+    const el = document.getElementById(q.id);
 
-    offsetX = e.offsetX;
-    offsetY = e.offsetY;
+    // 顯示對應物件，回到預設起始位置
+    el.classList.add("active");
+    el.style.left   = "";
+    el.style.top    = "";
+    el.style.cursor = "grab";
 
+    questionEl.textContent = q.question;
+    msgEl.textContent      = "";
+    updateDots(n);
+}
+
+// ─────────────────────────────────────────────
+// 拖曳邏輯（繫結到所有 .item）
+// ─────────────────────────────────────────────
+document.querySelectorAll(".item").forEach(item => {
+    item.addEventListener("pointerdown", (e) => {
+        // 只允許當前題目的物件被拖
+        if (item.id !== questions[currentQ].id) return;
+        if (item.style.cursor === "default") return;
+
+        dragging   = true;
+        activeItem = item;
+        offsetX    = e.offsetX;
+        offsetY    = e.offsetY;
+        item.setPointerCapture(e.pointerId);
+    });
 });
 
-
-window.addEventListener("pointermove",(e)=>{
-
-    if(!dragging) return;
-
+window.addEventListener("pointermove", (e) => {
+    if (!dragging || !activeItem) return;
     const rect = scene.getBoundingClientRect();
-
-    let x = e.clientX - rect.left - offsetX;
-    let y = e.clientY - rect.top - offsetY;
-
-    bear.style.left = x + "px";
-    bear.style.top  = y + "px";
-
+    const x = e.clientX - rect.left - offsetX;
+    const y = e.clientY - rect.top  - offsetY;
+    activeItem.style.left = x + "px";
+    activeItem.style.top  = y + "px";
 });
 
-
-window.addEventListener("pointerup",()=>{
-
-    if(!dragging) return;
-
+window.addEventListener("pointerup", () => {
+    if (!dragging || !activeItem) return;
     dragging = false;
 
-    const x = parseFloat(bear.style.left);
-    const y = parseFloat(bear.style.top);
+    const q    = questions[currentQ];
+    const rect = scene.getBoundingClientRect();
+    const W    = rect.width;
+    const H    = rect.height;
 
-    // 🧸 地毯成功區（你可以微調）
-    const isOnRug =
-        x > 30 &&
-        x < 300 &&
-        y > 280 &&
-        y < 550;
+    // 取得物件中心點（百分比）
+    const itemLeft = parseFloat(activeItem.style.left) || 0;
+    const itemTop  = parseFloat(activeItem.style.top)  || 0;
+    const itemW    = activeItem.offsetWidth;
+    const itemH    = activeItem.offsetHeight;
+    const cx = ((itemLeft + itemW / 2) / W) * 100;
+    const cy = ((itemTop  + itemH / 2) / H) * 100;
 
-    if(isOnRug){
+    const z = q.zone;
+    const inZone = cx > z.left && cx < z.right && cy > z.top && cy < z.bottom;
 
-        // ⭐ 吸附到地毯中心位置
-        bear.style.left = "160px";
-        bear.style.top  = "290px";
+    if (inZone) {
+        // ✅ 成功：吸附到目標位置
+        const snapL = (q.snap.left / 100) * W;
+        const snapT = (q.snap.top  / 100) * H;
+        activeItem.style.left   = snapL + "px";
+        activeItem.style.top    = snapT + "px";
+        activeItem.style.cursor = "default";
 
-        // 🎯 成功提示
-        msg.innerHTML = "⭐ Great! The bear is on the rug!";
+        msgEl.innerHTML = "⭐ Great job!";
 
-        // 🔒 鎖定（避免再拖）
-        bear.style.cursor = "default";
+        // 0.8 秒後進下一題
+        setTimeout(() => {
+            msgEl.textContent = "";
+            currentQ++;
+            loadQuestion(currentQ);
+        }, 900);
 
-    }else{
-
-        // ❌ 沒放對 → 回原位（可選）
-        bear.style.left = "40%";
-        bear.style.top  = "82%";
-
-        msg.innerHTML = "";
-
+    } else {
+        // ❌ 放錯：回到起始位置
+        activeItem.style.left = "";
+        activeItem.style.top  = "";
+        msgEl.innerHTML = "❌ Try again!";
     }
+
+    activeItem = null;
 });
 
+// ─────────────────────────────────────────────
+// 初始化
+// ─────────────────────────────────────────────
+loadQuestion(0);
 </script>
-
 </body>
 </html>
