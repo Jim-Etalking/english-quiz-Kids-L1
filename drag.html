@@ -851,6 +851,42 @@ document.getElementById("close-btn").addEventListener("click", () => {
     dataPanel.classList.remove("show");
     finishEl.style.display = "flex";
 });
+
+// ═══════════════════════════════════════════════
+// 視窗縮放與響應式物件大小計算 (修正：補回漏掉的程式碼)
+// ═══════════════════════════════════════════════
+resizeItems();
+
+window.addEventListener("resize", resizeItems);
+
+function resizeItems() {
+    const w = scene.offsetWidth;
+    const bgImg = scene.querySelector(".bg");
+    const h = bgImg.naturalWidth > 0
+        ? w * (bgImg.naturalHeight / bgImg.naturalWidth)
+        : scene.offsetHeight;
+
+    const sizes = { bear: 0.25, car: 0.10, ball: 0.12 };
+    Object.entries(sizes).forEach(([id, ratio]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const placed = el.style.cursor === "default";
+        el.style.width = (w * ratio) + "px";
+        if (placed) {
+            const q = questions.find(q => q.type === "drag" && q.itemId === id);
+            if (q) {
+                el.style.left = (q.snap.left / 100 * w) + "px";
+                el.style.top  = (q.snap.top  / 100 * h) + "px";
+            }
+        }
+    });
+}
+
+// START 按鈕：使用者點擊後解鎖音效，再載入第一題
+document.getElementById("start-btn").addEventListener("click", () => {
+    document.getElementById("start-screen").style.display = "none";
+    loadQuestion(0);
+});
 </script>
 </body>
 </html>
