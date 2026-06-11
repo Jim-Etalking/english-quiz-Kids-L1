@@ -207,7 +207,7 @@ h1 {
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.6);
-    z-index: 100;
+    z-index: 2000;
     align-items: center;
     justify-content: center;
 }
@@ -676,6 +676,9 @@ const dataPanel = document.getElementById("data-panel");
 const dataTbody = document.getElementById("data-tbody");
 
 dataBtn.addEventListener("click", () => {
+
+    finishEl.style.display = "none";
+
     dataTbody.innerHTML = "";
     qResults.forEach(r => {
         const tr = document.createElement("tr");
@@ -691,6 +694,7 @@ dataBtn.addEventListener("click", () => {
 
 document.getElementById("close-btn").addEventListener("click", () => {
     dataPanel.classList.remove("show");
+    finishEl.style.display = "flex";
 });
 resizeItems();
 
