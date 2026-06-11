@@ -41,19 +41,19 @@ h1 {
 }
 
 #bear {
-    width: clamp(120px, 16vw, 200px);
-    left: 40%;
-    top: 75%;
+    width: clamp(140px, 19vw, 230px);
+    left: 38%;
+    top: 68%;
 }
 #car {
-    width: clamp(100px, 14vw, 170px);
-    left: 42%;
-    top: 70%;
+    width: clamp(80px, 10vw, 120px);
+    left: 38%;
+    top: 68%;
 }
 #ball {
-    width: clamp(80px, 10vw, 130px);
-    left: 42%;
-    top: 72%;
+    width: clamp(100px, 13vw, 160px);
+    left: 38%;
+    top: 68%;
 }
 
 #message {
@@ -131,23 +131,23 @@ const questions = [
     {
         id:       "bear",
         question: "Put the bear on the rug.",
-        // 彩色拼圖地墊：左下角，約佔圖的左側 0~42%，高度 62%~100%
-        zone:  { left: 0, right: 42, top: 62, bottom: 100 },
-        snap:  { left: 14, top: 72 },
+        // 彩色拼圖地墊：左下角
+        zone:  { left: 0, right: 44, top: 60, bottom: 100 },
+        snap:  { left: 8, top: 68 },
     },
     {
         id:       "car",
         question: "Put the car on the table.",
-        // 矮桌桌面：約 47%~72% 水平，50%~65% 垂直
-        zone:  { left: 47, right: 72, top: 48, bottom: 68 },
-        snap:  { left: 50, top: 50 },
+        // 矮桌桌面：水平約 46~68%，垂直約 48~63%
+        zone:  { left: 44, right: 70, top: 45, bottom: 65 },
+        snap:  { left: 48, top: 46 },
     },
     {
         id:       "ball",
         question: "Put the ball in front of the table.",
-        // 桌子前方地板（小白墊）：約 52%~72% 水平，70%~90% 垂直
-        zone:  { left: 50, right: 73, top: 68, bottom: 90 },
-        snap:  { left: 55, top: 72 },
+        // 桌子前方小白墊：水平約 50~72%，垂直約 68~88%
+        zone:  { left: 48, right: 74, top: 66, bottom: 90 },
+        snap:  { left: 52, top: 68 },
     },
 ];
 
