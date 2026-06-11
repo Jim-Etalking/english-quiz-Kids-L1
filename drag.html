@@ -12,37 +12,17 @@ body {
     background: #c8dff0;
     font-family: Arial, sans-serif;
     text-align: center;
-    height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 h1 {
-    position: absolute;
-    top: 4%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin: 0;
-    color: #fff;
-    font-size: clamp(18px, 3vw, 34px);
-    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
-    background: rgba(0,0,0,0.45);
-    padding: 10px 28px;
-    border-radius: 50px;
-    white-space: nowrap;
-    z-index: 10;
-    width: auto;
+    margin: 10px 0 4px;
+    color: #333;
+    font-size: clamp(18px, 3vw, 32px);
+    font-weight: bold;
 }
-/* scene 撐滿剩餘高度，寬度自動 */
 .scene {
     position: relative;
-    flex: 1;
-    min-height: 0;
-    /* 維持背景圖 16:9 比例（1456x816） */
+    width: 100vw;
     aspect-ratio: 1456 / 816;
-    max-height: 100%;
-    max-width: 100%;
 }
 .bg {
     width: 100%;
@@ -100,34 +80,20 @@ h1 {
 
 /* ── 訊息 ── */
 #message {
-    position: absolute;
-    bottom: 3%;
-    left: 50%;
-    transform: translateX(-50%);
     font-size: clamp(18px, 3vw, 28px);
     font-weight: bold;
-    color: #fff;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
-    background: rgba(0,0,0,0.4);
-    padding: 8px 28px;
-    border-radius: 50px;
-    white-space: nowrap;
-    z-index: 10;
-    display: none;
+    margin: 6px;
+    min-height: 36px;
+    color: #2a7d2e;
 }
-#message:not(:empty) { display: block; }
 
 /* ── 進度點 ── */
 #progress {
-    position: absolute;
-    top: 1.5%;
-    left: 50%;
-    transform: translateX(-50%);
     display: flex;
     justify-content: center;
     gap: 8px;
+    margin: 6px 0;
     flex-wrap: wrap;
-    z-index: 10;
 }
 .dot {
     width: 13px; height: 13px;
@@ -170,19 +136,10 @@ h1 {
 /* ── 完成畫面 ── */
 #finish {
     display: none;
-    position: absolute;
-    bottom: 8%;
-    left: 50%;
-    transform: translateX(-50%);
     font-size: clamp(22px, 4vw, 38px);
     font-weight: bold;
-    color: #fff;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-    background: rgba(0,0,0,0.45);
-    padding: 14px 32px;
-    border-radius: 50px;
-    white-space: nowrap;
-    z-index: 10;
+    color: #e67e00;
+    margin: 10px;
     animation: pop 0.5s ease;
 }
 @keyframes pop {
@@ -199,6 +156,11 @@ h1 {
     <button id="start-btn">START</button>
 </div>
 
+<!-- 進度 -->
+<div id="progress"></div>
+<!-- 題目 -->
+<h1 id="question"></h1>
+
 <!-- 場景 -->
 <div class="scene" id="scene">
     <img class="bg" src="room_background.png">
@@ -214,11 +176,11 @@ h1 {
     <div class="hotspot" id="hs-books"></div>
     <div class="hotspot" id="hs-window"></div>
     <div class="hotspot" id="hs-cloud"></div>
-  <div id="progress"></div>
-  <h1 id="question"></h1>
-  <div id="message"></div>
-  <div id="finish">🎉 Well done! You are so smart! 🎉</div>
 </div>
+
+<!-- 訊息 / 完成 -->
+<div id="message"></div>
+<div id="finish">🎉 Well done! You are so smart! 🎉</div>
 
 <script>
 // ═══════════════════════════════════════════════
