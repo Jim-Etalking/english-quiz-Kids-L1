@@ -53,18 +53,9 @@ h1 {
 }
 .item.active { display: block; }
 
-#bear {
-    width: clamp(120px, 18vw, 220px);
-    left: 38%; top: 68%;
-}
-#car {
-    width: clamp(70px, 9vw, 130px);
-    left: 38%; top: 68%;
-}
-#ball {
-    width: clamp(90px, 12vw, 150px);
-    left: 38%; top: 68%;
-}
+#bear { left: 38%; top: 68%; }
+#car  { left: 38%; top: 68%; }
+#ball { left: 38%; top: 68%; }
 
 /* ── 圈選熱區 ── */
 .hotspot {
@@ -512,6 +503,17 @@ document.querySelectorAll(".item").forEach(item => {
 // ═══════════════════════════════════════════════
 buildDots();
 applyHotspotPositions();
+resizeItems();
+
+// 視窗大小改變時重新計算
+window.addEventListener("resize", resizeItems);
+
+function resizeItems() {
+    const w = scene.offsetWidth;
+    document.getElementById("bear").style.width = (w * 0.19) + "px";
+    document.getElementById("car").style.width  = (w * 0.10) + "px";
+    document.getElementById("ball").style.width = (w * 0.12) + "px";
+}
 
 // START 按鈕：使用者點擊後解鎖音效，再載入第一題
 document.getElementById("start-btn").addEventListener("click", () => {
