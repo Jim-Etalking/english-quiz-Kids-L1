@@ -12,17 +12,27 @@ body {
     background: #c8dff0;
     font-family: Arial, sans-serif;
     text-align: center;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 h1 {
-    margin: 10px 0 4px;
+    margin: 6px 0 2px;
     color: #333;
-    font-size: clamp(18px, 3vw, 32px);
+    font-size: clamp(16px, 2.5vw, 30px);
     font-weight: bold;
+    flex-shrink: 0;
 }
 .scene {
     position: relative;
+    /* 寬不超過螢幕，高不超過剩餘空間 */
     width: 100vw;
+    max-height: 80dvh;
     aspect-ratio: 1456 / 816;
+    flex-shrink: 1;
 }
 .bg {
     width: 100%;
