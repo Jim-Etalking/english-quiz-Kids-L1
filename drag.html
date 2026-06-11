@@ -732,26 +732,108 @@ function recordResult(n) {
 }
 
 // ═══════════════════════════════════════════════
-// 顯示完成畫面 + 新版數據按鈕邏輯
+// 顯示完成畫面 + 全新星星報告邏輯 (純數據精簡版)
 // ═══════════════════════════════════════════════
 const dataBtn   = document.getElementById("data-btn");
 const dataPanel = document.getElementById("data-panel");
 const dataTbody = document.getElementById("data-tbody");
+
+// 工具函式：傳入數字 1~5，回傳對應的星星字串
+function getStars(num) {
+    let stars = "";
+    for (let i = 1; i <= 5; i++) {
+        stars += i <= num ? "★" : "☆";
+    }
+    return stars;
+}
 
 dataBtn.addEventListener("click", () => {
     // 隱藏完成獎狀，顯示報表
     finishEl.style.display = "none";
     dataTbody.innerHTML = "";
     
+    // --- 1. 數據統計基礎 ---
+    let totalSeconds = 0;
+    let totalAttempts = 0;
+    let dragAttempts = 0; // 專門統計拖曳題的錯誤
+    let dragCount = 0;
+    
+    questions.forEach((q, idx) => {
+        const r = qResults[idx];
+        if (r) {
+            totalSeconds += r.seconds;
+            totalAttempts += r.attempts;
+            if (q.type === "drag") {
+                dragAttempts += r.attempts;
+                dragCount++;
+            }
+        }
+    });
+
+    const totalQuestions = qResults.length || 1;
+    const avgTime = totalSeconds / totalQuestions;
+
+    // --- 2. 星星演算法判定 ---
+    
+    // [Vocabulary & Listening] 依據總錯誤次數判定
+    let vocRating = 5;
+    if (totalAttempts > 0 && totalAttempts <= 2) vocRating = 4;
+    else if (totalAttempts > 2 && totalAttempts <= 4) vocRating = 3;
+    else if (totalAttempts > 4) vocRating = 2;
+
+    let listeningRating = vocRating; 
+
+    // [Response Speed] 依據平均秒數判定
+    let speedRating = 5;
+    if (avgTime > 3 && avgTime <= 6) speedRating = 4;
+    else if (avgTime > 6 && avgTime <= 10) speedRating = 3;
+    else if (avgTime > 10) speedRating = 2;
+
+    // [Following Directions] 依據拖曳題的錯誤次數判定
+    let directionRating = 5;
+    if (dragAttempts === 1) directionRating = 4;
+    else if (dragAttempts > 1 && dragAttempts <= 3) directionRating = 3;
+    else if (dragAttempts > 3) directionRating = 2;
+
+    // --- 3. 動態渲染家長報告 UI ---
+    const reportHeader = document.querySelector('.report-header');
+    reportHeader.innerHTML = `
+        <h2>📝 幼兒英語聽力與認知分析</h2>
+        <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
+        
+        <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin-top: 15px; border: 1px solid #e2e8f0; text-align: left;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
+                <span style="font-weight: bold; color: #475569;">Listening Skills</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(listeningRating)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
+                <span style="font-weight: bold; color: #475569;">Vocabulary</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(vocRating)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
+                <span style="font-weight: bold; color: #475569;">Response Speed</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(speedRating)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 15px;">
+                <span style="font-weight: bold; color: #475569;">Following Directions</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(directionRating)}</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; padding: 12px; background: rgba(239, 71, 111, 0.08); border-radius: 12px; border: 1px dashed #ef476f;">
+            <div style="font-size: 13px; color: #64748b; font-weight: bold; text-transform: uppercase;">Recommended Level</div>
+            <div style="font-weight: 900; color: #ef476f; font-size: 26px; margin-top: 4px; letter-spacing: 1px;">Starter A</div>
+        </div>
+    `;
+
+    // --- 4. 產出下方逐題明細 (純數據版) ---
     qResults.forEach(r => {
         const tr = document.createElement("tr");
         
-        // 將生硬的錯誤次數轉化為「理解力指標」
         let statusHtml = r.attempts === 0 
-            ? '<span class="badge perfect">✨ 一次答對</span>' 
-            : `<span class="badge learning">💡 探索 ${r.attempts} 次後理解</span>`;
+            ? `<span class="badge perfect">錯誤 0 次</span>` 
+            : `<span class="badge learning">錯誤 ${r.attempts} 次</span>`;
             
-        // 賦予時間一些意義
         let speedIcon = r.seconds < 3 ? '⚡' : (r.seconds < 6 ? '👍' : '🐢');
         
         tr.innerHTML = `
@@ -768,40 +850,6 @@ dataBtn.addEventListener("click", () => {
 document.getElementById("close-btn").addEventListener("click", () => {
     dataPanel.classList.remove("show");
     finishEl.style.display = "flex";
-});
-
-resizeItems();
-
-// 視窗大小改變時重新計算
-window.addEventListener("resize", resizeItems);
-
-function resizeItems() {
-    const w = scene.offsetWidth;
-    // 用背景圖的實際比例算高度，不依賴 offsetHeight
-    const bgImg = scene.querySelector(".bg");
-    const h = bgImg.naturalWidth > 0
-        ? w * (bgImg.naturalHeight / bgImg.naturalWidth)
-        : scene.offsetHeight;
-
-    const sizes = { bear: 0.25, car: 0.10, ball: 0.12 };
-    Object.entries(sizes).forEach(([id, ratio]) => {
-        const el = document.getElementById(id);
-        const placed = el.style.cursor === "default";
-        el.style.width = (w * ratio) + "px";
-        if (placed) {
-            const q = questions.find(q => q.type === "drag" && q.itemId === id);
-            if (q) {
-                el.style.left = (q.snap.left / 100 * w) + "px";
-                el.style.top  = (q.snap.top  / 100 * h) + "px";
-            }
-        }
-    });
-}
-
-// START 按鈕：使用者點擊後解鎖音效，再載入第一題
-document.getElementById("start-btn").addEventListener("click", () => {
-    document.getElementById("start-screen").style.display = "none";
-    loadQuestion(0);
 });
 </script>
 </body>
