@@ -139,7 +139,9 @@ h1 {
     box-shadow: 0 2px 0 #c47d0e;
 }
 
-/* ── 完成畫面 ── */
+/* =========================================
+   全新：完成畫面 (可愛立體獎狀風) 
+   ========================================= */
 #finish {
     display: none;
     position: fixed;
@@ -148,112 +150,180 @@ h1 {
     transform: translate(-50%, -50%);
     flex-direction: column;
     align-items: center;
-    gap: 18px;
-    background: rgba(255,255,255,0.92);
-    padding: 40px 50px;
-    border-radius: 30px;
-    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    gap: 20px;
+    background: #ffffff;
+    padding: 50px 40px 40px;
+    border-radius: 40px;
+    border: 8px solid #ffd166;
+    box-shadow: 0 25px 50px rgba(255, 166, 0, 0.2), inset 0 0 0 8px #fff9e6;
     z-index: 999;
-    animation: pop 0.5s ease;
+    animation: popBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 90vw;
+    max-width: 450px;
 }
 
-.finish-title {
-    font-size: clamp(28px, 5vw, 48px);
+.ribbon {
+    position: absolute;
+    top: -25px;
+    background: #ef476f;
+    color: white;
+    padding: 10px 30px;
+    border-radius: 30px;
+    font-size: clamp(18px, 4vw, 24px);
     font-weight: bold;
-    color: #ff8c42;
+    box-shadow: 0 5px 15px rgba(239, 71, 111, 0.4);
 }
 
 .stars {
-    font-size: clamp(28px, 5vw, 50px);
+    font-size: clamp(40px, 8vw, 60px);
+    letter-spacing: 5px;
+    filter: drop-shadow(0 4px 6px rgba(255, 209, 102, 0.6));
 }
 
 .finish-text {
-    font-size: clamp(18px, 3vw, 28px);
-    color: #666;
-    font-weight: bold;
+    font-size: clamp(22px, 4vw, 32px);
+    color: #06d6a0;
+    font-weight: 900;
+    margin-bottom: 10px;
 }
+
+/* 立體閃亮按鈕 */
 #data-btn {
     display: none;
-
-    background: linear-gradient(135deg,#ffb347,#ff8c42);
+    background: linear-gradient(180deg, #118ab2 0%, #0c637f 100%);
     color: white;
-
     border: none;
-    border-radius: 999px;
-
-    padding: 16px 42px;
-
-    font-size: clamp(18px,2.5vw,24px);
+    border-radius: 20px;
+    padding: 16px 36px;
+    font-size: clamp(16px, 3vw, 20px);
     font-weight: bold;
-
     cursor: pointer;
-
-    box-shadow: 0 8px 18px rgba(255,140,66,.35);
-
-    transition: all .2s ease;
-}
-
-#data-btn:hover {
-    transform: translateY(-2px);
+    box-shadow: 0 8px 0 #073b4c, 0 15px 20px rgba(17, 138, 178, 0.4);
+    transition: all 0.1s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 #data-btn:active {
-    transform: scale(0.96);
-    box-shadow: 0 4px 10px rgba(255,140,66,.35);
+    transform: translateY(8px);
+    box-shadow: 0 0 0 #073b4c, 0 5px 10px rgba(17, 138, 178, 0.4);
 }
-/* 數據面板 */
+
+@keyframes popBounce {
+    0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    80%  { transform: translate(-50%, -50%) scale(1.05); }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* =========================================
+   全新：數據面板 (家長專業報表風)
+   ========================================= */
 #data-panel {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(5px);
     z-index: 2000;
     align-items: center;
     justify-content: center;
 }
-#data-panel.show { display: flex; }
+#data-panel.show { display: flex; animation: fadeIn 0.3s ease; }
+
 #data-inner {
-    background: #fff;
-    border-radius: 16px;
-    padding: 24px 32px;
-    max-width: 500px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 35px 40px;
+    max-width: 600px;
     width: 90vw;
-    max-height: 80dvh;
+    max-height: 85dvh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+}
+
+.report-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.report-header h2 {
+    margin: 0 0 8px;
+    font-size: clamp(20px, 4vw, 26px);
+    color: #1e293b;
+}
+
+.report-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 15px;
+}
+
+.table-container {
     overflow-y: auto;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
 }
-#data-inner h2 {
-    margin: 0 0 16px;
-    font-size: 20px;
-    color: #333;
-}
+
 #data-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
 }
+
 #data-table th {
-    background: #f1f5f9;
-    padding: 8px 10px;
+    background: #f8fafc;
+    padding: 14px 16px;
     text-align: left;
-    color: #555;
-    font-weight: 600;
+    color: #475569;
+    font-weight: 700;
+    border-bottom: 2px solid #e2e8f0;
+    position: sticky;
+    top: 0;
 }
+
 #data-table td {
-    padding: 8px 10px;
-    border-bottom: 1px solid #e5e7eb;
-    color: #333;
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    vertical-align: middle;
 }
-#data-table tr:last-child td { border-bottom: none; }
+
+/* 狀態標籤 (Pills) */
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
+    white-space: nowrap;
+}
+.badge.perfect { background: #dcfce7; color: #166534; }
+.badge.learning { background: #fef9c3; color: #854d0e; }
+
+.speed { font-weight: 600; color: #0ea5e9; white-space: nowrap; }
+
 #close-btn {
-    margin-top: 16px;
-    padding: 10px 28px;
-    border-radius: 50px;
-    border: none;
-    background: #e5e7eb;
-    color: #333;
-    font-size: 15px;
+    margin-top: 25px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    background: transparent;
+    color: #475569;
+    font-size: 16px;
     cursor: pointer;
     font-weight: bold;
+    transition: all 0.2s;
+}
+#close-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 body.finished .scene,
@@ -263,36 +333,24 @@ body.finished #message {
     opacity:.25;
     transition: opacity .5s ease;
 }
-
-@keyframes pop {
-    0%   { transform: scale(0.5); opacity: 0; }
-    70%  { transform: scale(1.15); }
-    100% { transform: scale(1);   opacity: 1; }
-}
 </style>
 </head>
 <body>
 
-<!-- 開始畫面 -->
 <div id="start-screen">
     <button id="start-btn">START</button>
 </div>
 
-<!-- 進度 -->
 <div id="progress"></div>
-<!-- 題目 -->
 <h1 id="question"></h1>
 
-<!-- 場景 -->
 <div class="scene" id="scene">
     <img class="bg" src="room_background.png">
 
-    <!-- 拖曳物件 -->
     <img id="bear" class="item" src="bear_v3.png">
     <img id="car"  class="item" src="car.png">
     <img id="ball" class="item" src="ball.png">
 
-    <!-- 圈選熱區（位置用百分比，由 JS 套用） -->
     <div class="hotspot" id="hs-sun"></div>
     <div class="hotspot" id="hs-door"></div>
     <div class="hotspot" id="hs-books"></div>
@@ -300,32 +358,35 @@ body.finished #message {
     <div class="hotspot" id="hs-cloud"></div>
 </div>
 
-<!-- 訊息 / 完成 -->
 <div id="message"></div>
 <div id="finish">
-    <div class="finish-title">🎉 Great Job! 🎉</div>
+    <div class="ribbon">🎉 闖關成功 🎉</div>
     <div class="stars">⭐⭐⭐⭐⭐</div>
-    <div class="finish-text">You are so smart!</div>
-
-    <button id="data-btn">📈 Parent Report</button>
+    <div class="finish-text">You found all the toys!</div>
+    <button id="data-btn">
+        <span class="btn-icon">💌</span> 給爸爸媽媽的報告
+    </button>
 </div>
 
-<!-- 數據面板 -->
 <div id="data-panel">
   <div id="data-inner">
-    <h2>📊 答題數據</h2>
-    <table id="data-table">
-      <thead>
-        <tr>
-          <th>題目</th>
-          <th>⏱ 秒數</th>
-          <th>🔄 嘗試次數</th>
-        </tr>
-      </thead>
-      <tbody id="data-tbody"></tbody>
-    </table>
-    <br>
-    <button id="close-btn">關閉</button>
+    <div class="report-header">
+        <h2>📝 幼兒英語聽力與認知分析</h2>
+        <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
+    </div>
+    <div class="table-container">
+        <table id="data-table">
+          <thead>
+            <tr>
+              <th>單字 / 聽力指令</th>
+              <th>反應速度</th>
+              <th>理解力指標</th>
+            </tr>
+          </thead>
+          <tbody id="data-tbody"></tbody>
+        </table>
+    </div>
+    <button id="close-btn">完成並關閉</button>
   </div>
 </div>
 
@@ -507,7 +568,7 @@ function loadQuestion(n) {
         document.body.classList.add("finished");
         questionEl.style.display = "";
         finishEl.style.display   = "flex";
-        dataBtn.style.display    = "block";
+        dataBtn.style.display    = "flex";
         updateDots(questions.length);
         return;
     }
@@ -670,25 +731,37 @@ function recordResult(n) {
     });
 }
 
-// 顯示完成畫面 + 數據按鈕
+// ═══════════════════════════════════════════════
+// 顯示完成畫面 + 新版數據按鈕邏輯
+// ═══════════════════════════════════════════════
 const dataBtn   = document.getElementById("data-btn");
 const dataPanel = document.getElementById("data-panel");
 const dataTbody = document.getElementById("data-tbody");
 
 dataBtn.addEventListener("click", () => {
-
+    // 隱藏完成獎狀，顯示報表
     finishEl.style.display = "none";
-
     dataTbody.innerHTML = "";
+    
     qResults.forEach(r => {
         const tr = document.createElement("tr");
+        
+        // 將生硬的錯誤次數轉化為「理解力指標」
+        let statusHtml = r.attempts === 0 
+            ? '<span class="badge perfect">✨ 一次答對</span>' 
+            : `<span class="badge learning">💡 探索 ${r.attempts} 次後理解</span>`;
+            
+        // 賦予時間一些意義
+        let speedIcon = r.seconds < 3 ? '⚡' : (r.seconds < 6 ? '👍' : '🐢');
+        
         tr.innerHTML = `
-            <td style="max-width:200px">${r.question}</td>
-            <td>${r.seconds}s</td>
-            <td>${r.attempts} 次錯誤</td>
+            <td style="font-weight: 700;">${r.question}</td>
+            <td><span class="speed">${speedIcon} ${r.seconds}s</span></td>
+            <td>${statusHtml}</td>
         `;
         dataTbody.appendChild(tr);
     });
+    
     dataPanel.classList.add("show");
 });
 
@@ -696,6 +769,7 @@ document.getElementById("close-btn").addEventListener("click", () => {
     dataPanel.classList.remove("show");
     finishEl.style.display = "flex";
 });
+
 resizeItems();
 
 // 視窗大小改變時重新計算
