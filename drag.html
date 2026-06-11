@@ -12,9 +12,9 @@ body {
     text-align: center;
 }
 h1 {
-    margin: 20px 0;
+    margin: 16px 0;
     color: #333;
-    font-size: clamp(20px, 3vw, 32px);
+    font-size: clamp(18px, 3vw, 30px);
 }
 .scene {
     position: relative;
@@ -27,53 +27,80 @@ h1 {
     display: block;
 }
 
-/* 物件共用樣式 */
+/* ── 拖曳物件 ── */
 .item {
     position: absolute;
     touch-action: none;
     cursor: grab;
     user-select: none;
     transition: left 0.3s ease, top 0.3s ease;
-    display: none; /* 預設隱藏，由 JS 控制顯示 */
+    display: none;
 }
-.item.active {
-    display: block;
-}
+.item.active { display: block; }
 
 #bear {
     width: clamp(140px, 19vw, 230px);
-    left: 38%;
-    top: 68%;
+    left: 38%; top: 68%;
 }
 #car {
     width: clamp(80px, 10vw, 120px);
-    left: 38%;
-    top: 68%;
+    left: 38%; top: 68%;
 }
 #ball {
     width: clamp(100px, 13vw, 160px);
-    left: 30%;
-    top: 57%;
+    left: 38%; top: 68%;
 }
 
+/* ── 圈選熱區 ── */
+.hotspot {
+    position: absolute;
+    cursor: pointer;
+    border-radius: 12px;
+    display: none;          /* 由 JS 控制 */
+    box-sizing: border-box;
+}
+.hotspot.active { display: block; }
+/* 點擊後的圓圈動畫 */
+.hotspot.correct {
+    border: 4px solid #2a7d2e;
+    background: rgba(42,125,46,0.15);
+    animation: pulse 0.4s ease;
+}
+.hotspot.wrong {
+    border: 4px solid #e74c3c;
+    background: rgba(231,76,60,0.15);
+    animation: shake 0.4s ease;
+}
+@keyframes pulse {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+@keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%     { transform: translateX(-6px); }
+    75%     { transform: translateX(6px); }
+}
+
+/* ── 訊息 ── */
 #message {
     font-size: clamp(20px, 3vw, 28px);
     font-weight: bold;
-    margin: 16px;
-    min-height: 40px;
+    margin: 14px;
+    min-height: 38px;
     color: #2a7d2e;
 }
 
-/* 進度點點 */
+/* ── 進度點 ── */
 #progress {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     margin: 10px 0;
+    flex-wrap: wrap;
 }
 .dot {
-    width: 14px;
-    height: 14px;
+    width: 13px; height: 13px;
     border-radius: 50%;
     background: #ccc;
     transition: background 0.3s;
@@ -81,10 +108,10 @@ h1 {
 .dot.done   { background: #2a7d2e; }
 .dot.active { background: #f5a623; }
 
-/* 完成畫面 */
+/* ── 完成畫面 ── */
 #finish {
     display: none;
-    font-size: clamp(24px, 4vw, 40px);
+    font-size: clamp(22px, 4vw, 38px);
     font-weight: bold;
     color: #e67e00;
     margin: 24px;
@@ -99,22 +126,27 @@ h1 {
 </head>
 <body>
 
-<!-- 進度指示 -->
-<div id="progress">
-    <div class="dot active" id="dot0"></div>
-    <div class="dot"        id="dot1"></div>
-    <div class="dot"        id="dot2"></div>
-</div>
+<!-- 進度 -->
+<div id="progress"></div>
 
-<!-- 題目文字 -->
-<h1 id="question">Put the bear on the rug.</h1>
+<!-- 題目 -->
+<h1 id="question"></h1>
 
 <!-- 場景 -->
 <div class="scene" id="scene">
     <img class="bg" src="room_background.png">
-    <img id="bear" class="item active" src="bear_v3.png">
-    <img id="car"  class="item"        src="car.png">
-    <img id="ball" class="item"        src="ball.png">
+
+    <!-- 拖曳物件 -->
+    <img id="bear" class="item" src="bear_v3.png">
+    <img id="car"  class="item" src="car.png">
+    <img id="ball" class="item" src="ball.png">
+
+    <!-- 圈選熱區（位置用百分比，由 JS 套用） -->
+    <div class="hotspot" id="hs-sun"></div>
+    <div class="hotspot" id="hs-door"></div>
+    <div class="hotspot" id="hs-books"></div>
+    <div class="hotspot" id="hs-window"></div>
+    <div class="hotspot" id="hs-cloud"></div>
 </div>
 
 <!-- 訊息 / 完成 -->
@@ -122,98 +154,183 @@ h1 {
 <div id="finish">🎉 Well done! You are so smart! 🎉</div>
 
 <script>
-// ─────────────────────────────────────────────
-// 題目設定（座標以 scene 的百分比表示，方便響應式）
-// snap: 吸附到的位置（百分比）
-// zone: 判定成功的區域（百分比 left/top/right/bottom）
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
+// 題目資料
+// type: "drag" 或 "tap"
+//
+// drag: zone（判定區，%）, snap（吸附位置，%）
+// tap:  targets（正確熱區 id 陣列）, decoys（干擾熱區 id 陣列，之後可加）
+//
+// hotspots: 各熱區的位置（%: left, top, width, height）
+// ═══════════════════════════════════════════════
+const HOTSPOT_DEFS = {
+    "hs-sun":    { left: 2,  top: 5,  width: 18, height: 35 },
+    "hs-door":   { left: 12, top: 10, width: 28, height: 75 },
+    "hs-books":  { left: 68, top: 50, width: 22, height: 48 },
+    "hs-window": { left: 82, top: 8,  width: 17, height: 45 },
+    "hs-cloud":  { left: 38, top: 0,  width: 22, height: 18 },
+};
+
 const questions = [
+    // ── 拖曳題 ──
     {
-        id:       "bear",
-        question: "Put the bear on the rug.",
-        // 彩色拼圖地墊：左下角
-        zone:  { left: 0, right: 44, top: 60, bottom: 100 },
-        snap:  { left: 8, top: 68 },
+        type: "drag",
+        itemId: "bear",
+        question: "Can you put the bear on the rug?",
+        zone: { left: 0, right: 44, top: 60, bottom: 100 },
+        snap: { left: 8, top: 68 },
     },
     {
-        id:       "car",
-        question: "Put the car on the table.",
-        // 矮桌桌面：水平約 46~68%，垂直約 48~63%
-        zone:  { left: 44, right: 70, top: 45, bottom: 65 },
-        snap:  { left: 55, top: 51 },
+        type: "drag",
+        itemId: "car",
+        question: "Can you put the car on the table?",
+        zone: { left: 44, right: 70, top: 45, bottom: 65 },
+        snap: { left: 46, top: 55 },
     },
     {
-        id:       "ball",
-        question: "Put the ball in front of the table.",
-        // 桌子前方小白墊：水平約 50~72%，垂直約 68~88%
-        zone:  { left: 48, right: 74, top: 66, bottom: 90 },
-        snap:  { left: 52, top: 68 },
+        type: "drag",
+        itemId: "ball",
+        question: "Can you put the ball in front of the table?",
+        zone: { left: 48, right: 74, top: 66, bottom: 90 },
+        snap: { left: 52, top: 68 },
+    },
+    // ── 圈選題 ──
+    {
+        type: "tap",
+        question: "Can you find the sun? ☀️",
+        targets: ["hs-sun"],
+        decoys:  ["hs-door", "hs-books", "hs-window", "hs-cloud"],
+    },
+    {
+        type: "tap",
+        question: "Where is the door? 🚪",
+        targets: ["hs-door"],
+        decoys:  ["hs-sun", "hs-books", "hs-window", "hs-cloud"],
+    },
+    {
+        type: "tap",
+        question: "Can you find the books? 📚",
+        targets: ["hs-books"],
+        decoys:  ["hs-sun", "hs-door", "hs-window", "hs-cloud"],
+    },
+    {
+        type: "tap",
+        question: "Where is the window? 🪟",
+        targets: ["hs-window"],
+        decoys:  ["hs-sun", "hs-door", "hs-books", "hs-cloud"],
+    },
+    {
+        type: "tap",
+        question: "Can you find the cloud? ☁️",
+        targets: ["hs-cloud"],
+        decoys:  ["hs-sun", "hs-door", "hs-books", "hs-window"],
     },
 ];
 
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
 // 狀態
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
 let currentQ   = 0;
 let dragging   = false;
 let activeItem = null;
-let offsetX    = 0;
-let offsetY    = 0;
+let offsetX = 0, offsetY = 0;
+let tapLocked  = false; // 避免答對後連點
 
-const scene   = document.getElementById("scene");
-const msgEl   = document.getElementById("message");
-const finishEl= document.getElementById("finish");
+const scene      = document.getElementById("scene");
+const msgEl      = document.getElementById("message");
+const finishEl   = document.getElementById("finish");
 const questionEl = document.getElementById("question");
+const progressEl = document.getElementById("progress");
 
-// ─────────────────────────────────────────────
-// 更新進度點
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
+// 初始化進度點
+// ═══════════════════════════════════════════════
+function buildDots() {
+    progressEl.innerHTML = "";
+    questions.forEach((_, i) => {
+        const d = document.createElement("div");
+        d.className = "dot";
+        d.id = "dot" + i;
+        progressEl.appendChild(d);
+    });
+}
+
 function updateDots(current) {
     questions.forEach((_, i) => {
         const dot = document.getElementById("dot" + i);
         dot.className = "dot";
-        if (i < current)  dot.classList.add("done");
+        if (i < current)   dot.classList.add("done");
         if (i === current) dot.classList.add("active");
     });
 }
 
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
+// 套用熱區位置（百分比 → style）
+// ═══════════════════════════════════════════════
+function applyHotspotPositions() {
+    Object.entries(HOTSPOT_DEFS).forEach(([id, pos]) => {
+        const el = document.getElementById(id);
+        el.style.left   = pos.left   + "%";
+        el.style.top    = pos.top    + "%";
+        el.style.width  = pos.width  + "%";
+        el.style.height = pos.height + "%";
+    });
+}
+
+// ═══════════════════════════════════════════════
+// 隱藏所有拖曳物件與熱區
+// ═══════════════════════════════════════════════
+function hideAll() {
+    document.querySelectorAll(".item").forEach(el => {
+        el.classList.remove("active");
+        el.style.cursor = "grab";
+    });
+    document.querySelectorAll(".hotspot").forEach(el => {
+        el.classList.remove("active", "correct", "wrong");
+    });
+}
+
+// ═══════════════════════════════════════════════
 // 載入第 n 題
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
 function loadQuestion(n) {
+    hideAll();
+    msgEl.textContent = "";
+    tapLocked = false;
+
     if (n >= questions.length) {
-        // 全部完成
         questionEl.style.display = "none";
         finishEl.style.display   = "block";
-        updateDots(questions.length); // 全亮綠
-        questions.forEach(q => {
-            const el = document.getElementById(q.id);
-            el.style.cursor = "default";
-        });
+        updateDots(questions.length);
         return;
     }
 
-    const q  = questions[n];
-    const el = document.getElementById(q.id);
-
-    // 顯示對應物件，回到預設起始位置
-    el.classList.add("active");
-    el.style.left   = "";
-    el.style.top    = "";
-    el.style.cursor = "grab";
-
-    questionEl.textContent = q.question;
-    msgEl.textContent      = "";
+    const q = questions[n];
+    questionEl.style.display = "";
+    questionEl.textContent   = q.question;
     updateDots(n);
+
+    if (q.type === "drag") {
+        const el = document.getElementById(q.itemId);
+        el.classList.add("active");
+        el.style.left = "";
+        el.style.top  = "";
+    } else {
+        // 圈選：顯示所有熱區（正確 + 干擾）
+        [...q.targets, ...q.decoys].forEach(id => {
+            document.getElementById(id).classList.add("active");
+        });
+    }
 }
 
-// ─────────────────────────────────────────────
-// 拖曳邏輯（繫結到所有 .item）
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
+// 拖曳邏輯
+// ═══════════════════════════════════════════════
 document.querySelectorAll(".item").forEach(item => {
     item.addEventListener("pointerdown", (e) => {
-        // 只允許當前題目的物件被拖
-        if (item.id !== questions[currentQ].id) return;
+        const q = questions[currentQ];
+        if (q.type !== "drag") return;
+        if (item.id !== q.itemId) return;
         if (item.style.cursor === "default") return;
 
         dragging   = true;
@@ -227,10 +344,8 @@ document.querySelectorAll(".item").forEach(item => {
 window.addEventListener("pointermove", (e) => {
     if (!dragging || !activeItem) return;
     const rect = scene.getBoundingClientRect();
-    const x = e.clientX - rect.left - offsetX;
-    const y = e.clientY - rect.top  - offsetY;
-    activeItem.style.left = x + "px";
-    activeItem.style.top  = y + "px";
+    activeItem.style.left = (e.clientX - rect.left - offsetX) + "px";
+    activeItem.style.top  = (e.clientY - rect.top  - offsetY) + "px";
 });
 
 window.addEventListener("pointerup", () => {
@@ -239,50 +354,63 @@ window.addEventListener("pointerup", () => {
 
     const q    = questions[currentQ];
     const rect = scene.getBoundingClientRect();
-    const W    = rect.width;
-    const H    = rect.height;
+    const W = rect.width, H = rect.height;
 
-    // 取得物件中心點（百分比）
-    const itemLeft = parseFloat(activeItem.style.left) || 0;
-    const itemTop  = parseFloat(activeItem.style.top)  || 0;
-    const itemW    = activeItem.offsetWidth;
-    const itemH    = activeItem.offsetHeight;
-    const cx = ((itemLeft + itemW / 2) / W) * 100;
-    const cy = ((itemTop  + itemH / 2) / H) * 100;
+    const itemL = parseFloat(activeItem.style.left) || 0;
+    const itemT = parseFloat(activeItem.style.top)  || 0;
+    const cx = ((itemL + activeItem.offsetWidth  / 2) / W) * 100;
+    const cy = ((itemT + activeItem.offsetHeight / 2) / H) * 100;
 
     const z = q.zone;
     const inZone = cx > z.left && cx < z.right && cy > z.top && cy < z.bottom;
 
     if (inZone) {
-        // ✅ 成功：吸附到目標位置
-        const snapL = (q.snap.left / 100) * W;
-        const snapT = (q.snap.top  / 100) * H;
-        activeItem.style.left   = snapL + "px";
-        activeItem.style.top    = snapT + "px";
+        activeItem.style.left   = (q.snap.left / 100 * W) + "px";
+        activeItem.style.top    = (q.snap.top  / 100 * H) + "px";
         activeItem.style.cursor = "default";
-
         msgEl.innerHTML = "⭐ Great job!";
-
-        // 0.8 秒後進下一題
-        setTimeout(() => {
-            msgEl.textContent = "";
-            currentQ++;
-            loadQuestion(currentQ);
-        }, 900);
-
+        setTimeout(() => { currentQ++; loadQuestion(currentQ); }, 900);
     } else {
-        // ❌ 放錯：回到起始位置
         activeItem.style.left = "";
         activeItem.style.top  = "";
         msgEl.innerHTML = "❌ Try again!";
     }
-
     activeItem = null;
 });
 
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
+// 圈選邏輯
+// ═══════════════════════════════════════════════
+document.querySelectorAll(".hotspot").forEach(hs => {
+    hs.addEventListener("pointerdown", (e) => {
+        e.stopPropagation();
+        const q = questions[currentQ];
+        if (q.type !== "tap") return;
+        if (tapLocked) return;
+
+        const isCorrect = q.targets.includes(hs.id);
+
+        if (isCorrect) {
+            tapLocked = true;
+            hs.classList.add("correct");
+            msgEl.innerHTML = "⭐ Great job!";
+            setTimeout(() => { currentQ++; loadQuestion(currentQ); }, 900);
+        } else {
+            hs.classList.add("wrong");
+            msgEl.innerHTML = "❌ Try again!";
+            setTimeout(() => {
+                hs.classList.remove("wrong");
+                msgEl.textContent = "";
+            }, 600);
+        }
+    });
+});
+
+// ═══════════════════════════════════════════════
 // 初始化
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
+buildDots();
+applyHotspotPositions();
 loadQuestion(0);
 </script>
 </body>
