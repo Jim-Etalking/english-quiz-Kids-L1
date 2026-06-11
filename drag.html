@@ -9,38 +9,23 @@
 body {
     margin: 0;
     padding: 0;
-    background: #000;
+    background: #c8dff0;
     font-family: Arial, sans-serif;
     text-align: center;
-    height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
 }
 h1 {
-    margin: 0;
-    padding: 10px 0 4px;
-    color: #fff;
+    margin: 12px 0 4px;
+    color: #333;
     font-size: clamp(20px, 3.5vw, 36px);
-    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
-    flex-shrink: 0;
-    background: rgba(0,0,0,0.35);
 }
 .scene {
     position: relative;
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100vw;
+    margin: auto;
 }
 .bg {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
     display: block;
-    position: absolute;
-    inset: 0;
 }
 
 /* ── 拖曳物件 ── */
@@ -101,15 +86,11 @@ h1 {
 
 /* ── 訊息 ── */
 #message {
-    font-size: clamp(18px, 3vw, 28px);
+    font-size: clamp(20px, 3vw, 28px);
     font-weight: bold;
-    margin: 0;
-    padding: 8px 0;
-    min-height: 44px;
-    color: #fff;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
-    flex-shrink: 0;
-    background: rgba(0,0,0,0.35);
+    margin: 8px;
+    min-height: 38px;
+    color: #2a7d2e;
 }
 
 /* ── 進度點 ── */
@@ -117,10 +98,8 @@ h1 {
     display: flex;
     justify-content: center;
     gap: 8px;
-    padding: 6px 0;
+    margin: 8px 0;
     flex-wrap: wrap;
-    flex-shrink: 0;
-    background: rgba(0,0,0,0.35);
 }
 .dot {
     width: 13px; height: 13px;
@@ -165,12 +144,9 @@ h1 {
     display: none;
     font-size: clamp(22px, 4vw, 38px);
     font-weight: bold;
-    color: #fff;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-    padding: 16px;
+    color: #e67e00;
+    margin: 24px;
     animation: pop 0.5s ease;
-    flex-shrink: 0;
-    background: rgba(0,0,0,0.35);
 }
 @keyframes pop {
     0%   { transform: scale(0.5); opacity: 0; }
