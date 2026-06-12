@@ -355,7 +355,7 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 
 <script>
 const HOTSPOT_DEFS = {
-    "hs-sun":    { left: 2,  top: 15,  width: 12, height: 15 },
+    "hs-sun":    { left: 2,  top: 20,  width: 15, height: 18 },
     "hs-door":   { left: 12, top: 10, width: 28, height: 75 },
     "hs-books":  { left: 68, top: 50, width: 22, height: 48 },
     "hs-window": { left: 82, top: 8,  width: 17, height: 45 },
@@ -364,9 +364,9 @@ const HOTSPOT_DEFS = {
     // ═══════════════════════════════════════════════
     // 已完美對齊您新設定的玩具 % 數位置！
     // ═══════════════════════════════════════════════
-    "hs-bear":   { left: 43, top: 70, width: 15, height: 24 }, // 對齊 left: 42%, top: 70%
+    "hs-bear":   { left: 46, top: 70, width: 15, height: 27 }, // 對齊 left: 42%, top: 70%
     "hs-car":    { left: 29, top: 69, width: 10, height: 10 }, // 對齊 left: 33%, top: 68%
-    "hs-ball":   { left: 34, top: 73, width: 9, height: 11 }  // 對齊 left: 34%, top: 72%
+    "hs-ball":   { left: 36, top: 73, width: 10, height: 12 }  // 對齊 left: 34%, top: 72%
 };
 
 const questions = [
@@ -392,7 +392,7 @@ const questions = [
     // STAGE 3: Position (空間指令 - 拖曳題)
     // ═══════════════════════════════════════════════
     { type: "drag", itemId: "bear", question: "Can you put the bear on the rug?", audio: "q1.mp3", zone: { left: 0, right: 44, top: 60, bottom: 100 }, snap: { left: 8, top: 68 } },
-    { type: "drag", itemId: "car", question: "Can you put the car on the table?", audio: "q2.mp3", zone: { left: 44, right: 70, top: 45, bottom: 65 }, snap: { left: 53, top: 54 } },
+    { type: "drag", itemId: "car", question: "Can you put the car on the table?", audio: "q2.mp3", zone: { left: 44, right: 70, top: 45, bottom: 68 }, snap: { left: 53, top: 54 } },
     { type: "drag", itemId: "ball", question: "Can you put the ball in front of the table?", audio: "q3.mp3", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
 ];
 
