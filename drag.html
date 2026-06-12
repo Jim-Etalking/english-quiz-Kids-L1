@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Drag the Toys</title>
+<title>Etalking Kids - Placement Test</title>
 <style>
 * { box-sizing: border-box; }
 body {
     margin: 0;
     padding: 0;
-    background: #c8dff0;
-    font-family: Arial, sans-serif;
+    background: #f0f4f8; 
+    font-family: 'Arial Rounded MT Bold', Arial, sans-serif; 
     text-align: center;
     height: 100dvh;
     overflow: hidden;
@@ -19,34 +19,77 @@ body {
     align-items: center;
     justify-content: center;
 }
-h1 {
-    margin: 6px 0 2px;
-    color: #333;
-    font-size: clamp(16px, 2.5vw, 30px);
-    font-weight: bold;
+
+.header-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 10px 0;
     flex-shrink: 0;
+    z-index: 10;
 }
+h1 {
+    margin: 0;
+    color: #4a5568;
+    font-size: clamp(16px, 2.5vw, 26px);
+    font-weight: 800;
+}
+#replay-btn {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s, background 0.2s;
+}
+#replay-btn:active { transform: scale(0.9); background: #f1f5f9; }
+
 .scene {
     position: relative;
-    /* 寬跟高都限制，讓瀏覽器自動選小的那個 */
-    width: min(100vw, 80dvh * 1456 / 816);
+    width: min(100vw, 75dvh * 1456 / 816); 
     aspect-ratio: 1456 / 816;
+    border-radius: 24px; 
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
 }
 .bg {
     width: 100%;
     display: block;
 }
 
-/* ── 拖曳物件 ── */
+/* ── 拖曳物件：預設改為 display: block 一開始就顯示 ── */
 .item {
     position: absolute;
     touch-action: none;
-    cursor: grab;
+    cursor: default; /* 預設先不可抓取 */
     user-select: none;
-    transition: none;
-    display: none;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: block; 
 }
-.item.active { display: block; }
+/* 當進入可拖曳狀態時，滑鼠圖標變成 grab */
+.item.draggable {
+    cursor: grab;
+}
+.item.dragging {
+    transform: scale(1.15);
+    filter: drop-shadow(0 10px 15px rgba(14, 165, 233, 0.4));
+    cursor: grabbing;
+    z-index: 100;
+}
+.item.jump {
+    animation: toyJump 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 2;
+}
+
+@keyframes toyJump {
+    0%, 100% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.08, 0.92) translateY(-30px); }
+}
 
 #bear { left: 38%; top: 68%; }
 #car  { left: 38%; top: 68%; }
@@ -60,22 +103,23 @@ h1 {
     display: none;
     box-sizing: border-box;
     border: 3px dashed transparent;
+    z-index: 50; 
 }
 .hotspot.active { display: block; }
 .hotspot.correct {
-    border: 5px solid #2a7d2e;
-    background: rgba(42,125,46,0.18);
+    border: 5px solid #10b981;
+    background: rgba(16,185,129,0.15);
     animation: pulse 0.4s ease;
     cursor: default;
 }
 .hotspot.wrong {
-    border: 5px solid #e74c3c;
-    background: rgba(231,76,60,0.18);
+    border: 5px solid #ef476f;
+    background: rgba(239,71,111,0.15);
     animation: shake 0.4s ease;
 }
 @keyframes pulse {
     0%   { transform: scale(1); }
-    50%  { transform: scale(1.08); }
+    50%  { transform: scale(1.06); }
     100% { transform: scale(1); }
 }
 @keyframes shake {
@@ -86,35 +130,36 @@ h1 {
 
 /* ── 訊息 ── */
 #message {
-    font-size: clamp(18px, 3vw, 28px);
+    font-size: clamp(18px, 3vw, 26px);
     font-weight: bold;
-    margin: 6px;
+    margin: 8px;
     min-height: 36px;
-    color: #2a7d2e;
+    color: #10b981;
 }
 
 /* ── 進度點 ── */
 #progress {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin: 6px 0;
+    gap: 10px;
+    margin: 12px 0 6px;
     flex-wrap: wrap;
 }
 .dot {
-    width: 13px; height: 13px;
+    width: 14px; height: 14px;
     border-radius: 50%;
-    background: #ccc;
-    transition: background 0.3s;
+    background: #e2e8f0;
+    transition: all 0.3s ease;
+    border: 2px solid #cbd5e1;
 }
-.dot.done   { background: #2a7d2e; }
-.dot.active { background: #f5a623; }
+.dot.done   { background: #10b981; border-color: #10b981; transform: scale(1.1); }
+.dot.active { background: #f59e0b; border-color: #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.5); }
 
 /* ── 開始畫面 ── */
 #start-screen {
     position: fixed;
     inset: 0;
-    background: #f3f6fb;
+    background: #f8fafc;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -122,26 +167,24 @@ h1 {
     z-index: 999;
 }
 #start-btn {
-    font-size: clamp(28px, 5vw, 48px);
+    font-size: clamp(24px, 4vw, 38px);
     font-weight: bold;
-    padding: 24px 64px;
+    padding: 20px 60px;
     border-radius: 50px;
     border: none;
-    background: #f5a623;
+    background: #f59e0b;
     color: white;
     cursor: pointer;
-    box-shadow: 0 6px 0 #c47d0e;
+    box-shadow: 0 8px 0 #b47b05, 0 15px 20px rgba(245,158,11,0.3);
     transition: transform 0.1s, box-shadow 0.1s;
-    letter-spacing: 4px;
+    letter-spacing: 2px;
 }
 #start-btn:active {
-    transform: translateY(4px);
-    box-shadow: 0 2px 0 #c47d0e;
+    transform: translateY(6px);
+    box-shadow: 0 2px 0 #b47b05, 0 5px 10px rgba(245,158,11,0.3);
 }
 
-/* =========================================
-   完成畫面 (可愛立體獎狀風) 
-   ========================================= */
+/* ── 完成畫面 ── */
 #finish {
     display: none;
     position: fixed;
@@ -161,7 +204,6 @@ h1 {
     width: 90vw;
     max-width: 450px;
 }
-
 .ribbon {
     position: absolute;
     top: -25px;
@@ -173,21 +215,17 @@ h1 {
     font-weight: bold;
     box-shadow: 0 5px 15px rgba(239, 71, 111, 0.4);
 }
-
 .stars {
     font-size: clamp(40px, 8vw, 60px);
     letter-spacing: 5px;
     filter: drop-shadow(0 4px 6px rgba(255, 209, 102, 0.6));
 }
-
 .finish-text {
     font-size: clamp(22px, 4vw, 32px);
     color: #06d6a0;
     font-weight: 900;
     margin-bottom: 10px;
 }
-
-/* 立體閃亮按鈕 */
 #data-btn {
     display: none;
     background: linear-gradient(180deg, #118ab2 0%, #0c637f 100%);
@@ -204,21 +242,12 @@ h1 {
     align-items: center;
     gap: 10px;
 }
-
 #data-btn:active {
     transform: translateY(8px);
     box-shadow: 0 0 0 #073b4c, 0 5px 10px rgba(17, 138, 178, 0.4);
 }
 
-@keyframes popBounce {
-    0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-    80%  { transform: translate(-50%, -50%) scale(1.05); }
-    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-}
-
-/* =========================================
-   數據面板 (家長專業報表風)
-   ========================================= */
+/* ── 數據面板 ── */
 #data-panel {
     display: none;
     position: fixed;
@@ -230,7 +259,6 @@ h1 {
     justify-content: center;
 }
 #data-panel.show { display: flex; animation: fadeIn 0.3s ease; }
-
 #data-inner {
     background: #ffffff;
     border-radius: 24px;
@@ -242,96 +270,22 @@ h1 {
     flex-direction: column;
     box-shadow: 0 25px 50px rgba(0,0,0,0.15);
 }
-
-.report-header {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.report-header h2 {
-    margin: 0 0 8px;
-    font-size: clamp(20px, 4vw, 26px);
-    color: #1e293b;
-}
-
-.report-header p {
-    margin: 0;
-    color: #64748b;
-    font-size: 15px;
-}
-
-.table-container {
-    overflow-y: auto;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-}
-
-#data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-
-#data-table th {
-    background: #f8fafc;
-    padding: 14px 16px;
-    text-align: left;
-    color: #475569;
-    font-weight: 700;
-    border-bottom: 2px solid #e2e8f0;
-    position: sticky;
-    top: 0;
-}
-
-#data-table td {
-    padding: 14px 16px;
-    border-bottom: 1px solid #f1f5f9;
-    color: #334155;
-    vertical-align: middle;
-}
-
-/* 狀態標籤 (Pills) */
-.badge {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    display: inline-block;
-    white-space: nowrap;
-}
+.report-header { text-align: center; margin-bottom: 25px; }
+.report-header h2 { margin: 0 0 8px; font-size: clamp(20px, 4vw, 26px); color: #1e293b; }
+.report-header p { margin: 0; color: #64748b; font-size: 15px; }
+.table-container { overflow-y: auto; border-radius: 12px; border: 1px solid #e2e8f0; }
+#data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+#data-table th { background: #f8fafc; padding: 14px 16px; text-align: left; color: #475569; font-weight: 700; border-bottom: 2px solid #e2e8f0; position: sticky; top: 0; }
+#data-table td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+.badge { padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; white-space: nowrap; }
 .badge.perfect { background: #dcfce7; color: #166534; }
 .badge.learning { background: #fef9c3; color: #854d0e; }
-
 .speed { font-weight: 600; color: #0ea5e9; white-space: nowrap; }
+#close-btn { margin-top: 25px; padding: 14px; border-radius: 12px; border: 2px solid #e2e8f0; background: transparent; color: #475569; font-size: 16px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+#close-btn:hover { background: #f1f5f9; color: #0f172a; }
 
-#close-btn {
-    margin-top: 25px;
-    padding: 14px;
-    border-radius: 12px;
-    border: 2px solid #e2e8f0;
-    background: transparent;
-    color: #475569;
-    font-size: 16px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.2s;
-}
-#close-btn:hover {
-    background: #f1f5f9;
-    color: #0f172a;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-body.finished .scene,
-body.finished #question,
-body.finished #progress,
-body.finished #message {
-    opacity:.25;
-    transition: opacity .5s ease;
+body.finished .scene, body.finished .header-area, body.finished #progress, body.finished #message {
+    opacity:.25; transition: opacity .5s ease;
 }
 </style>
 </head>
@@ -342,7 +296,11 @@ body.finished #message {
 </div>
 
 <div id="progress"></div>
-<h1 id="question"></h1>
+
+<div class="header-area">
+    <button id="replay-btn" title="Listen again">🔊</button>
+    <h1 id="question"></h1>
+</div>
 
 <div class="scene" id="scene">
     <img class="bg" src="room_background.png">
@@ -356,12 +314,17 @@ body.finished #message {
     <div class="hotspot" id="hs-books"></div>
     <div class="hotspot" id="hs-window"></div>
     <div class="hotspot" id="hs-cloud"></div>
+    
+    <div class="hotspot" id="hs-bear"></div>
+    <div class="hotspot" id="hs-car"></div>
+    <div class="hotspot" id="hs-ball"></div>
 </div>
 
 <div id="message"></div>
+
 <div id="finish">
-    <div class="ribbon"> You Did It! </div>
-    <div class="stars">⭐⭐⭐⭐⭐</div>
+    <div class="ribbon">You Did It!</div>
+    <div class="stars">⭐⭐⭐⭐微</div>
     <div class="finish-text">You found all the toys!</div>
     <button id="data-btn">
         <span class="btn-icon">💌</span> ✨ View Results
@@ -371,7 +334,7 @@ body.finished #message {
 <div id="data-panel">
   <div id="data-inner">
     <div class="report-header">
-        <h2>📝 局英語聽力與認知分析</h2>
+        <h2>📝 幼兒英語聽力與認知分析</h2>
         <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
     </div>
     <div class="table-container">
@@ -391,117 +354,37 @@ body.finished #message {
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
-// 題目資料 (包含全新排序與 STAGE 2 顏色題)
-// 測試用：音檔欄位暫時保留空字串 "" 以防報錯
-// ═══════════════════════════════════════════════
 const HOTSPOT_DEFS = {
     "hs-sun":    { left: 2,  top: 5,  width: 18, height: 35 },
     "hs-door":   { left: 12, top: 10, width: 28, height: 75 },
     "hs-books":  { left: 68, top: 50, width: 22, height: 48 },
     "hs-window": { left: 82, top: 8,  width: 17, height: 45 },
     "hs-cloud":  { left: 38, top: 0,  width: 22, height: 18 },
+    "hs-bear":   { left: 36, top: 66, width: 20, height: 26 },
+    "hs-car":    { left: 37, top: 67, width: 12, height: 12 },
+    "hs-ball":   { left: 37, top: 67, width: 14, height: 14 }
 };
 
 const questions = [
-    // ═══════════════════════════════════════════════
-    // STAGE 1: Vocabulary (基礎詞彙認知 - 點擊題)
-    // ═══════════════════════════════════════════════
-    {
-        type: "tap",
-        question: "Can you find the sun? ☀️",
-        audio: "",
-        targets: ["hs-sun"],
-        decoys:  ["hs-door", "hs-books", "hs-window", "hs-cloud"],
-    },
-    {
-        type: "tap",
-        question: "Where is the door? 🚪",
-        audio: "",
-        targets: ["hs-door"],
-        decoys:  ["hs-sun", "hs-books", "hs-window", "hs-cloud"],
-    },
-    {
-        type: "tap",
-        question: "Can you find the books? 📚",
-        audio: "",
-        targets: ["hs-books"],
-        decoys:  ["hs-sun", "hs-door", "hs-window", "hs-cloud"],
-    },
-    {
-        type: "tap",
-        question: "Where is the window? 🪟",
-        audio: "",
-        targets: ["hs-window"],
-        decoys:  ["hs-sun", "hs-door", "hs-books", "hs-cloud"],
-    },
-    {
-        type: "tap",
-        question: "Can you find the cloud? ☁️",
-        audio: "",
-        targets: ["hs-cloud"],
-        decoys:  ["hs-sun", "hs-door", "hs-books", "hs-window"],
-    },
-
-    // ═══════════════════════════════════════════════
-    // STAGE 2: Color (顏色與視覺特徵辨識 - 點擊題)
-    // ═══════════════════════════════════════════════
-    {
-        type: "tap",
-        question: "Touch the BLUE bear! 🧸",
-        audio: "",
-        targets: ["bear"],
-        decoys:  ["car", "ball", "hs-sun", "hs-door"],
-    },
-    {
-        type: "tap",
-        question: "Can you find the RED ball? 🔴",
-        audio: "",
-        targets: ["ball"],
-        decoys:  ["bear", "car", "hs-window", "hs-cloud"],
-    },
-    {
-        type: "tap",
-        question: "Where is the YELLOW window? 🟨",
-        audio: "",
-        targets: ["hs-window"],
-        decoys:  ["hs-sun", "hs-door", "hs-books", "hs-cloud"],
-    },
-
-    // ═══════════════════════════════════════════════
-    // STAGE 3: Position (空間介系詞與複雜指令 - 拖曳題)
-    // ═══════════════════════════════════════════════
-    {
-        type: "drag",
-        itemId: "bear",
-        question: "Can you put the bear on the rug?",
-        audio: "",
-        zone: { left: 0, right: 44, top: 60, bottom: 100 },
-        snap: { left: 8, top: 68 },
-    },
-    {
-        type: "drag",
-        itemId: "car",
-        question: "Can you put the car on the table?",
-        audio: "",
-        zone: { left: 44, right: 70, top: 45, bottom: 65 },
-        snap: { left: 53, top: 54 },
-    },
-    {
-        type: "drag",
-        itemId: "ball",
-        question: "Can you put the ball in front of the table?",
-        audio: "",
-        zone: { left: 48, right: 74, top: 66, bottom: 90 },
-        snap: { left: 52, top: 70 },
-    }
+    // STAGE 1: Vocabulary (前五題：三個道具都被列為干擾項 decoys)
+    { type: "tap", question: "Can you find the sun? ☀️", audio: "", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the door? 🚪", audio: "", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the books? 📚", audio: "", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the window? 🪟", audio: "", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the cloud? ☁️", audio: "", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-car", "hs-ball"] },
+    // STAGE 2: Color
+    { type: "tap", question: "Touch the BLUE bear! 🧸", audio: "", targets: ["hs-bear"], decoys: ["hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", question: "Can you find the RED ball? 🔴", audio: "", targets: ["hs-ball"], decoys: ["hs-bear", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", question: "Where is the YELLOW window? 🟨", audio: "", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
+    // STAGE 3: Position
+    { type: "drag", itemId: "bear", question: "Can you put the bear on the rug?", audio: "", zone: { left: 0, right: 44, top: 60, bottom: 100 }, snap: { left: 8, top: 68 } },
+    { type: "drag", itemId: "car", question: "Can you put the car on the table?", audio: "", zone: { left: 44, right: 70, top: 45, bottom: 65 }, snap: { left: 53, top: 54 } },
+    { type: "drag", itemId: "ball", question: "Can you put the ball in front of the table?", audio: "", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
 ];
 
-// ── 音效設定 ──
 const CORRECT_SOUNDS = ["correct1.mp3", "correct2.mp3", "correct3.mp3"];
 const WRONG_SOUNDS   = ["wrong1.mp3"];
 
-// 安全撥放機制：如果檔名為空字串或未定義，直接跳過不報錯
 function playSound(file) {
     if (!file || file === "") return; 
     const audio = new Audio(file);
@@ -524,19 +407,14 @@ function playQuestion(n) {
     }
 }
 
-// ═══════════════════════════════════════════════
-// 狀態
-// ═══════════════════════════════════════════════
 let currentQ   = 0;
 let dragging   = false;
 let activeItem = null;
 let offsetX = 0, offsetY = 0;
 let tapLocked  = false;
-
-// 答題數據記錄
 let qStartTime  = 0;
 let qAttempts   = 0;
-const qResults  = []; // { question, seconds, attempts }
+const qResults  = []; 
 
 const scene      = document.getElementById("scene");
 const msgEl      = document.getElementById("message");
@@ -544,9 +422,6 @@ const finishEl   = document.getElementById("finish");
 const questionEl = document.getElementById("question");
 const progressEl = document.getElementById("progress");
 
-// ═══════════════════════════════════════════════
-// 初始化進度點
-// ═══════════════════════════════════════════════
 function buildDots() {
     progressEl.innerHTML = "";
     questions.forEach((_, i) => {
@@ -567,9 +442,6 @@ function updateDots(current) {
     });
 }
 
-// ═══════════════════════════════════════════════
-// 套用熱區位置（百分比 → style）
-// ═══════════════════════════════════════════════
 function applyHotspotPositions() {
     Object.entries(HOTSPOT_DEFS).forEach(([id, pos]) => {
         const el = document.getElementById(id);
@@ -582,19 +454,20 @@ function applyHotspotPositions() {
     });
 }
 
-// ═══════════════════════════════════════════════
-// 載入第 n 題
-// ═══════════════════════════════════════════════
 function loadQuestion(n) {
     document.querySelectorAll(".hotspot").forEach(el => {
         el.classList.remove("active", "correct", "wrong");
     });
+    
+    // 移除所有物件的可拖曳狀態，避免前幾題被誤拖曳
+    document.querySelectorAll(".item").forEach(el => el.classList.remove("draggable"));
+    
     msgEl.textContent = "";
     tapLocked = false;
 
     if (n >= questions.length) {
         document.body.classList.add("finished");
-        questionEl.style.display = "";
+        document.querySelector(".header-area").style.display = "none";
         finishEl.style.display   = "flex";
         dataBtn.style.display    = "flex";
         updateDots(questions.length);
@@ -602,7 +475,6 @@ function loadQuestion(n) {
     }
 
     const q = questions[n];
-    questionEl.style.display = "";
     questionEl.textContent   = q.question;
     updateDots(n);
     
@@ -614,13 +486,13 @@ function loadQuestion(n) {
     if (q.type === "drag") {
         const el = document.getElementById(q.itemId);
         if (el) {
-            el.classList.add("active");
+            // 只有當前需要被拖曳的物件，才賦予可拖曳的 class (改變滑鼠游標)
             if (el.style.cursor !== "default") {
-                el.style.left = "";
-                el.style.top  = "";
+                el.classList.add("draggable");
             }
         }
     } else {
+        // 點擊題：啟動對應的正確與錯誤熱區
         [...q.targets, ...q.decoys].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.add("active");
@@ -628,9 +500,11 @@ function loadQuestion(n) {
     }
 }
 
-// ═══════════════════════════════════════════════
-// 拖曳邏輯
-// ═══════════════════════════════════════════════
+document.getElementById("replay-btn").addEventListener("click", () => {
+    playQuestion(currentQ);
+});
+
+// ── 拖曳邏輯 ──
 document.querySelectorAll(".item").forEach(item => {
     item.addEventListener("pointerdown", (e) => {
         const q = questions[currentQ];
@@ -642,6 +516,7 @@ document.querySelectorAll(".item").forEach(item => {
         activeItem = item;
         offsetX    = e.offsetX;
         offsetY    = e.offsetY;
+        item.classList.add("dragging"); 
         item.setPointerCapture(e.pointerId);
     });
 });
@@ -656,14 +531,13 @@ window.addEventListener("pointermove", (e) => {
 window.addEventListener("pointerup", () => {
     if (!dragging || !activeItem) return;
     dragging = false;
+    activeItem.classList.remove("dragging");
 
     const q    = questions[currentQ];
     const rect = scene.getBoundingClientRect();
     const W = rect.width;
     const bgImg = scene.querySelector(".bg");
-    const H = bgImg.naturalWidth > 0
-        ? W * (bgImg.naturalHeight / bgImg.naturalWidth)
-        : rect.height;
+    const H = bgImg.naturalWidth > 0 ? W * (bgImg.naturalHeight / bgImg.naturalWidth) : rect.height;
 
     const itemL = parseFloat(activeItem.style.left) || 0;
     const itemT = parseFloat(activeItem.style.top)  || 0;
@@ -674,14 +548,24 @@ window.addEventListener("pointerup", () => {
     const inZone = cx > z.left && cx < z.right && cy > z.top && cy < z.bottom;
 
     if (inZone) {
-        activeItem.style.transition = "left 0.3s ease, top 0.3s ease";
-        activeItem.style.left   = (q.snap.left / 100 * W) + "px";
-        activeItem.style.top    = (q.snap.top  / 100 * H) + "px";
-        activeItem.style.cursor = "default";
+        const targetToy = activeItem; 
+        targetToy.style.transition = "left 0.3s ease, top 0.3s ease";
+        targetToy.style.left   = (q.snap.left / 100 * W) + "px";
+        targetToy.style.top    = (q.snap.top  / 100 * H) + "px";
+        targetToy.style.cursor = "default";
+        targetToy.classList.remove("draggable");
+        
         recordResult(currentQ);
         playCorrect();
         msgEl.innerHTML = "⭐ Great job!";
-        setTimeout(() => { currentQ++; loadQuestion(currentQ); }, 900);
+        
+        setTimeout(() => { targetToy.classList.add("jump"); }, 150);
+
+        setTimeout(() => { 
+            targetToy.classList.remove("jump");
+            currentQ++; 
+            loadQuestion(currentQ); 
+        }, 1100);
     } else {
         activeItem.style.left = "";
         activeItem.style.top  = "";
@@ -692,9 +576,7 @@ window.addEventListener("pointerup", () => {
     activeItem = null;
 });
 
-// ═══════════════════════════════════════════════
-// 圈選邏輯
-// ═══════════════════════════════════════════════
+// ── 圈選邏輯 ──
 document.querySelectorAll(".hotspot").forEach(hs => {
     hs.addEventListener("pointerdown", (e) => {
         e.stopPropagation();
@@ -723,28 +605,6 @@ document.querySelectorAll(".hotspot").forEach(hs => {
     });
 });
 
-document.querySelectorAll(".item").forEach(item => {
-    item.addEventListener("pointerdown", (e) => {
-        const q = questions[currentQ];
-        if (!q || q.type !== "tap") return;
-        if (tapLocked) return;
-        e.stopPropagation();
-        qAttempts++;
-        item.style.outline = "5px solid #e74c3c";
-        item.style.borderRadius = "12px";
-        playWrong();
-        msgEl.innerHTML = "❌ Try again!";
-        setTimeout(() => {
-            item.style.outline = "";
-            item.style.borderRadius = "";
-            msgEl.textContent = "";
-        }, 600);
-    });
-});
-
-// ═══════════════════════════════════════════════
-// 初始化呼叫
-// ═══════════════════════════════════════════════
 buildDots();
 applyHotspotPositions();
 
@@ -757,18 +617,14 @@ function recordResult(n) {
     });
 }
 
-// ═══════════════════════════════════════════════
-// 顯示完成畫面 + 全新星星報告邏輯 (純數據精簡版)
-// ═══════════════════════════════════════════════
+// ── 星星報表核心邏輯 ──
 const dataBtn   = document.getElementById("data-btn");
 const dataPanel = document.getElementById("data-panel");
 const dataTbody = document.getElementById("data-tbody");
 
 function getStars(num) {
     let stars = "";
-    for (let i = 1; i <= 5; i++) {
-        stars += i <= num ? "★" : "☆";
-    }
+    for (let i = 1; i <= 5; i++) { stars += i <= num ? "★" : "☆"; }
     return stars;
 }
 
@@ -779,17 +635,13 @@ dataBtn.addEventListener("click", () => {
     let totalSeconds = 0;
     let totalAttempts = 0;
     let dragAttempts = 0;
-    let dragCount = 0;
     
     questions.forEach((q, idx) => {
         const r = qResults[idx];
         if (r) {
             totalSeconds += r.seconds;
             totalAttempts += r.attempts;
-            if (q.type === "drag") {
-                dragAttempts += r.attempts;
-                dragCount++;
-            }
+            if (q.type === "drag") dragAttempts += r.attempts;
         }
     });
 
@@ -817,7 +669,6 @@ dataBtn.addEventListener("click", () => {
     reportHeader.innerHTML = `
         <h2>📝 幼兒英語聽力與認知分析</h2>
         <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
-        
         <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin-top: 15px; border: 1px solid #e2e8f0; text-align: left;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
                 <span style="font-weight: bold; color: #475569;">Listening Skills</span>
@@ -836,7 +687,6 @@ dataBtn.addEventListener("click", () => {
                 <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(directionRating)}</span>
             </div>
         </div>
-
         <div style="margin-top: 20px; padding: 12px; background: rgba(239, 71, 111, 0.08); border-radius: 12px; border: 1px dashed #ef476f;">
             <div style="font-size: 13px; color: #64748b; font-weight: bold; text-transform: uppercase;">Recommended Level</div>
             <div style="font-weight: 900; color: #ef476f; font-size: 26px; margin-top: 4px; letter-spacing: 1px;">Starter A</div>
@@ -845,13 +695,8 @@ dataBtn.addEventListener("click", () => {
 
     qResults.forEach(r => {
         const tr = document.createElement("tr");
-        
-        let statusHtml = r.attempts === 0 
-            ? `<span class="badge perfect">錯誤 0 次</span>` 
-            : `<span class="badge learning">錯誤 ${r.attempts} 次</span>`;
-            
+        let statusHtml = r.attempts === 0 ? `<span class="badge perfect">錯誤 0 次</span>` : `<span class="badge learning">錯誤 ${r.attempts} 次</span>`;
         let speedIcon = r.seconds < 3 ? '⚡' : (r.seconds < 6 ? '👍' : '🐢');
-        
         tr.innerHTML = `
             <td style="font-weight: 700;">${r.question}</td>
             <td><span class="speed">${speedIcon} ${r.seconds}s</span></td>
@@ -859,7 +704,6 @@ dataBtn.addEventListener("click", () => {
         `;
         dataTbody.appendChild(tr);
     });
-    
     dataPanel.classList.add("show");
 });
 
@@ -868,19 +712,13 @@ document.getElementById("close-btn").addEventListener("click", () => {
     finishEl.style.display = "flex";
 });
 
-// ═══════════════════════════════════════════════
-// 視窗縮放與響應式物件大小計算 
-// ═══════════════════════════════════════════════
 resizeItems();
 window.addEventListener("resize", resizeItems);
 
 function resizeItems() {
     const w = scene.offsetWidth;
     const bgImg = scene.querySelector(".bg");
-    const h = bgImg.naturalWidth > 0
-        ? w * (bgImg.naturalHeight / bgImg.naturalWidth)
-        : scene.offsetHeight;
-
+    const h = bgImg.naturalWidth > 0 ? w * (bgImg.naturalHeight / bgImg.naturalWidth) : scene.offsetHeight;
     const sizes = { bear: 0.25, car: 0.10, ball: 0.12 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
@@ -897,7 +735,6 @@ function resizeItems() {
     });
 }
 
-// START 按鈕
 document.getElementById("start-btn").addEventListener("click", () => {
     document.getElementById("start-screen").style.display = "none";
     loadQuestion(0);
