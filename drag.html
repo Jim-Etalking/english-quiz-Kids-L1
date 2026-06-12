@@ -370,20 +370,30 @@ const HOTSPOT_DEFS = {
 };
 
 const questions = [
-    // STAGE 1: Vocabulary (前五題：三個道具都被列為干擾項 decoys)
-    { type: "tap", question: "Can you find the sun? ☀️", audio: "", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Where is the door? 🚪", audio: "", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Can you find the books? 📚", audio: "", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Where is the window? 🪟", audio: "", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Can you find the cloud? ☁️", audio: "", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-car", "hs-ball"] },
-    // STAGE 2: Color
+    // ═══════════════════════════════════════════════
+    // STAGE 1: Vocabulary (環境單字 - 點擊題)
+    // ═══════════════════════════════════════════════
+    { type: "tap", question: "Can you find the sun? ☀️", audio: "q4.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the door? 🚪", audio: "q5.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the books? 📚", audio: "q6.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the window? 🪟", audio: "q7.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the cloud? ☁️", audio: "q8.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-car", "hs-ball"] },
+    
+    // ═══════════════════════════════════════════════
+    // STAGE 2: Color (顏色特徵 - 點擊題)
+    // 💡 提醒：這三題是新加的，如果還沒錄音，可以先留空 ""。
+    // 如果錄好了，就把引號內改成你的音檔檔名（例如 "q_blue_bear.mp3"）
+    // ═══════════════════════════════════════════════
     { type: "tap", question: "Touch the BLUE bear! 🧸", audio: "", targets: ["hs-bear"], decoys: ["hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
     { type: "tap", question: "Can you find the RED ball? 🔴", audio: "", targets: ["hs-ball"], decoys: ["hs-bear", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
     { type: "tap", question: "Where is the YELLOW window? 🟨", audio: "", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
-    // STAGE 3: Position
-    { type: "drag", itemId: "bear", question: "Can you put the bear on the rug?", audio: "", zone: { left: 0, right: 44, top: 60, bottom: 100 }, snap: { left: 8, top: 68 } },
-    { type: "drag", itemId: "car", question: "Can you put the car on the table?", audio: "", zone: { left: 44, right: 70, top: 45, bottom: 65 }, snap: { left: 53, top: 54 } },
-    { type: "drag", itemId: "ball", question: "Can you put the ball in front of the table?", audio: "", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
+    
+    // ═══════════════════════════════════════════════
+    // STAGE 3: Position (空間指令 - 拖曳題)
+    // ═══════════════════════════════════════════════
+    { type: "drag", itemId: "bear", question: "Can you put the bear on the rug?", audio: "q1.mp3", zone: { left: 0, right: 44, top: 60, bottom: 100 }, snap: { left: 8, top: 68 } },
+    { type: "drag", itemId: "car", question: "Can you put the car on the table?", audio: "q2.mp3", zone: { left: 44, right: 70, top: 45, bottom: 65 }, snap: { left: 53, top: 54 } },
+    { type: "drag", itemId: "ball", question: "Can you put the ball in front of the table?", audio: "q3.mp3", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
 ];
 
 const CORRECT_SOUNDS = ["correct1.mp3", "correct2.mp3", "correct3.mp3"];
