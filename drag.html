@@ -355,7 +355,7 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 
 <script>
 const HOTSPOT_DEFS = {
-    "hs-sun":    { left: 2,  top: 20,  width: 15, height: 18 },
+    "hs-sun":    { left: 2,  top: 24,  width: 13, height: 20 },
     "hs-door":   { left: 12, top: 10, width: 28, height: 75 },
     "hs-books":  { left: 68, top: 50, width: 22, height: 48 },
     "hs-window": { left: 82, top: 8,  width: 17, height: 45 },
@@ -364,9 +364,9 @@ const HOTSPOT_DEFS = {
     // ═══════════════════════════════════════════════
     // 已完美對齊您新設定的玩具 % 數位置！
     // ═══════════════════════════════════════════════
-    "hs-bear":   { left: 46, top: 70, width: 15, height: 27 }, // 對齊 left: 42%, top: 70%
+    "hs-bear":   { left: 48, top: 70, width: 15, height: 27 }, // 對齊 left: 42%, top: 70%
     "hs-car":    { left: 29, top: 69, width: 10, height: 10 }, // 對齊 left: 33%, top: 68%
-    "hs-ball":   { left: 36, top: 73, width: 10, height: 12 }  // 對齊 left: 34%, top: 72%
+    "hs-ball":   { left: 35, top: 73, width: 10, height: 13 }  // 對齊 left: 34%, top: 72%
 };
 
 const questions = [
@@ -471,9 +471,10 @@ function applyHotspotPositions() {
 function loadQuestion(n) {
     document.querySelectorAll(".hotspot").forEach(el => {
         el.classList.remove("active", "correct", "wrong");
+        // 預設重設：讓所有熱區都能正常接收點擊
+        el.style.pointerEvents = "auto"; 
     });
     
-    // 移除所有物件的可拖曳狀態，避免前幾題被誤拖曳
     document.querySelectorAll(".item").forEach(el => el.classList.remove("draggable"));
     
     msgEl.textContent = "";
@@ -498,15 +499,22 @@ function loadQuestion(n) {
     qAttempts  = 0;
 
     if (q.type === "drag") {
+        // ═══════════════════════════════════════════════
+        // 🔥 核心修正：進入拖曳題時，啟動「圖層穿透」
+        // 讓三個玩具的透明圈選熱區徹底隱形，絕對不擋住滑鼠抓取圖片！
+        // ═══════════════════════════════════════════════
+        ["hs-bear", "hs-car", "hs-ball"].forEach(id => {
+            const hsEl = document.getElementById(id);
+            if (hsEl) hsEl.style.pointerEvents = "none";
+        });
+
         const el = document.getElementById(q.itemId);
         if (el) {
-            // 只有當前需要被拖曳的物件，才賦予可拖曳的 class (改變滑鼠游標)
             if (el.style.cursor !== "default") {
                 el.classList.add("draggable");
             }
         }
     } else {
-        // 點擊題：啟動對應的正確與錯誤熱區
         [...q.targets, ...q.decoys].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.add("active");
