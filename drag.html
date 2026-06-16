@@ -747,7 +747,7 @@ function resizeItems() {
     const h = bgImg.naturalWidth > 0 ? w * (bgImg.naturalHeight / bgImg.naturalWidth) : scene.offsetHeight;
     
     // 🔥 將綠色熊熊的縮放比例同步納入計算 (等同藍色熊熊比例 0.25)
-    const sizes = { bear: 0.25, bear_green: 0.25, car: 0.10, ball: 0.12 };
+    const sizes = { bear: 0.25, bear_green: 0.15, car: 0.10, ball: 0.12 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
         if (!el) return;
