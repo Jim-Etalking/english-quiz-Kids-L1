@@ -188,7 +188,7 @@ h1 {
     box-shadow: 0 2px 0 #b47b05, 0 5px 10px rgba(245,158,11,0.3);
 }
 
-/* ── 🔥 新增：轉場畫面樣式 ── */
+/* ── 轉場畫面樣式 ── */
 #next-stage-screen {
     display: none;
     position: fixed;
@@ -820,26 +820,27 @@ document.getElementById("start-btn").addEventListener("click", () => {
 
 // ═══════════════════════════════════════════════
 // 🔥 終極外掛：公園關卡 (Stage 2) 獨立設定區
-// 不碰你前面寫的任何 array，只在觸發轉場時替換內容
+// 不碰第一關，進入第二關時「隱藏舊玩具」，專心點擊背景！
 // ═══════════════════════════════════════════════
 const HOTSPOT_DEFS_PARK = {
-    "hs-sun":     { left: 5,  top: 5,  width: 9,  height: 16 }, 
-    "hs-slide":   { left: 5,  top: 22, width: 25, height: 40 }, 
-    "hs-tree":    { left: 20, top: 2,  width: 30, height: 52 }, 
-    "hs-swing":   { left: 50, top: 27, width: 23, height: 32 }, 
-    "hs-seesaw":  { left: 35, top: 56, width: 23, height: 16 }, 
-    "hs-sandbox": { left: 73, top: 54, width: 24, height: 16 }
+    "hs-sun":     { left: 5,  top: 5,  width: 12, height: 20 }, // 太陽
+    "hs-cloud":   { left: 51, top: 6,  width: 15, height: 15 }, // 白雲
+    "hs-slide":   { left: 5,  top: 22, width: 25, height: 40 }, // 溜滑梯
+    "hs-tree":    { left: 20, top: 2,  width: 30, height: 52 }, // 大樹
+    "hs-swing":   { left: 50, top: 27, width: 23, height: 32 }, // 鞦韆
+    "hs-seesaw":  { left: 35, top: 56, width: 23, height: 16 }, // 蹺蹺板
+    "hs-sandbox": { left: 73, top: 54, width: 24, height: 16 }  // 沙坑
 };
 
+// 💡 目前全數設定為 tap (點擊題)，專注於背景景物
 const questions_park = [
-    { type: "tap", question: "Can you find the slide? 🛝", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-tree","hs-swing","hs-seesaw","hs-sandbox"] },
-    { type: "tap", question: "Where is the swing? 🎡", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-tree","hs-seesaw","hs-sandbox"] },
-    { type: "tap", question: "Can you find the seesaw? ⚖️", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-tree","hs-sandbox"] },
-    { type: "tap", question: "Where is the sandbox? ⏳", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-tree"] },
-    { type: "tap", question: "Can you find the big tree? 🌳", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun"] },
-    { type: "drag", itemId: "bear", question: "Can you put the BLUE bear ON the swing?", audio: "p_drag_bear.mp3", zone: { left: 45, right: 75, top: 25, bottom: 65 }, snap: { left: 58, top: 41 } },
-    { type: "drag", itemId: "car", question: "Can you put the car UNDER the slide?", audio: "p_drag_car.mp3", zone: { left: 2, right: 32, top: 50, bottom: 85 }, snap: { left: 14, top: 56 } },
-    { type: "drag", itemId: "ball", question: "Can you put the ball IN the sandbox?", audio: "p_drag_ball.mp3", zone: { left: 70, right: 98, top: 50, bottom: 85 }, snap: { left: 81, top: 58 } }
+    { type: "tap", question: "Can you find the slide? 🛝", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox"] },
+    { type: "tap", question: "Where is the swing? 🎡", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox"] },
+    { type: "tap", question: "Can you find the seesaw? ⚖️", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox"] },
+    { type: "tap", question: "Where is the sandbox? ⏳", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree"] },
+    { type: "tap", question: "Can you find the big tree? 🌳", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud"] },
+    { type: "tap", question: "Where is the sun? ☀️", audio: "p_sun.mp3", targets: ["hs-sun"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-cloud"] },
+    { type: "tap", question: "Can you find the cloud? ☁️", audio: "p_cloud.mp3", targets: ["hs-cloud"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun"] }
 ];
 
 document.getElementById("next-stage-btn").addEventListener("click", () => {
@@ -850,7 +851,7 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
     // 1. 替換成公園背景圖
     document.getElementById("game-bg").src = "park.jpeg";
     
-    // 2. 暴力覆寫題目陣列 (原本第一關的會被清掉替換成公園的)
+    // 2. 暴力覆寫題目陣列
     questions.length = 0;
     questions.push(...questions_park);
     
@@ -858,25 +859,12 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
     Object.assign(HOTSPOT_DEFS, HOTSPOT_DEFS_PARK);
     applyHotspotPositions();
     
-    // 4. 將玩具瞬間移動到公園草地上的排排站新位置
-    const parkPositions = {
-        bear:        { left: "35%", top: "76%" },
-        bear_green:  { left: "45%", top: "82%" },
-        bear_yellow: { left: "55%", top: "82%" },
-        car:         { left: "20%", top: "76%" },
-        ball:        { left: "70%", top: "82%" }
-    };
-    Object.entries(parkPositions).forEach(([id, pos]) => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.style.left = pos.left;
-            el.style.top = pos.top;
-            el.style.cursor = "default";
-            el.classList.remove("draggable", "jump");
-        }
+    // 4. 🔥 關鍵：把第一關的熊、車子、球全部隱藏，保持公園乾淨！
+    document.querySelectorAll(".item").forEach(el => {
+        el.style.display = "none";
     });
     
-    // 重新建置上方的答題點點並載入公園第一題！
+    // 重新建置上方的答題點點並載入公園第一題
     buildDots();
     resizeItems();
     loadQuestion(0);
