@@ -90,11 +90,12 @@ h1 {
     50% { transform: scale(1.08, 0.92) translateY(-30px); }
 }
 
-/* ── 玩具在房間的初始位置（完美錯開不重疊） ── */
-#bear       { left: 42%; top: 70%; }
-#bear_green { left: 55%; top: 68%; } /* 🔥 綠色熊放在中間偏右，與藍色熊錯開 */
-#car        { left: 30%; top: 68%; }
-#ball       { left: 90%; top: 88%; }
+/* ── 玩具在房間的初始位置（三隻熊漂亮排排站） ── */
+#bear        { left: 42%; top: 70%; }
+#bear_green  { left: 55%; top: 74%; } /* 綠色熊 */
+#bear_yellow { left: 65%; top: 74%; } /* 🔥 新增黃色熊，排在綠色熊右邊，稍微靠下一點點更自然 */
+#car         { left: 30%; top: 68%; }
+#ball        { left: 90%; top: 88%; }
 
 /* ── 圈選熱區 ── */
 .hotspot {
@@ -306,12 +307,9 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 <div class="scene" id="scene">
     <img class="bg" src="room_background.png">
 
-    <!-- 原本的藍色熊熊 -->
-    <img id="bear" class="item" src="bear_v3.png">
-    <!-- 🔥 新增的綠色熊熊（當作顏色關卡的干擾項） -->
-    <img id="bear_green" class="item" src="bear_green.png">
-    
-    <img id="car"  class="item" src="car.png">
+    <img id="bear"        class="item" src="bear_v3.png">
+    <img id="bear_green"  class="item" src="bear_green.png">
+    <img id="bear_yellow" class="item" src="bear_yellow.png"> <img id="car"  class="item" src="car.png">
     <img id="ball" class="item" src="ball.png">
 
     <div class="hotspot" id="hs-sun"></div>
@@ -320,11 +318,9 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <div class="hotspot" id="hs-window"></div>
     <div class="hotspot" id="hs-cloud"></div>
     
-    <!-- 玩具熱區 -->
     <div class="hotspot" id="hs-bear"></div>
-    <!-- 🔥 新增綠色熊熊的點擊熱區 -->
     <div class="hotspot" id="hs-bear-green"></div>
-    <div class="hotspot" id="hs-car"></div>
+    <div class="hotspot" id="hs-bear-yellow"></div> <div class="hotspot" id="hs-car"></div>
     <div class="hotspot" id="hs-ball"></div>
 </div>
 
@@ -342,7 +338,7 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 <div id="data-panel">
   <div id="data-inner">
     <div class="report-header">
-        <h2>📝 幼兒英語聽力與認知分析</h2>
+        <h2>📝 幼兒英語聽力與認知 analysis</h2>
         <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
     </div>
     <div class="table-container">
@@ -363,38 +359,39 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 
 <script>
 const HOTSPOT_DEFS = {
-    "hs-sun":        { left: 2,  top: 24, width: 13, height: 20 },
-    "hs-door":       { left: 12, top: 10, width: 28, height: 75 },
-    "hs-books":      { left: 68, top: 50, width: 22, height: 48 },
-    "hs-window":     { left: 82, top: 8,  width: 17, height: 45 },
-    "hs-cloud":      { left: 36, top: 0,  width: 22, height: 18 },
+    "hs-sun":         { left: 2,  top: 24, width: 13, height: 20 },
+    "hs-door":        { left: 12, top: 10, width: 28, height: 75 },
+    "hs-books":       { left: 68, top: 50, width: 22, height: 48 },
+    "hs-window":      { left: 82, top: 8,  width: 17, height: 45 },
+    "hs-cloud":       { left: 36, top: 0,  width: 22, height: 18 },
     
     // ═══════════════════════════════════════════════
-    // 玩具熱區：對齊 CSS % 數
+    // 玩具熱區：精準配合全新 CSS 排列與大小
     // ═══════════════════════════════════════════════
-    "hs-bear":       { left: 41, top: 69, width: 15, height: 27 }, // 藍色熊熊 (left: 42%)
-    "hs-bear-green": { left: 54, top: 67, width: 15, height: 27 }, // 🔥 綠色熊熊 (left: 55%)
-    "hs-car":        { left: 29, top: 69, width: 10, height: 10 }, 
-    "hs-ball":       { left: 89, top: 87, width: 10, height: 13 }  
+    "hs-bear":        { left: 41, top: 69, width: 15, height: 27 }, // 大藍熊 (0.25)
+    "hs-bear-green":  { left: 54, top: 73, width: 10, height: 18 }, // 🔥 修正：微調配合 0.15 縮小尺寸
+    "hs-bear-yellow": { left: 64, top: 73, width: 10, height: 18 }, // 🔥 新增：黃色熊熱區 (對齊 0.15 尺寸)
+    "hs-car":         { left: 29, top: 69, width: 10, height: 10 }, 
+    "hs-ball":        { left: 89, top: 87, width: 10, height: 13 }  
 };
 
 const questions = [
     // ═══════════════════════════════════════════════
     // STAGE 1: Vocabulary (環境單字 - 點擊題)
     // ═══════════════════════════════════════════════
-    { type: "tap", question: "Can you find the sun? ☀️", audio: "q4.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Where is the door? 🚪", audio: "q5.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Can you find the books? 📚", audio: "q6.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Where is the window? 🪟", audio: "q7.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Can you find the cloud? ☁️", audio: "q8.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the sun? ☀️", audio: "q4.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the door? 🚪", audio: "q5.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the books? 📚", audio: "q6.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the window? 🪟", audio: "q7.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the cloud? ☁️", audio: "q8.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
     
     // ═══════════════════════════════════════════════
     // STAGE 2: Color (顏色特徵 - 點擊題)
-    // 💡 綠色熊熊（hs-bear-green）完美加入干擾！點錯就抓得到
+    // 💡 綠色熊、黃色熊雙重夾擊！完美測試孩子是否真的聽懂 BLUE
     // ═══════════════════════════════════════════════
-    { type: "tap", question: "Touch the BLUE bear! 🧸", audio: "", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
-    { type: "tap", question: "Can you find the RED ball? 🔴", audio: "", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
-    { type: "tap", question: "Where is the YELLOW window? 🟨", audio: "", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Touch the BLUE bear! 🧸", audio: "", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", question: "Can you find the RED ball? 🔴", audio: "", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", question: "Where is the YELLOW window? 🟨", audio: "", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
     
     // ═══════════════════════════════════════════════
     // STAGE 3: Position (空間指令 - 拖曳題)
@@ -506,8 +503,8 @@ function loadQuestion(n) {
     qAttempts  = 0;
 
     if (q.type === "drag") {
-        // 🔥 核心修正：進入拖曳題時，啟動「圖層穿透」，把包含綠色熊在內的所有熱區滑鼠穿透開啟
-        ["hs-bear", "hs-bear-green", "hs-car", "hs-ball"].forEach(id => {
+        // 🔥 圖層穿透：包含黃色熊在內，全玩具熱區在拖曳題時關閉滑鼠事件
+        ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"].forEach(id => {
             const hsEl = document.getElementById(id);
             if (hsEl) hsEl.style.pointerEvents = "none";
         });
@@ -746,8 +743,8 @@ function resizeItems() {
     const bgImg = scene.querySelector(".bg");
     const h = bgImg.naturalWidth > 0 ? w * (bgImg.naturalHeight / bgImg.naturalWidth) : scene.offsetHeight;
     
-    // 🔥 將綠色熊熊的縮放比例同步納入計算 (等同藍色熊熊比例 0.25)
-    const sizes = { bear: 0.25, bear_green: 0.15, car: 0.10, ball: 0.12 };
+    // 🔥 黃金比例更新：綠色熊、黃色熊縮放比（ratio）同步設定為超精準的 0.15 
+    const sizes = { bear: 0.25, bear_green: 0.15, bear_yellow: 0.15, car: 0.10, ball: 0.12 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
         if (!el) return;
