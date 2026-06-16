@@ -71,6 +71,8 @@ h1 {
     user-select: none;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: block; 
+    -webkit-user-drag: none; /* 禁用 Webkit 瀏覽器的內建圖片拖拽行為 */
+    user-drag: none;         /* 禁用標準瀏覽器的內建圖片拖拽行為 */
 }
 .item.draggable {
     cursor: grab;
