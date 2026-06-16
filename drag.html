@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Etalking Kids - Placement Test (Dual Stage)</title>
+<title>Etalking Kids - Placement Test</title>
 <style>
 * { box-sizing: border-box; }
 body {
@@ -50,11 +50,10 @@ h1 {
 }
 #replay-btn:active { transform: scale(0.9); background: #f1f5f9; }
 
-/* ── 擁抱 16:9 黃金比例容器 ── */
 .scene {
     position: relative;
-    width: min(100vw, 75dvh * 16 / 9); 
-    aspect-ratio: 16 / 9;
+    width: min(100vw, 75dvh * 1456 / 816); 
+    aspect-ratio: 1456 / 816;
     border-radius: 24px; 
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0,0,0,0.08);
@@ -72,8 +71,8 @@ h1 {
     user-select: none;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: block; 
-    -webkit-user-drag: none; /* 禁用內建圖片拖拽行為 */
-    user-drag: none;
+    -webkit-user-drag: none; /* 禁用 Webkit 瀏覽器的內建圖片拖拽行為 */
+    user-drag: none;         /* 禁用標準瀏覽器的內建圖片拖拽行為 */
 }
 .item.draggable {
     cursor: grab;
@@ -92,6 +91,13 @@ h1 {
     0%, 100% { transform: scale(1) translateY(0); }
     50% { transform: scale(1.08, 0.92) translateY(-30px); }
 }
+
+/* ── 🔒 完美保留：玩具在房間的初始位置（維持原樣） ── */
+#bear        { left: 42%; top: 70%; }
+#bear_green  { left: 70%; top: 81%; } 
+#bear_yellow { left: 73%; top: 50%; } 
+#car         { left: 30%; top: 68%; }
+#ball        { left: 90%; top: 88%; }
 
 /* ── 圈選熱區 ── */
 .hotspot {
@@ -182,7 +188,7 @@ h1 {
     box-shadow: 0 2px 0 #b47b05, 0 5px 10px rgba(245,158,11,0.3);
 }
 
-/* ── 晉級過渡畫面 ── */
+/* ── 🔥 新增：晉級關卡中間過渡轉場畫面 ── */
 #next-stage-screen {
     display: none;
     position: fixed;
@@ -192,7 +198,6 @@ h1 {
     align-items: center;
     justify-content: center;
     z-index: 998;
-    animation: fadeIn 0.4s ease;
 }
 #next-stage-btn {
     font-size: clamp(20px, 3.5vw, 32px);
@@ -228,6 +233,7 @@ h1 {
     border: 8px solid #ffd166;
     box-shadow: 0 25px 50px rgba(255, 166, 0, 0.2), inset 0 0 0 8px #fff9e6;
     z-index: 999;
+    animation: popBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     width: 90vw;
     max-width: 450px;
 }
@@ -245,6 +251,7 @@ h1 {
 .stars {
     font-size: clamp(40px, 8vw, 60px);
     letter-spacing: 5px;
+    filter: drop-shadow(0 4px 6px rgba(255, 209, 102, 0.6));
 }
 .finish-text {
     font-size: clamp(22px, 4vw, 32px);
@@ -284,7 +291,7 @@ h1 {
     align-items: center;
     justify-content: center;
 }
-#data-panel.show { display: flex; }
+#data-panel.show { display: flex; animation: fadeIn 0.3s ease; }
 #data-inner {
     background: #ffffff;
     border-radius: 24px;
@@ -296,14 +303,14 @@ h1 {
     flex-direction: column;
     box-shadow: 0 25px 50px rgba(0,0,0,0.15);
 }
-.report-header { text-align: center; margin-bottom: 20px; }
+.report-header { text-align: center; margin-bottom: 25px; }
 .report-header h2 { margin: 0 0 8px; font-size: clamp(20px, 4vw, 26px); color: #1e293b; }
 .report-header p { margin: 0; color: #64748b; font-size: 15px; }
 .table-container { overflow-y: auto; border-radius: 12px; border: 1px solid #e2e8f0; }
 #data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-#data-table th { background: #f8fafc; padding: 12px 14px; text-align: left; color: #475569; font-weight: 700; border-bottom: 2px solid #e2e8f0; position: sticky; top: 0; }
-#data-table td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
-.badge { padding: 4px 8px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; white-space: nowrap; }
+#data-table th { background: #f8fafc; padding: 14px 16px; text-align: left; color: #475569; font-weight: 700; border-bottom: 2px solid #e2e8f0; position: sticky; top: 0; }
+#data-table td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+.badge { padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; white-space: nowrap; }
 .badge.perfect { background: #dcfce7; color: #166534; }
 .badge.learning { background: #fef9c3; color: #854d0e; }
 .speed { font-weight: 600; color: #0ea5e9; white-space: nowrap; }
@@ -318,7 +325,7 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 <body>
 
 <div id="start-screen">
-    <button id="start-btn">START TEST</button>
+    <button id="start-btn">START</button>
 </div>
 
 <div id="next-stage-screen">
@@ -343,15 +350,16 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <img id="car"         class="item" src="car.png">
     <img id="ball"        class="item" src="ball.png">
 
-    <div class="hotspot" id="hs-1"></div>
-    <div class="hotspot" id="hs-2"></div>
-    <div class="hotspot" id="hs-3"></div>
-    <div class="hotspot" id="hs-4"></div>
-    <div class="hotspot" id="hs-5"></div>
-    <div class="hotspot" id="hs-6"></div>
-    <div class="hotspot" id="hs-7"></div>
-    <div class="hotspot" id="hs-8"></div>
-    <div class="hotspot" id="hs-9"></div>
+    <div class="hotspot" id="hs-sun"></div>
+    <div class="hotspot" id="hs-door"></div>
+    <div class="hotspot" id="hs-books"></div>
+    <div class="hotspot" id="hs-window"></div>
+    <div class="hotspot" id="hs-cloud"></div>
+    <div class="hotspot" id="hs-bear"></div>
+    <div class="hotspot" id="hs-bear-green"></div>
+    <div class="hotspot" id="hs-bear-yellow"></div>
+    <div class="hotspot" id="hs-car"></div>
+    <div class="hotspot" id="hs-ball"></div>
 </div>
 
 <div id="message"></div>
@@ -359,9 +367,9 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 <div id="finish">
     <div class="ribbon" id="finish-ribbon">Test Completed!</div>
     <div class="stars">⭐⭐⭐⭐⭐</div>
-    <div class="finish-text" id="finish-title">Great Job!</div>
+    <div class="finish-text" id="finish-title">You found all the toys!</div>
     <button id="data-btn">
-        <span class="btn-icon">💌</span> ✨ View Report
+        <span class="btn-icon">💌</span> ✨ View Results
     </button>
 </div>
 
@@ -373,7 +381,7 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
           <thead>
             <tr>
               <th>場景</th>
-              <th>聽力指令 / 題目</th>
+              <th>聽力指令 / 綜合題目</th>
               <th>反應速度</th>
               <th>理解力指標</th>
             </tr>
@@ -394,15 +402,15 @@ let offsetX = 0, offsetY = 0;
 let tapLocked    = false;
 let qStartTime   = 0;
 let qAttempts    = 0;
-const allResults = []; 
+const allResults = []; // 全量保存兩關的成績數據
 
 // ═══════════════════════════════════════════════
-// 📦 雙關卡核心架構（精準對齊您微調的熊熊大小與房間位置）
+// 📦 整合大招：把兩關獨立的定義檔拆開，隨場景一鍵抽換
 // ═══════════════════════════════════════════════
 const STAGE_CONFIGS = {
     1: {
         bg: "room_background.png",
-        // 精確帶入您微調的房間初始位置 
+        // 🔒 完美鎖定：完全採用您微調後的初始座標與大小
         itemPositions: {
             bear:        { left: "42%", top: "70%" },
             bear_green:  { left: "70%", top: "81%" },
@@ -410,27 +418,28 @@ const STAGE_CONFIGS = {
             car:         { left: "30%", top: "68%" },
             ball:        { left: "90%", top: "88%" }
         },
-        // 精確帶入您微調的房間熱區對齊
+        // 🔒 完美鎖定：完全採用您微調後的房間熱區定義 (hs-1 到 hs-9)
         hotspots: {
-            "hs-1": { name: "hs-sun",         left: 2,  top: 24, width: 13, height: 20 },
-            "hs-2": { name: "hs-door",        left: 12, top: 10, width: 28, height: 75 },
-            "hs-3": { name: "hs-books",       left: 68, top: 50, width: 22, height: 48 },
-            "hs-4": { name: "hs-window",      left: 82, top: 8,  width: 17, height: 45 },
-            "hs-5": { name: "hs-cloud",       left: 36, top: 0,  width: 22, height: 18 },
-            "hs-6": { name: "hs-bear",        left: 48, top: 69, width: 15, height: 27 },
-            "hs-7": { name: "hs-bear-green",  left: 69, top: 80, width: 10, height: 18 },
-            "hs-8": { name: "hs-bear-yellow", left: 72, top: 49, width: 10, height: 18 },
-            "hs-9": { name: "hs-car",         left: 29, top: 69, width: 10, height: 10 }
+            "hs-sun":         { left: 2,  top: 24, width: 13, height: 20 },
+            "hs-door":        { left: 12, top: 10, width: 28, height: 75 },
+            "hs-books":       { left: 68, top: 50, width: 22, height: 48 },
+            "hs-window":      { left: 82, top: 8,  width: 17, height: 45 },
+            "hs-cloud":       { left: 36, top: 0,  width: 22, height: 18 },
+            "hs-bear":        { left: 48, top: 69, width: 15, height: 27 },
+            "hs-bear-green":  { left: 69, top: 80, width: 10, height: 18 },
+            "hs-bear-yellow": { left: 72, top: 49, width: 10, height: 18 },
+            "hs-car":         { left: 29, top: 69, width: 10, height: 10 },
+            "hs-ball":        { left: 89, top: 87, width: 10, height: 13 }
         },
         questions: [
-            { type: "tap", question: "Can you find the sun? ☀️", audio: "q4.mp3", targets: ["hs-1"], decoys: ["hs-2","hs-3","hs-4","hs-5","hs-6","hs-7","hs-8","hs-9"] },
-            { type: "tap", question: "Where is the door? 🚪", audio: "q5.mp3", targets: ["hs-2"], decoys: ["hs-1","hs-3","hs-4","hs-5","hs-6","hs-7","hs-8","hs-9"] },
-            { type: "tap", question: "Can you find the books? 📚", audio: "q6.mp3", targets: ["hs-3"], decoys: ["hs-1","hs-2","hs-4","hs-5","hs-6","hs-7","hs-8","hs-9"] },
-            { type: "tap", question: "Where is the window? 🪟", audio: "q7.mp3", targets: ["hs-4"], decoys: ["hs-1","hs-2","hs-3","hs-5","hs-6","hs-7","hs-8","hs-9"] },
-            { type: "tap", question: "Can you find the cloud? ☁️", audio: "q8.mp3", targets: ["hs-5"], decoys: ["hs-1","hs-2","hs-3","hs-4","hs-6","hs-7","hs-8","hs-9"] },
-            { type: "tap", question: "Touch the BLUE bear! 🧸🟦", audio: "q9.mp3", targets: ["hs-6"], decoys: ["hs-7","hs-8","hs-9","hs-1","hs-2","hs-4"] },
-            { type: "tap", question: "Can you find the RED ball? 🔴", audio: "q10.mp3", targets: ["hs-5"], decoys: ["hs-6","hs-7","hs-8"] }, // 同步您補上的新音檔
-            { type: "tap", question: "Where is the YELLOW window? 🟨", audio: "q11.mp3", targets: ["hs-4"], decoys: ["hs-1","hs-2","hs-3"] },
+            { type: "tap", question: "Can you find the sun? ☀️", audio: "q4.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+            { type: "tap", question: "Where is the door? 🚪", audio: "q5.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+            { type: "tap", question: "Can you find the books? 📚", audio: "q6.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+            { type: "tap", question: "Where is the window? 🪟", audio: "q7.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+            { type: "tap", question: "Can you find the cloud? ☁️", audio: "q8.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+            { type: "tap", question: "Touch the BLUE bear! 🧸🟦", audio: "q9.mp3", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+            { type: "tap", question: "Can you find the RED ball? 🔴", audio: "q10.mp3", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+            { type: "tap", question: "Where is the YELLOW window? 🟨", audio: "q11.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
             { type: "drag", itemId: "bear", question: "Can you put the BLUE bear on the rug? 🧸", audio: "q1.mp3", zone: { left: 0, right: 50, top: 55, bottom: 100 }, snap: { left: 8, top: 68 } },
             { type: "drag", itemId: "car", question: "Can you put the car on the table? 🚗", audio: "q2.mp3", zone: { left: 44, right: 70, top: 45, bottom: 68 }, snap: { left: 53, top: 54 } },
             { type: "drag", itemId: "ball", question: "Can you put the ball in front of the table? ⚽", audio: "q3.mp3", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
@@ -438,7 +447,7 @@ const STAGE_CONFIGS = {
     },
     2: {
         bg: "park.jpeg",
-        // 公園草地擺放位置（同步將綠熊、黃熊移到草地上更自然的並排處）
+        // 公園草地的玩具初始排排站點 (完美錯開不影響第一關)
         itemPositions: {
             bear:        { left: "35%", top: "76%" },
             bear_green:  { left: "45%", top: "79%" },
@@ -446,24 +455,27 @@ const STAGE_CONFIGS = {
             car:         { left: "20%", top: "76%" },
             ball:        { left: "70%", top: "80%" }
         },
-        // 對齊 16:9 公園場景熱區定義
+        // 對齊公園景物的精準熱區
         hotspots: {
-            "hs-1": { name: "hs-sun",     left: 5,  top: 5,  width: 9,  height: 16 }, 
-            "hs-2": { name: "hs-slide",   left: 5,  top: 22, width: 25, height: 40 }, 
-            "hs-3": { name: "hs-tree",    left: 20, top: 2,  width: 30, height: 52 }, 
-            "hs-4": { name: "hs-swing",   left: 50, top: 27, width: 23, height: 32 }, 
-            "hs-5": { name: "hs-seesaw",  left: 35, top: 56, width: 23, height: 16 }, 
-            "hs-6": { name: "hs-sandbox", left: 73, top: 54, width: 24, height: 16 }, 
-            "hs-7": { name: "hs-cloud",   left: 51, top: 6,  width: 13, height: 11 },
-            "hs-8": { name: "hs-empty1",  left: 0,  top: 0,  width: 0,  height: 0 }, 
-            "hs-9": { name: "hs-empty2",  left: 0,  top: 0,  width: 0,  height: 0 }
+            "hs-sun":         { left: 5,  top: 5,  width: 9,  height: 16 }, 
+            "hs-slide":       { left: 5,  top: 22, width: 25, height: 40 }, 
+            "hs-tree":        { left: 20, top: 2,  width: 30, height: 52 }, 
+            "hs-swing":       { left: 50, top: 27, width: 23, height: 32 }, 
+            "hs-seesaw":      { left: 35, top: 56, width: 23, height: 16 }, 
+            "hs-sandbox":     { left: 73, top: 54, width: 24, height: 16 }, 
+            "hs-cloud":       { left: 51, top: 6,  width: 13, height: 11 },
+            "hs-bear":        { left: 0,  top: 0,  width: 0,  height: 0 }, // 關閉不必要的舊標籤
+            "hs-bear-green":  { left: 0,  top: 0,  width: 0,  height: 0 },
+            "hs-bear-yellow": { left: 0,  top: 0,  width: 0,  height: 0 },
+            "hs-car":         { left: 0,  top: 0,  width: 0,  height: 0 },
+            "hs-ball":        { left: 0,  top: 0,  width: 0,  height: 0 }
         },
         questions: [
-            { type: "tap", question: "Can you find the slide? 🛝", audio: "p_slide.mp3", targets: ["hs-2"], decoys: ["hs-1","hs-3","hs-4","hs-5","hs-6","hs-7"] },
-            { type: "tap", question: "Where is the swing? 🎡", audio: "p_swing.mp3", targets: ["hs-4"], decoys: ["hs-2","hs-1","hs-3","hs-5","hs-6","hs-7"] },
-            { type: "tap", question: "Can you find the seesaw? ⚖️", audio: "p_seesaw.mp3", targets: ["hs-5"], decoys: ["hs-2","hs-4","hs-1","hs-3","hs-6","hs-7"] },
-            { type: "tap", question: "Where is the sandbox? ⏳", audio: "p_sandbox.mp3", targets: ["hs-6"], decoys: ["hs-2","hs-4","hs-5","hs-1","hs-3","hs-7"] },
-            { type: "tap", question: "Can you find the big tree? 🌳", audio: "p_tree.mp3", targets: ["hs-3"], decoys: ["hs-2","hs-4","hs-5","hs-6","hs-1","hs-7"] },
+            { type: "tap", question: "Can you find the slide? 🛝", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-cloud"] },
+            { type: "tap", question: "Where is the swing? 🎡", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-tree","hs-seesaw","hs-sandbox","hs-cloud"] },
+            { type: "tap", question: "Can you find the seesaw? ⚖️", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-tree","hs-sandbox","hs-cloud"] },
+            { type: "tap", question: "Where is the sandbox? ⏳", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-tree","hs-cloud"] },
+            { type: "tap", question: "Can you find the big tree? 🌳", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud"] },
             { type: "drag", itemId: "bear", question: "Can you put the BLUE bear ON the swing? 🧸", audio: "p_drag_bear.mp3", zone: { left: 45, right: 75, top: 25, bottom: 65 }, snap: { left: 58, top: 41 } },
             { type: "drag", itemId: "car", question: "Can you put the car UNDER the slide? 🚗", audio: "p_drag_car.mp3", zone: { left: 2, right: 32, top: 50, bottom: 85 }, snap: { left: 14, top: 56 } },
             { type: "drag", itemId: "ball", question: "Can you put the ball IN the sandbox? ⚽", audio: "p_drag_ball.mp3", zone: { left: 70, right: 98, top: 50, bottom: 85 }, snap: { left: 81, top: 58 } }
@@ -471,11 +483,20 @@ const STAGE_CONFIGS = {
     }
 };
 
+const gameBgEl = document.getElementById("game-bg");
+
+function playQuestion(stage, n) {
+    const activeQuestions = STAGE_CONFIGS[stage].questions;
+    if (n < activeQuestions.length && activeQuestions[n].audio) {
+        playSound(activeQuestions[n].audio);
+    }
+}
+
 function applyStageUI(stage) {
     const cfg = STAGE_CONFIGS[stage];
     gameBgEl.src = cfg.bg;
     
-    // 初始化玩具初始擺放位置
+    // 重置玩具位置
     Object.entries(cfg.itemPositions).forEach(([id, pos]) => {
         const el = document.getElementById(id);
         if (el) {
@@ -486,9 +507,9 @@ function applyStageUI(stage) {
         }
     });
 
-    // 刷新熱區定義
-    Object.entries(cfg.hotspots).forEach(([htmlId, def]) => {
-        const el = document.getElementById(htmlId);
+    // 重新部署對應關卡的熱區
+    Object.entries(cfg.hotspots).forEach(([id, def]) => {
+        const el = document.getElementById(id);
         if (el) {
             el.style.left   = def.left   + "%";
             el.style.top    = def.top    + "%";
@@ -513,6 +534,7 @@ function loadQuestion(n) {
 
     const activeQuestions = STAGE_CONFIGS[currentStage].questions;
 
+    // 當前關卡全部做完了
     if (n >= activeQuestions.length) {
         handleStageComplete();
         return;
@@ -542,12 +564,13 @@ function loadQuestion(n) {
     }
 }
 
+// 🔀 SPA 關卡自動流轉核心
 function handleStageComplete() {
     if (currentStage === 1) {
         const stage1Results = allResults.filter(r => r.stage === 1);
         const totalCorrect = stage1Results.length; 
 
-        // 🌟 晉級機制：房間完成 5 題以上順利解鎖公園
+        // 🌟 分流：第一關順利完成 5 題以上，跳出彈窗準備進公園
         if (totalCorrect >= 5) {
             document.getElementById("next-stage-screen").style.display = "flex";
         } else {
@@ -558,6 +581,7 @@ function handleStageComplete() {
     }
 }
 
+// 點擊中間過渡轉場，一鍵換軌到公園
 document.getElementById("next-stage-btn").addEventListener("click", () => {
     document.getElementById("next-stage-screen").style.display = "none";
     currentStage = 2;
@@ -576,6 +600,10 @@ function showFinalEnd(level, titleText) {
     document.getElementById("finish-title").textContent = titleText;
     document.getElementById("finish-ribbon").textContent = "Recommended: " + level;
 }
+
+document.getElementById("replay-btn").addEventListener("click", () => {
+    playQuestion(currentStage, currentQ);
+});
 
 // ── 拖曳邏輯 ──
 document.querySelectorAll(".item").forEach(item => {
@@ -692,7 +720,7 @@ function recordResult() {
     });
 }
 
-// ── 豪華雙關卡數據面板大總結 ──
+// ── 🏆 雙關卡星星報表大總結核心 ──
 const dataBtn   = document.getElementById("data-btn");
 const dataPanel = document.getElementById("data-panel");
 const dataTbody = document.getElementById("data-tbody");
@@ -776,7 +804,7 @@ document.getElementById("close-btn").addEventListener("click", () => {
     finishEl.style.display = "flex";
 });
 
-// ── 響應式等比例縮放（完美同步您調校的 0.08 比例） ──
+// ── 🔒 完美保留：你設定的 0.08 自適應縮放比例 ──
 window.addEventListener("resize", resizeItems);
 
 function resizeItems() {
@@ -784,7 +812,6 @@ function resizeItems() {
     const bgImg = scene.querySelector(".bg");
     const h = bgImg.naturalWidth > 0 ? w * (bgImg.naturalHeight / bgImg.naturalWidth) : scene.offsetHeight;
     
-    // 🔥 完全保留您微調後的精緻 0.08 比例
     const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
@@ -804,7 +831,6 @@ function resizeItems() {
     });
 }
 
-// 初始化與啟動
 function buildDots() {
     progressEl.innerHTML = "";
     const activeQuestions = STAGE_CONFIGS[currentStage].questions;
