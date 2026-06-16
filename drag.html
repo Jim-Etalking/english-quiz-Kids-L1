@@ -63,16 +63,15 @@ h1 {
     display: block;
 }
 
-/* ── 拖曳物件：預設改為 display: block 一開始就顯示 ── */
+/* ── 拖曳與靜態物件樣式 ── */
 .item {
     position: absolute;
     touch-action: none;
-    cursor: default; /* 預設先不可抓取 */
+    cursor: default;
     user-select: none;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: block; 
 }
-/* 當進入可拖曳狀態時，滑鼠圖標變成 grab */
 .item.draggable {
     cursor: grab;
 }
@@ -91,9 +90,11 @@ h1 {
     50% { transform: scale(1.08, 0.92) translateY(-30px); }
 }
 
-#bear { left: 42%; top: 70%; }
-#car  { left: 30%; top: 68%; }
-#ball { left: 90%; top: 88%; }
+/* ── 玩具在房間的初始位置（完美錯開不重疊） ── */
+#bear       { left: 42%; top: 70%; }
+#bear_green { left: 55%; top: 68%; } /* 🔥 綠色熊放在中間偏右，與藍色熊錯開 */
+#car        { left: 30%; top: 68%; }
+#ball       { left: 90%; top: 88%; }
 
 /* ── 圈選熱區 ── */
 .hotspot {
@@ -305,7 +306,11 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 <div class="scene" id="scene">
     <img class="bg" src="room_background.png">
 
+    <!-- 原本的藍色熊熊 -->
     <img id="bear" class="item" src="bear_v3.png">
+    <!-- 🔥 新增的綠色熊熊（當作顏色關卡的干擾項） -->
+    <img id="bear_green" class="item" src="bear_green.png">
+    
     <img id="car"  class="item" src="car.png">
     <img id="ball" class="item" src="ball.png">
 
@@ -315,7 +320,10 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <div class="hotspot" id="hs-window"></div>
     <div class="hotspot" id="hs-cloud"></div>
     
+    <!-- 玩具熱區 -->
     <div class="hotspot" id="hs-bear"></div>
+    <!-- 🔥 新增綠色熊熊的點擊熱區 -->
+    <div class="hotspot" id="hs-bear-green"></div>
     <div class="hotspot" id="hs-car"></div>
     <div class="hotspot" id="hs-ball"></div>
 </div>
@@ -355,38 +363,38 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 
 <script>
 const HOTSPOT_DEFS = {
-    "hs-sun":    { left: 2,  top: 24,  width: 13, height: 20 },
-    "hs-door":   { left: 12, top: 10, width: 28, height: 75 },
-    "hs-books":  { left: 68, top: 50, width: 22, height: 48 },
-    "hs-window": { left: 82, top: 8,  width: 17, height: 45 },
-    "hs-cloud":  { left: 36, top: 0,  width: 22, height: 18 },
+    "hs-sun":        { left: 2,  top: 24, width: 13, height: 20 },
+    "hs-door":       { left: 12, top: 10, width: 28, height: 75 },
+    "hs-books":      { left: 68, top: 50, width: 22, height: 48 },
+    "hs-window":     { left: 82, top: 8,  width: 17, height: 45 },
+    "hs-cloud":      { left: 36, top: 0,  width: 22, height: 18 },
     
     // ═══════════════════════════════════════════════
-    // 已完美對齊您新設定的玩具 % 數位置！
+    // 玩具熱區：對齊 CSS % 數
     // ═══════════════════════════════════════════════
-    "hs-bear":   { left: 48, top: 70, width: 15, height: 27 }, // 對齊 left: 42%, top: 70%
-    "hs-car":    { left: 29, top: 69, width: 10, height: 10 }, // 對齊 left: 33%, top: 68%
-    "hs-ball":   { left: 89, top: 87, width: 10, height: 13 }  // 對齊 left: 34%, top: 72%
+    "hs-bear":       { left: 41, top: 69, width: 15, height: 27 }, // 藍色熊熊 (left: 42%)
+    "hs-bear-green": { left: 54, top: 67, width: 15, height: 27 }, // 🔥 綠色熊熊 (left: 55%)
+    "hs-car":        { left: 29, top: 69, width: 10, height: 10 }, 
+    "hs-ball":       { left: 89, top: 87, width: 10, height: 13 }  
 };
 
 const questions = [
     // ═══════════════════════════════════════════════
     // STAGE 1: Vocabulary (環境單字 - 點擊題)
     // ═══════════════════════════════════════════════
-    { type: "tap", question: "Can you find the sun? ☀️", audio: "q4.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Where is the door? 🚪", audio: "q5.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Can you find the books? 📚", audio: "q6.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Where is the window? 🪟", audio: "q7.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Can you find the cloud? ☁️", audio: "q8.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the sun? ☀️", audio: "q4.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the door? 🚪", audio: "q5.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the books? 📚", audio: "q6.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the window? 🪟", audio: "q7.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the cloud? ☁️", audio: "q8.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-car", "hs-ball"] },
     
     // ═══════════════════════════════════════════════
     // STAGE 2: Color (顏色特徵 - 點擊題)
-    // 💡 提醒：這三題是新加的，如果還沒錄音，可以先留空 ""。
-    // 如果錄好了，就把引號內改成你的音檔檔名（例如 "q_blue_bear.mp3"）
+    // 💡 綠色熊熊（hs-bear-green）完美加入干擾！點錯就抓得到
     // ═══════════════════════════════════════════════
-    { type: "tap", question: "Touch the BLUE bear! 🧸", audio: "", targets: ["hs-bear"], decoys: ["hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
-    { type: "tap", question: "Can you find the RED ball? 🔴", audio: "", targets: ["hs-ball"], decoys: ["hs-bear", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
-    { type: "tap", question: "Where is the YELLOW window? 🟨", audio: "", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Touch the BLUE bear! 🧸", audio: "", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", question: "Can you find the RED ball? 🔴", audio: "", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", question: "Where is the YELLOW window? 🟨", audio: "", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-car", "hs-ball"] },
     
     // ═══════════════════════════════════════════════
     // STAGE 3: Position (空間指令 - 拖曳題)
@@ -471,7 +479,6 @@ function applyHotspotPositions() {
 function loadQuestion(n) {
     document.querySelectorAll(".hotspot").forEach(el => {
         el.classList.remove("active", "correct", "wrong");
-        // 預設重設：讓所有熱區都能正常接收點擊
         el.style.pointerEvents = "auto"; 
     });
     
@@ -499,11 +506,8 @@ function loadQuestion(n) {
     qAttempts  = 0;
 
     if (q.type === "drag") {
-        // ═══════════════════════════════════════════════
-        // 🔥 核心修正：進入拖曳題時，啟動「圖層穿透」
-        // 讓三個玩具的透明圈選熱區徹底隱形，絕對不擋住滑鼠抓取圖片！
-        // ═══════════════════════════════════════════════
-        ["hs-bear", "hs-car", "hs-ball"].forEach(id => {
+        // 🔥 核心修正：進入拖曳題時，啟動「圖層穿透」，把包含綠色熊在內的所有熱區滑鼠穿透開啟
+        ["hs-bear", "hs-bear-green", "hs-car", "hs-ball"].forEach(id => {
             const hsEl = document.getElementById(id);
             if (hsEl) hsEl.style.pointerEvents = "none";
         });
@@ -741,7 +745,9 @@ function resizeItems() {
     const w = scene.offsetWidth;
     const bgImg = scene.querySelector(".bg");
     const h = bgImg.naturalWidth > 0 ? w * (bgImg.naturalHeight / bgImg.naturalWidth) : scene.offsetHeight;
-    const sizes = { bear: 0.25, car: 0.10, ball: 0.12 };
+    
+    // 🔥 將綠色熊熊的縮放比例同步納入計算 (等同藍色熊熊比例 0.25)
+    const sizes = { bear: 0.25, bear_green: 0.25, car: 0.10, ball: 0.12 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
         if (!el) return;
