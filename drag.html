@@ -92,10 +92,10 @@ h1 {
     50% { transform: scale(1.08, 0.92) translateY(-30px); }
 }
 
-/* ── 🔒 完美保留：玩具在房間的初始位置（維持原樣） ── */
+/* ── 玩具在房間的初始位置（三隻熊漂亮排排站） ── */
 #bear        { left: 42%; top: 70%; }
-#bear_green  { left: 70%; top: 81%; } 
-#bear_yellow { left: 73%; top: 50%; } 
+#bear_green  { left: 70%; top: 81%; } /* 綠色熊 */
+#bear_yellow { left: 73%; top: 50%; } /* 🔥 新增黃色熊，排在綠色熊右邊，稍微靠下一點點更自然 */
 #car         { left: 30%; top: 68%; }
 #ball        { left: 90%; top: 88%; }
 
@@ -188,7 +188,7 @@ h1 {
     box-shadow: 0 2px 0 #b47b05, 0 5px 10px rgba(245,158,11,0.3);
 }
 
-/* ── 🔥 新增：晉級關卡中間過渡轉場畫面 ── */
+/* ── 🔥 新增：轉場畫面樣式 ── */
 #next-stage-screen {
     display: none;
     position: fixed;
@@ -296,7 +296,7 @@ h1 {
     background: #ffffff;
     border-radius: 24px;
     padding: 35px 40px;
-    max-width: 650px;
+    max-width: 600px;
     width: 90vw;
     max-height: 85dvh;
     display: flex;
@@ -307,7 +307,7 @@ h1 {
 .report-header h2 { margin: 0 0 8px; font-size: clamp(20px, 4vw, 26px); color: #1e293b; }
 .report-header p { margin: 0; color: #64748b; font-size: 15px; }
 .table-container { overflow-y: auto; border-radius: 12px; border: 1px solid #e2e8f0; }
-#data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+#data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 #data-table th { background: #f8fafc; padding: 14px 16px; text-align: left; color: #475569; font-weight: 700; border-bottom: 2px solid #e2e8f0; position: sticky; top: 0; }
 #data-table td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
 .badge { padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; white-space: nowrap; }
@@ -346,9 +346,9 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 
     <img id="bear"        class="item" src="bear_v3.png">
     <img id="bear_green"  class="item" src="bear_green.png">
-    <img id="bear_yellow" class="item" src="bear_yellow.png">
-    <img id="car"         class="item" src="car.png">
-    <img id="ball"        class="item" src="ball.png">
+    <img id="bear_yellow" class="item" src="bear_yellow.png"> 
+    <img id="car"  class="item" src="car.png">
+    <img id="ball" class="item" src="ball.png">
 
     <div class="hotspot" id="hs-sun"></div>
     <div class="hotspot" id="hs-door"></div>
@@ -357,17 +357,23 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <div class="hotspot" id="hs-cloud"></div>
     <div class="hotspot" id="hs-bear"></div>
     <div class="hotspot" id="hs-bear-green"></div>
-    <div class="hotspot" id="hs-bear-yellow"></div>
+    <div class="hotspot" id="hs-bear-yellow"></div> 
     <div class="hotspot" id="hs-car"></div>
     <div class="hotspot" id="hs-ball"></div>
+    
+    <div class="hotspot" id="hs-slide"></div>
+    <div class="hotspot" id="hs-tree"></div>
+    <div class="hotspot" id="hs-swing"></div>
+    <div class="hotspot" id="hs-seesaw"></div>
+    <div class="hotspot" id="hs-sandbox"></div>
 </div>
 
 <div id="message"></div>
 
 <div id="finish">
-    <div class="ribbon" id="finish-ribbon">Test Completed!</div>
+    <div class="ribbon">Test Completed!</div>
     <div class="stars">⭐⭐⭐⭐⭐</div>
-    <div class="finish-text" id="finish-title">You found all the toys!</div>
+    <div class="finish-text">You found all the toys!</div>
     <button id="data-btn">
         <span class="btn-icon">💌</span> ✨ View Results
     </button>
@@ -375,13 +381,15 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 
 <div id="data-panel">
   <div id="data-inner">
-    <div class="report-header" id="report-summary-box"></div>
+    <div class="report-header">
+        <h2>📝 幼兒英語聽力與認知 analysis</h2>
+        <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
+    </div>
     <div class="table-container">
         <table id="data-table">
           <thead>
             <tr>
-              <th>場景</th>
-              <th>聽力指令 / 綜合題目</th>
+              <th>單字 / 聽力指令</th>
               <th>反應速度</th>
               <th>理解力指標</th>
             </tr>
@@ -394,132 +402,122 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 </div>
 
 <script>
-let currentStage = 1; // 1 = 房間, 2 = 公園
-let currentQ     = 0;
-let dragging     = false;
-let activeItem   = null;
-let offsetX = 0, offsetY = 0;
-let tapLocked    = false;
-let qStartTime   = 0;
-let qAttempts    = 0;
-const allResults = []; // 全量保存兩關的成績數據
+// 🔥 新增一個小旗標，用來判斷現在是不是在第二關
+let isStage2 = false;
 
-// ═══════════════════════════════════════════════
-// 📦 整合大招：把兩關獨立的定義檔拆開，隨場景一鍵抽換
-// ═══════════════════════════════════════════════
-const STAGE_CONFIGS = {
-    1: {
-        bg: "room_background.png",
-        // 🔒 完美鎖定：完全採用您微調後的初始座標與大小
-        itemPositions: {
-            bear:        { left: "42%", top: "70%" },
-            bear_green:  { left: "70%", top: "81%" },
-            bear_yellow: { left: "73%", top: "50%" },
-            car:         { left: "30%", top: "68%" },
-            ball:        { left: "90%", top: "88%" }
-        },
-        // 🔒 完美鎖定：完全採用您微調後的房間熱區定義 (hs-1 到 hs-9)
-        hotspots: {
-            "hs-sun":         { left: 2,  top: 24, width: 13, height: 20 },
-            "hs-door":        { left: 12, top: 10, width: 28, height: 75 },
-            "hs-books":       { left: 68, top: 50, width: 22, height: 48 },
-            "hs-window":      { left: 82, top: 8,  width: 17, height: 45 },
-            "hs-cloud":       { left: 36, top: 0,  width: 22, height: 18 },
-            "hs-bear":        { left: 48, top: 69, width: 15, height: 27 },
-            "hs-bear-green":  { left: 69, top: 80, width: 10, height: 18 },
-            "hs-bear-yellow": { left: 72, top: 49, width: 10, height: 18 },
-            "hs-car":         { left: 29, top: 69, width: 10, height: 10 },
-            "hs-ball":        { left: 89, top: 87, width: 10, height: 13 }
-        },
-        questions: [
-            { type: "tap", question: "Can you find the sun? ☀️", audio: "q4.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-            { type: "tap", question: "Where is the door? 🚪", audio: "q5.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-            { type: "tap", question: "Can you find the books? 📚", audio: "q6.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-            { type: "tap", question: "Where is the window? 🪟", audio: "q7.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-            { type: "tap", question: "Can you find the cloud? ☁️", audio: "q8.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-            { type: "tap", question: "Touch the BLUE bear! 🧸🟦", audio: "q9.mp3", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
-            { type: "tap", question: "Can you find the RED ball? 🔴", audio: "q10.mp3", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
-            { type: "tap", question: "Where is the YELLOW window? 🟨", audio: "q11.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-            { type: "drag", itemId: "bear", question: "Can you put the BLUE bear on the rug? 🧸", audio: "q1.mp3", zone: { left: 0, right: 50, top: 55, bottom: 100 }, snap: { left: 8, top: 68 } },
-            { type: "drag", itemId: "car", question: "Can you put the car on the table? 🚗", audio: "q2.mp3", zone: { left: 44, right: 70, top: 45, bottom: 68 }, snap: { left: 53, top: 54 } },
-            { type: "drag", itemId: "ball", question: "Can you put the ball in front of the table? ⚽", audio: "q3.mp3", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
-        ]
-    },
-    2: {
-        bg: "park.jpeg",
-        // 公園草地的玩具初始排排站點 (完美錯開不影響第一關)
-        itemPositions: {
-            bear:        { left: "35%", top: "76%" },
-            bear_green:  { left: "45%", top: "79%" },
-            bear_yellow: { left: "55%", top: "79%" },
-            car:         { left: "20%", top: "76%" },
-            ball:        { left: "70%", top: "80%" }
-        },
-        // 對齊公園景物的精準熱區
-        hotspots: {
-            "hs-sun":         { left: 5,  top: 5,  width: 9,  height: 16 }, 
-            "hs-slide":       { left: 5,  top: 22, width: 25, height: 40 }, 
-            "hs-tree":        { left: 20, top: 2,  width: 30, height: 52 }, 
-            "hs-swing":       { left: 50, top: 27, width: 23, height: 32 }, 
-            "hs-seesaw":      { left: 35, top: 56, width: 23, height: 16 }, 
-            "hs-sandbox":     { left: 73, top: 54, width: 24, height: 16 }, 
-            "hs-cloud":       { left: 51, top: 6,  width: 13, height: 11 },
-            "hs-bear":        { left: 0,  top: 0,  width: 0,  height: 0 }, // 關閉不必要的舊標籤
-            "hs-bear-green":  { left: 0,  top: 0,  width: 0,  height: 0 },
-            "hs-bear-yellow": { left: 0,  top: 0,  width: 0,  height: 0 },
-            "hs-car":         { left: 0,  top: 0,  width: 0,  height: 0 },
-            "hs-ball":        { left: 0,  top: 0,  width: 0,  height: 0 }
-        },
-        questions: [
-            { type: "tap", question: "Can you find the slide? 🛝", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-cloud"] },
-            { type: "tap", question: "Where is the swing? 🎡", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-tree","hs-seesaw","hs-sandbox","hs-cloud"] },
-            { type: "tap", question: "Can you find the seesaw? ⚖️", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-tree","hs-sandbox","hs-cloud"] },
-            { type: "tap", question: "Where is the sandbox? ⏳", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-tree","hs-cloud"] },
-            { type: "tap", question: "Can you find the big tree? 🌳", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud"] },
-            { type: "drag", itemId: "bear", question: "Can you put the BLUE bear ON the swing? 🧸", audio: "p_drag_bear.mp3", zone: { left: 45, right: 75, top: 25, bottom: 65 }, snap: { left: 58, top: 41 } },
-            { type: "drag", itemId: "car", question: "Can you put the car UNDER the slide? 🚗", audio: "p_drag_car.mp3", zone: { left: 2, right: 32, top: 50, bottom: 85 }, snap: { left: 14, top: 56 } },
-            { type: "drag", itemId: "ball", question: "Can you put the ball IN the sandbox? ⚽", audio: "p_drag_ball.mp3", zone: { left: 70, right: 98, top: 50, bottom: 85 }, snap: { left: 81, top: 58 } }
-        ]
-    }
+const HOTSPOT_DEFS = {
+    "hs-sun":         { left: 2,  top: 24, width: 13, height: 20 },
+    "hs-door":        { left: 12, top: 10, width: 28, height: 75 },
+    "hs-books":       { left: 68, top: 50, width: 22, height: 48 },
+    "hs-window":      { left: 82, top: 8,  width: 17, height: 45 },
+    "hs-cloud":       { left: 36, top: 0,  width: 22, height: 18 },
+    
+    // ═══════════════════════════════════════════════
+    // 玩具熱區：精準配合全新 CSS 排列與大小
+    // ═══════════════════════════════════════════════
+    "hs-bear":        { left: 48, top: 69, width: 15, height: 27 }, // 大藍熊 (0.25)
+    "hs-bear-green":  { left: 69, top: 80, width: 10, height: 18 }, // 🔥 修正：微調配合 0.15 縮小尺寸
+    "hs-bear-yellow": { left: 72, top: 49, width: 10, height: 18 }, // 🔥 新增：黃色熊熱區 (對齊 0.15 尺寸)
+    "hs-car":         { left: 29, top: 69, width: 10, height: 10 }, 
+    "hs-ball":        { left: 89, top: 87, width: 10, height: 13 }  
 };
 
-const gameBgEl = document.getElementById("game-bg");
+const questions = [
+    // ═══════════════════════════════════════════════
+    // STAGE 1: Vocabulary (環境單字 - 點擊題)
+    // ═══════════════════════════════════════════════
+    { type: "tap", question: "Can you find the sun? ", audio: "q4.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the door? ", audio: "q5.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the books? ", audio: "q6.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the window? ", audio: "q7.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the cloud? ", audio: "q8.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    
+    // ═══════════════════════════════════════════════
+    // STAGE 2: Color (顏色特徵 - 點擊題)
+    // 💡 綠色熊、黃色熊雙重夾擊！完美測試孩子是否真的聽懂 BLUE
+    // ═══════════════════════════════════════════════
+    { type: "tap", question: "Touch the BLUE bear! ", audio: "q9.mp3", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", question: "Can you find the RED ball? ", audio: "q10.mp3", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", question: "Where is the YELLOW window? ", audio: "q11.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    
+    // ═══════════════════════════════════════════════
+    // STAGE 3: Position (空間指令 - 拖曳題)
+    // ═══════════════════════════════════════════════
+    { type: "drag", itemId: "bear", question: "Can you put the BLUE bear on the rug?", audio: "q1.mp3", zone: { left: 0, right: 50, top: 55, bottom: 100 }, snap: { left: 8, top: 68 } },
+    { type: "drag", itemId: "car", question: "Can you put the car on the table?", audio: "q2.mp3", zone: { left: 44, right: 70, top: 45, bottom: 68 }, snap: { left: 53, top: 54 } },
+    { type: "drag", itemId: "ball", question: "Can you put the ball in front of the table?", audio: "q3.mp3", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
+];
 
-function playQuestion(stage, n) {
-    const activeQuestions = STAGE_CONFIGS[stage].questions;
-    if (n < activeQuestions.length && activeQuestions[n].audio) {
-        playSound(activeQuestions[n].audio);
+const CORRECT_SOUNDS = ["correct1.mp3", "correct2.mp3", "correct3.mp3"];
+const WRONG_SOUNDS   = ["wrong1.mp3"];
+
+function playSound(file) {
+    if (!file || file === "") return; 
+    const audio = new Audio(file);
+    audio.play().catch(() => {}); 
+}
+
+function playCorrect() {
+    const file = CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)];
+    playSound(file);
+}
+
+function playWrong() {
+    const file = WRONG_SOUNDS[Math.floor(Math.random() * WRONG_SOUNDS.length)];
+    playSound(file);
+}
+
+function playQuestion(n) {
+    if (n < questions.length && questions[n].audio) {
+        playSound(questions[n].audio);
     }
 }
 
-function applyStageUI(stage) {
-    const cfg = STAGE_CONFIGS[stage];
-    gameBgEl.src = cfg.bg;
-    
-    // 重置玩具位置
-    Object.entries(cfg.itemPositions).forEach(([id, pos]) => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.style.left = pos.left;
-            el.style.top = pos.top;
-            el.style.cursor = "default";
-            el.classList.remove("draggable", "jump");
-        }
-    });
+let currentQ   = 0;
+let dragging   = false;
+let activeItem = null;
+let offsetX = 0, offsetY = 0;
+let tapLocked  = false;
+let qStartTime  = 0;
+let qAttempts   = 0;
+const qResults  = []; 
 
-    // 重新部署對應關卡的熱區
-    Object.entries(cfg.hotspots).forEach(([id, def]) => {
+const scene      = document.getElementById("scene");
+const msgEl      = document.getElementById("message");
+const finishEl   = document.getElementById("finish");
+const questionEl = document.getElementById("question");
+const progressEl = document.getElementById("progress");
+
+function buildDots() {
+    progressEl.innerHTML = "";
+    questions.forEach((_, i) => {
+        const d = document.createElement("div");
+        d.className = "dot";
+        d.id = "dot" + i;
+        progressEl.appendChild(d);
+    });
+}
+
+function updateDots(current) {
+    questions.forEach((_, i) => {
+        const dot = document.getElementById("dot" + i);
+        if (!dot) return;
+        dot.className = "dot";
+        if (i < current)   dot.classList.add("done");
+        if (i === current) dot.classList.add("active");
+    });
+}
+
+function applyHotspotPositions() {
+    Object.entries(HOTSPOT_DEFS).forEach(([id, pos]) => {
         const el = document.getElementById(id);
         if (el) {
-            el.style.left   = def.left   + "%";
-            el.style.top    = def.top    + "%";
-            el.style.width  = def.width  + "%";
-            el.style.height = def.height + "%";
+            el.style.left   = pos.left   + "%";
+            el.style.top    = pos.top    + "%";
+            el.style.width  = pos.width  + "%";
+            el.style.height = pos.height + "%";
         }
     });
-    
-    buildDots();
-    resizeItems();
 }
 
 function loadQuestion(n) {
@@ -529,32 +527,47 @@ function loadQuestion(n) {
     });
     
     document.querySelectorAll(".item").forEach(el => el.classList.remove("draggable"));
+    
     msgEl.textContent = "";
     tapLocked = false;
 
-    const activeQuestions = STAGE_CONFIGS[currentStage].questions;
+    if (n >= questions.length) {
+        // 🔥 外掛攔截點：如果第一關跑完，啟動前往公園的轉場！
+        if (!isStage2) {
+            document.getElementById("next-stage-screen").style.display = "flex";
+            return;
+        }
 
-    // 當前關卡全部做完了
-    if (n >= activeQuestions.length) {
-        handleStageComplete();
+        // 第二關跑完，走原本的結束邏輯
+        document.body.classList.add("finished");
+        document.querySelector(".header-area").style.display = "none";
+        finishEl.style.display   = "flex";
+        dataBtn.style.display    = "flex";
+        updateDots(questions.length);
         return;
     }
 
-    const q = activeQuestions[n];
-    questionEl.textContent = q.question;
+    const q = questions[n];
+    questionEl.textContent   = q.question;
     updateDots(n);
     
-    setTimeout(() => playQuestion(currentStage, n), 300);
+    setTimeout(() => playQuestion(n), 300);
 
     qStartTime = Date.now();
     qAttempts  = 0;
 
     if (q.type === "drag") {
-        document.querySelectorAll(".hotspot").forEach(hsEl => hsEl.style.pointerEvents = "none");
+        // 🔥 圖層穿透：包含黃色熊在內，全玩具熱區在拖曳題時關閉滑鼠事件
+        ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"].forEach(id => {
+            const hsEl = document.getElementById(id);
+            if (hsEl) hsEl.style.pointerEvents = "none";
+        });
 
         const el = document.getElementById(q.itemId);
-        if (el && el.style.cursor !== "default") {
-            el.classList.add("draggable");
+        if (el) {
+            if (el.style.cursor !== "default") {
+                el.classList.add("draggable");
+            }
         }
     } else {
         [...q.targets, ...q.decoys].forEach(id => {
@@ -564,52 +577,14 @@ function loadQuestion(n) {
     }
 }
 
-// 🔀 SPA 關卡自動流轉核心
-function handleStageComplete() {
-    if (currentStage === 1) {
-        const stage1Results = allResults.filter(r => r.stage === 1);
-        const totalCorrect = stage1Results.length; 
-
-        // 🌟 分流：第一關順利完成 5 題以上，跳出彈窗準備進公園
-        if (totalCorrect >= 5) {
-            document.getElementById("next-stage-screen").style.display = "flex";
-        } else {
-            showFinalEnd("Starter A", "Room Stage Finished!");
-        }
-    } else {
-        showFinalEnd("Starter B", "All Stages Cleared!");
-    }
-}
-
-// 點擊中間過渡轉場，一鍵換軌到公園
-document.getElementById("next-stage-btn").addEventListener("click", () => {
-    document.getElementById("next-stage-screen").style.display = "none";
-    currentStage = 2;
-    currentQ = 0;
-    applyStageUI(2);
-    loadQuestion(0);
-});
-
-function showFinalEnd(level, titleText) {
-    document.body.classList.add("finished");
-    document.querySelector(".header-area").style.display = "none";
-    progressEl.style.display = "none";
-    
-    finishEl.style.display = "flex";
-    document.getElementById("data-btn").style.display = "flex";
-    document.getElementById("finish-title").textContent = titleText;
-    document.getElementById("finish-ribbon").textContent = "Recommended: " + level;
-}
-
 document.getElementById("replay-btn").addEventListener("click", () => {
-    playQuestion(currentStage, currentQ);
+    playQuestion(currentQ);
 });
 
 // ── 拖曳邏輯 ──
 document.querySelectorAll(".item").forEach(item => {
     item.addEventListener("pointerdown", (e) => {
-        const activeQuestions = STAGE_CONFIGS[currentStage].questions;
-        const q = activeQuestions[currentQ];
+        const q = questions[currentQ];
         if (!q || q.type !== "drag") return;
         if (item.id !== q.itemId) return;
         if (item.style.cursor === "default") return;
@@ -635,8 +610,7 @@ window.addEventListener("pointerup", () => {
     dragging = false;
     activeItem.classList.remove("dragging");
 
-    const activeQuestions = STAGE_CONFIGS[currentStage].questions;
-    const q    = activeQuestions[currentQ];
+    const q    = questions[currentQ];
     const rect = scene.getBoundingClientRect();
     const W = rect.width;
     const bgImg = scene.querySelector(".bg");
@@ -658,7 +632,7 @@ window.addEventListener("pointerup", () => {
         targetToy.style.cursor = "default";
         targetToy.classList.remove("draggable");
         
-        recordResult();
+        recordResult(currentQ);
         playCorrect();
         msgEl.innerHTML = "⭐ Great job!";
         
@@ -679,12 +653,11 @@ window.addEventListener("pointerup", () => {
     activeItem = null;
 });
 
-// ── 圈選點擊邏輯 ──
+// ── 圈選邏輯 ──
 document.querySelectorAll(".hotspot").forEach(hs => {
     hs.addEventListener("pointerdown", (e) => {
         e.stopPropagation();
-        const activeQuestions = STAGE_CONFIGS[currentStage].questions;
-        const q = activeQuestions[currentQ];
+        const q = questions[currentQ];
         if (!q || q.type !== "tap") return;
         if (tapLocked) return;
 
@@ -692,7 +665,7 @@ document.querySelectorAll(".hotspot").forEach(hs => {
         if (isCorrect) {
             tapLocked = true;
             hs.classList.add("correct");
-            recordResult();
+            recordResult(currentQ);
             playCorrect();
             msgEl.innerHTML = "⭐ Great job!";
             setTimeout(() => { currentQ++; loadQuestion(currentQ); }, 900);
@@ -709,21 +682,29 @@ document.querySelectorAll(".hotspot").forEach(hs => {
     });
 });
 
-function recordResult() {
-    const activeQuestions = STAGE_CONFIGS[currentStage].questions;
+buildDots();
+applyHotspotPositions();
+
+function recordResult(n) {
     const seconds = ((Date.now() - qStartTime) / 1000).toFixed(1);
-    allResults.push({
-        stage: currentStage,
-        question: activeQuestions[currentQ].question,
+    qResults.push({
+        // 加上是哪個場景的註記，報表會更清楚
+        question: (isStage2 ? "🛝 " : "🏠 ") + questions[n].question,
         seconds:  parseFloat(seconds),
         attempts: qAttempts,
     });
 }
 
-// ── 🏆 雙關卡星星報表大總結核心 ──
+// ── 星星報表核心邏輯 ──
 const dataBtn   = document.getElementById("data-btn");
 const dataPanel = document.getElementById("data-panel");
 const dataTbody = document.getElementById("data-tbody");
+
+function getStars(num) {
+    let stars = "";
+    for (let i = 1; i <= 5; i++) { stars += i <= num ? "★" : "☆"; }
+    return stars;
+}
 
 dataBtn.addEventListener("click", () => {
     finishEl.style.display = "none";
@@ -731,59 +712,68 @@ dataBtn.addEventListener("click", () => {
     
     let totalSeconds = 0;
     let totalAttempts = 0;
+    let dragAttempts = 0;
     
-    allResults.forEach(r => {
+    qResults.forEach((r, idx) => {
         totalSeconds += r.seconds;
         totalAttempts += r.attempts;
+        // 簡單判定是否為 drag
+        if (r.question.includes("put")) dragAttempts += r.attempts;
     });
 
-    const totalQuestions = allResults.length || 1;
+    const totalQuestions = qResults.length || 1;
     const avgTime = totalSeconds / totalQuestions;
 
     let vocRating = 5;
-    if (totalAttempts > 1 && totalAttempts <= 3) vocRating = 4;
-    else if (totalAttempts > 3 && totalAttempts <= 5) vocRating = 3;
-    else if (totalAttempts > 5) vocRating = 2;
+    if (totalAttempts > 0 && totalAttempts <= 2) vocRating = 4;
+    else if (totalAttempts > 2 && totalAttempts <= 4) vocRating = 3;
+    else if (totalAttempts > 4) vocRating = 2;
+
+    let listeningRating = vocRating; 
 
     let speedRating = 5;
     if (avgTime > 3 && avgTime <= 6) speedRating = 4;
     else if (avgTime > 6 && avgTime <= 10) speedRating = 3;
     else if (avgTime > 10) speedRating = 2;
 
-    const finalLevel = (currentStage === 2) ? "Starter B" : "Starter A";
-    const finalColor = (currentStage === 2) ? "#06d6a0" : "#ef476f";
+    let directionRating = 5;
+    if (dragAttempts === 1) directionRating = 4;
+    else if (dragAttempts > 1 && dragAttempts <= 3) directionRating = 3;
+    else if (dragAttempts > 3) directionRating = 2;
 
-    document.getElementById("report-summary-box").innerHTML = `
-        <h2>📝 幼兒英語聽力與綜合認知分析</h2>
-        <p>透過直覺互動，雙場景追蹤孩子的學習特徵</p>
-        <div style="background: #f8fafc; padding: 18px; border-radius: 16px; margin-top: 15px; border: 1px solid #e2e8f0; text-align: left;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
-                <span style="font-weight: bold; color: #475569;">Listening Skills (聽力理解)</span>
+    const reportHeader = document.querySelector('.report-header');
+    reportHeader.innerHTML = `
+        <h2>📝 幼兒英語聽力與認知 analysis</h2>
+        <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin-top: 15px; border: 1px solid #e2e8f0; text-align: left;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
+                <span style="font-weight: bold; color: #475569;">Listening Skills</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(listeningRating)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
+                <span style="font-weight: bold; color: #475569;">Vocabulary</span>
                 <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(vocRating)}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
-                <span style="font-weight: bold; color: #475569;">Vocabulary & Color (單字特徵)</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(vocRating)}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 14px;">
-                <span style="font-weight: bold; color: #475569;">Response Speed (反應速度)</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
+                <span style="font-weight: bold; color: #475569;">Response Speed</span>
                 <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(speedRating)}</span>
             </div>
+            <div style="display: flex; justify-content: space-between; font-size: 15px;">
+                <span style="font-weight: bold; color: #475569;">Following Directions</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(directionRating)}</span>
+            </div>
         </div>
-        <div style="margin-top: 15px; padding: 10px; background: rgba(15, 23, 42, 0.04); border-radius: 12px; border: 1px dashed #cbd5e1;">
-            <div style="font-size: 12px; color: #64748b; font-weight: bold;">RECOMMENDED LEVEL</div>
-            <div style="font-weight: 900; color: ${finalColor}; font-size: 28px; margin-top: 2px;">${finalLevel}</div>
+        <div style="margin-top: 20px; padding: 12px; background: rgba(239, 71, 111, 0.08); border-radius: 12px; border: 1px dashed #ef476f;">
+            <div style="font-size: 13px; color: #64748b; font-weight: bold; text-transform: uppercase;">Recommended Level</div>
+            <div style="font-weight: 900; color: #ef476f; font-size: 26px; margin-top: 4px; letter-spacing: 1px;">Starter B</div>
         </div>
     `;
 
-    allResults.forEach(r => {
+    qResults.forEach(r => {
         const tr = document.createElement("tr");
-        const stageName = r.stage === 1 ? "🏠 房間" : "🛝 公園";
         let statusHtml = r.attempts === 0 ? `<span class="badge perfect">錯誤 0 次</span>` : `<span class="badge learning">錯誤 ${r.attempts} 次</span>`;
         let speedIcon = r.seconds < 3 ? '⚡' : (r.seconds < 6 ? '👍' : '🐢');
-        
         tr.innerHTML = `
-            <td style="color: #64748b; font-weight: bold;">${stageName}</td>
             <td style="font-weight: 700;">${r.question}</td>
             <td><span class="speed">${speedIcon} ${r.seconds}s</span></td>
             <td>${statusHtml}</td>
@@ -793,18 +783,12 @@ dataBtn.addEventListener("click", () => {
     dataPanel.classList.add("show");
 });
 
-function getStars(num) {
-    let stars = "";
-    for (let i = 1; i <= 5; i++) { stars += i <= num ? "★" : "☆"; }
-    return stars;
-}
-
 document.getElementById("close-btn").addEventListener("click", () => {
     dataPanel.classList.remove("show");
     finishEl.style.display = "flex";
 });
 
-// ── 🔒 完美保留：你設定的 0.08 自適應縮放比例 ──
+resizeItems();
 window.addEventListener("resize", resizeItems);
 
 function resizeItems() {
@@ -812,17 +796,15 @@ function resizeItems() {
     const bgImg = scene.querySelector(".bg");
     const h = bgImg.naturalWidth > 0 ? w * (bgImg.naturalHeight / bgImg.naturalWidth) : scene.offsetHeight;
     
+    // 🔥 完美保留你微調過的 0.08 比例！
     const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
         if (!el) return;
-        
         const placed = el.style.cursor === "default";
         el.style.width = (w * ratio) + "px";
-        
         if (placed) {
-            const activeQuestions = STAGE_CONFIGS[currentStage].questions;
-            const q = activeQuestions.find(q => q.type === "drag" && q.itemId === id);
+            const q = questions.find(q => q.type === "drag" && q.itemId === id);
             if (q) {
                 el.style.left = (q.snap.left / 100 * w) + "px";
                 el.style.top  = (q.snap.top  / 100 * h) + "px";
@@ -831,31 +813,72 @@ function resizeItems() {
     });
 }
 
-function buildDots() {
-    progressEl.innerHTML = "";
-    const activeQuestions = STAGE_CONFIGS[currentStage].questions;
-    activeQuestions.forEach((_, i) => {
-        const d = document.createElement("div");
-        d.className = "dot";
-        d.id = "dot" + i;
-        progressEl.appendChild(d);
-    });
-}
-
-function updateDots(current) {
-    const activeQuestions = STAGE_CONFIGS[currentStage].questions;
-    activeQuestions.forEach((_, i) => {
-        const dot = document.getElementById("dot" + i);
-        if (!dot) return;
-        dot.className = "dot";
-        if (i < current)   dot.classList.add("done");
-        if (i === current) dot.classList.add("active");
-    });
-}
-
 document.getElementById("start-btn").addEventListener("click", () => {
     document.getElementById("start-screen").style.display = "none";
-    applyStageUI(1);
+    loadQuestion(0);
+});
+
+// ═══════════════════════════════════════════════
+// 🔥 終極外掛：公園關卡 (Stage 2) 獨立設定區
+// 不碰你前面寫的任何 array，只在觸發轉場時替換內容
+// ═══════════════════════════════════════════════
+const HOTSPOT_DEFS_PARK = {
+    "hs-sun":     { left: 5,  top: 5,  width: 9,  height: 16 }, 
+    "hs-slide":   { left: 5,  top: 22, width: 25, height: 40 }, 
+    "hs-tree":    { left: 20, top: 2,  width: 30, height: 52 }, 
+    "hs-swing":   { left: 50, top: 27, width: 23, height: 32 }, 
+    "hs-seesaw":  { left: 35, top: 56, width: 23, height: 16 }, 
+    "hs-sandbox": { left: 73, top: 54, width: 24, height: 16 }
+};
+
+const questions_park = [
+    { type: "tap", question: "Can you find the slide? 🛝", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-tree","hs-swing","hs-seesaw","hs-sandbox"] },
+    { type: "tap", question: "Where is the swing? 🎡", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-tree","hs-seesaw","hs-sandbox"] },
+    { type: "tap", question: "Can you find the seesaw? ⚖️", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-tree","hs-sandbox"] },
+    { type: "tap", question: "Where is the sandbox? ⏳", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-tree"] },
+    { type: "tap", question: "Can you find the big tree? 🌳", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun"] },
+    { type: "drag", itemId: "bear", question: "Can you put the BLUE bear ON the swing?", audio: "p_drag_bear.mp3", zone: { left: 45, right: 75, top: 25, bottom: 65 }, snap: { left: 58, top: 41 } },
+    { type: "drag", itemId: "car", question: "Can you put the car UNDER the slide?", audio: "p_drag_car.mp3", zone: { left: 2, right: 32, top: 50, bottom: 85 }, snap: { left: 14, top: 56 } },
+    { type: "drag", itemId: "ball", question: "Can you put the ball IN the sandbox?", audio: "p_drag_ball.mp3", zone: { left: 70, right: 98, top: 50, bottom: 85 }, snap: { left: 81, top: 58 } }
+];
+
+document.getElementById("next-stage-btn").addEventListener("click", () => {
+    document.getElementById("next-stage-screen").style.display = "none";
+    isStage2 = true;
+    currentQ = 0;
+    
+    // 1. 替換成公園背景圖
+    document.getElementById("game-bg").src = "park.jpeg";
+    
+    // 2. 暴力覆寫題目陣列 (原本第一關的會被清掉替換成公園的)
+    questions.length = 0;
+    questions.push(...questions_park);
+    
+    // 3. 替換熱區坐標並重新套用
+    Object.assign(HOTSPOT_DEFS, HOTSPOT_DEFS_PARK);
+    applyHotspotPositions();
+    
+    // 4. 將玩具瞬間移動到公園草地上的排排站新位置
+    const parkPositions = {
+        bear:        { left: "35%", top: "76%" },
+        bear_green:  { left: "45%", top: "82%" },
+        bear_yellow: { left: "55%", top: "82%" },
+        car:         { left: "20%", top: "76%" },
+        ball:        { left: "70%", top: "82%" }
+    };
+    Object.entries(parkPositions).forEach(([id, pos]) => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.left = pos.left;
+            el.style.top = pos.top;
+            el.style.cursor = "default";
+            el.classList.remove("draggable", "jump");
+        }
+    });
+    
+    // 重新建置上方的答題點點並載入公園第一題！
+    buildDots();
+    resizeItems();
     loadQuestion(0);
 });
 </script>
