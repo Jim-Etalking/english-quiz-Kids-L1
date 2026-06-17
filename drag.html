@@ -71,8 +71,8 @@ h1 {
     user-select: none;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: block; 
-    -webkit-user-drag: none; /* 禁用 Webkit 瀏覽器的內建圖片拖拽行為 */
-    user-drag: none;         /* 禁用標準瀏覽器的內建圖片拖拽行為 */
+    -webkit-user-drag: none; 
+    user-drag: none;         
 }
 .item.draggable {
     cursor: grab;
@@ -94,8 +94,8 @@ h1 {
 
 /* ── 玩具在房間的初始位置（三隻熊漂亮排排站） ── */
 #bear        { left: 42%; top: 70%; }
-#bear_green  { left: 70%; top: 81%; } /* 綠色熊 */
-#bear_yellow { left: 73%; top: 50%; } /* 🔥 新增黃色熊，排在綠色熊右邊，稍微靠下一點點更自然 */
+#bear_green  { left: 70%; top: 81%; } 
+#bear_yellow { left: 73%; top: 50%; } 
 #car         { left: 30%; top: 68%; }
 #ball        { left: 90%; top: 88%; }
 
@@ -344,11 +344,16 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 <div class="scene" id="scene">
     <img class="bg" id="game-bg" src="room_background.png">
 
+    <!-- 第一關專屬玩具 -->
     <img id="bear"        class="item" src="bear_v3.png">
     <img id="bear_green"  class="item" src="bear_green.png">
     <img id="bear_yellow" class="item" src="bear_yellow.png"> 
     <img id="car"  class="item" src="car.png">
     <img id="ball" class="item" src="ball.png">
+    
+    <!-- 🔥 第二關專屬寵物 (一開始先隱藏) -->
+    <img id="cat"  class="item" src="cat.png" style="display: none;">
+    <img id="dog"  class="item" src="dog.png" style="display: none;">
 
     <div class="hotspot" id="hs-sun"></div>
     <div class="hotspot" id="hs-door"></div>
@@ -361,6 +366,7 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <div class="hotspot" id="hs-car"></div>
     <div class="hotspot" id="hs-ball"></div>
     
+    <!-- 公園專屬熱區 (稍後由 JS 定義位置) -->
     <div class="hotspot" id="hs-slide"></div>
     <div class="hotspot" id="hs-tree"></div>
     <div class="hotspot" id="hs-swing"></div>
@@ -402,7 +408,7 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 </div>
 
 <script>
-// 🔥 新增一個小旗標，用來判斷現在是不是在第二關
+// 小旗標，用來判斷現在是不是在第二關
 let isStage2 = false;
 
 const HOTSPOT_DEFS = {
@@ -412,37 +418,24 @@ const HOTSPOT_DEFS = {
     "hs-window":      { left: 82, top: 8,  width: 17, height: 45 },
     "hs-cloud":       { left: 36, top: 0,  width: 22, height: 18 },
     
-    // ═══════════════════════════════════════════════
-    // 玩具熱區：精準配合全新 CSS 排列與大小
-    // ═══════════════════════════════════════════════
     "hs-bear":        { left: 48, top: 69, width: 15, height: 27 }, // 大藍熊 (0.25)
-    "hs-bear-green":  { left: 69, top: 80, width: 10, height: 18 }, // 🔥 修正：微調配合 0.15 縮小尺寸
-    "hs-bear-yellow": { left: 72, top: 49, width: 10, height: 18 }, // 🔥 新增：黃色熊熱區 (對齊 0.15 尺寸)
+    "hs-bear-green":  { left: 69, top: 80, width: 10, height: 18 }, // 綠熊
+    "hs-bear-yellow": { left: 72, top: 49, width: 10, height: 18 }, // 黃熊
     "hs-car":         { left: 29, top: 69, width: 10, height: 10 }, 
     "hs-ball":        { left: 89, top: 87, width: 10, height: 13 }  
 };
 
 const questions = [
-    // ═══════════════════════════════════════════════
-    // STAGE 1: Vocabulary (環境單字 - 點擊題)
-    // ═══════════════════════════════════════════════
     { type: "tap", question: "Can you find the sun? ", audio: "q4.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
     { type: "tap", question: "Where is the door? ", audio: "q5.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
     { type: "tap", question: "Can you find the books? ", audio: "q6.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
     { type: "tap", question: "Where is the window? ", audio: "q7.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
     { type: "tap", question: "Can you find the cloud? ", audio: "q8.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
     
-    // ═══════════════════════════════════════════════
-    // STAGE 2: Color (顏色特徵 - 點擊題)
-    // 💡 綠色熊、黃色熊雙重夾擊！完美測試孩子是否真的聽懂 BLUE
-    // ═══════════════════════════════════════════════
     { type: "tap", question: "Touch the BLUE bear! ", audio: "q9.mp3", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
     { type: "tap", question: "Can you find the RED ball? ", audio: "q10.mp3", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
     { type: "tap", question: "Where is the YELLOW window? ", audio: "q11.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
     
-    // ═══════════════════════════════════════════════
-    // STAGE 3: Position (空間指令 - 拖曳題)
-    // ═══════════════════════════════════════════════
     { type: "drag", itemId: "bear", question: "Can you put the BLUE bear on the rug?", audio: "q1.mp3", zone: { left: 0, right: 50, top: 55, bottom: 100 }, snap: { left: 8, top: 68 } },
     { type: "drag", itemId: "car", question: "Can you put the car on the table?", audio: "q2.mp3", zone: { left: 44, right: 70, top: 45, bottom: 68 }, snap: { left: 53, top: 54 } },
     { type: "drag", itemId: "ball", question: "Can you put the ball in front of the table?", audio: "q3.mp3", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
@@ -532,13 +525,13 @@ function loadQuestion(n) {
     tapLocked = false;
 
     if (n >= questions.length) {
-        // 🔥 外掛攔截點：如果第一關跑完，啟動前往公園的轉場！
+        // 🔥 外掛攔截點：第一關跑完觸發轉場
         if (!isStage2) {
             document.getElementById("next-stage-screen").style.display = "flex";
             return;
         }
 
-        // 第二關跑完，走原本的結束邏輯
+        // 第二關跑完結束
         document.body.classList.add("finished");
         document.querySelector(".header-area").style.display = "none";
         finishEl.style.display   = "flex";
@@ -557,11 +550,8 @@ function loadQuestion(n) {
     qAttempts  = 0;
 
     if (q.type === "drag") {
-        // 🔥 圖層穿透：包含黃色熊在內，全玩具熱區在拖曳題時關閉滑鼠事件
-        ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"].forEach(id => {
-            const hsEl = document.getElementById(id);
-            if (hsEl) hsEl.style.pointerEvents = "none";
-        });
+        // 🔥 動態優化：拖曳題時關閉「所有」透明熱區的干擾
+        document.querySelectorAll(".hotspot").forEach(hsEl => hsEl.style.pointerEvents = "none");
 
         const el = document.getElementById(q.itemId);
         if (el) {
@@ -688,7 +678,6 @@ applyHotspotPositions();
 function recordResult(n) {
     const seconds = ((Date.now() - qStartTime) / 1000).toFixed(1);
     qResults.push({
-        // 加上是哪個場景的註記，報表會更清楚
         question: (isStage2 ? "🛝 " : "🏠 ") + questions[n].question,
         seconds:  parseFloat(seconds),
         attempts: qAttempts,
@@ -717,7 +706,6 @@ dataBtn.addEventListener("click", () => {
     qResults.forEach((r, idx) => {
         totalSeconds += r.seconds;
         totalAttempts += r.attempts;
-        // 簡單判定是否為 drag
         if (r.question.includes("put")) dragAttempts += r.attempts;
     });
 
@@ -796,8 +784,8 @@ function resizeItems() {
     const bgImg = scene.querySelector(".bg");
     const h = bgImg.naturalWidth > 0 ? w * (bgImg.naturalHeight / bgImg.naturalWidth) : scene.offsetHeight;
     
-    // 🔥 完美保留你微調過的 0.08 比例！
-    const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12 };
+    // 🔥 保留 0.08 比例，並加入貓狗大小 (可依需求調整 0.12/0.15)
+    const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12, cat: 0.12, dog: 0.15 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -820,7 +808,7 @@ document.getElementById("start-btn").addEventListener("click", () => {
 
 // ═══════════════════════════════════════════════
 // 🔥 終極外掛：公園關卡 (Stage 2) 獨立設定區
-// 不碰第一關，進入第二關時「隱藏舊玩具」，專心點擊背景！
+// 不碰第一關，進入第二關時隱藏房間玩具，啟動專屬寵物！
 // ═══════════════════════════════════════════════
 const HOTSPOT_DEFS_PARK = {
     "hs-sun":     { left: 5,  top: 5,  width: 12, height: 20 }, // 太陽
@@ -832,15 +820,19 @@ const HOTSPOT_DEFS_PARK = {
     "hs-sandbox": { left: 73, top: 54, width: 24, height: 16 }  // 沙坑
 };
 
-// 💡 目前全數設定為 tap (點擊題)，專注於背景景物
 const questions_park = [
+    // --- 環境單字點擊題 ---
     { type: "tap", question: "Can you find the slide? 🛝", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox"] },
     { type: "tap", question: "Where is the swing? 🎡", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox"] },
     { type: "tap", question: "Can you find the seesaw? ⚖️", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox"] },
     { type: "tap", question: "Where is the sandbox? ⏳", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree"] },
     { type: "tap", question: "Can you find the big tree? 🌳", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud"] },
-    { type: "tap", question: "Where is the sun? ☀️", audio: "p_sun.mp3", targets: ["hs-sun"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-cloud"] },
-    { type: "tap", question: "Can you find the cloud? ☁️", audio: "p_cloud.mp3", targets: ["hs-cloud"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun"] }
+    
+    // --- 🔥 寵物專屬空間拖曳題 ---
+    // 1. 把貓咪放在蹺蹺板上 (Zone與吸附點已對齊公園場景)
+    { type: "drag", itemId: "cat", question: "Can you put the cat ON the seesaw? 🐈", audio: "p_drag_cat.mp3", zone: { left: 20, right: 50, top: 40, bottom: 70 }, snap: { left: 36, top: 45 } },
+    // 2. 把狗狗放在大樹下 
+    { type: "drag", itemId: "dog", question: "Can you put the dog UNDER the big tree? 🐕", audio: "p_drag_dog.mp3", zone: { left: 10, right: 40, top: 35, bottom: 70 }, snap: { left: 25, top: 50 } }
 ];
 
 document.getElementById("next-stage-btn").addEventListener("click", () => {
@@ -851,20 +843,34 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
     // 1. 替換成公園背景圖
     document.getElementById("game-bg").src = "park.jpeg";
     
-    // 2. 暴力覆寫題目陣列
+    // 2. 覆寫為公園專屬題目陣列
     questions.length = 0;
     questions.push(...questions_park);
     
-    // 3. 替換熱區坐標並重新套用
+    // 3. 替換背景熱區
     Object.assign(HOTSPOT_DEFS, HOTSPOT_DEFS_PARK);
     applyHotspotPositions();
     
-    // 4. 🔥 關鍵：把第一關的熊、車子、球全部隱藏，保持公園乾淨！
+    // 4. 🔥 隱藏房間的舊玩具
     document.querySelectorAll(".item").forEach(el => {
         el.style.display = "none";
+        // 清除先前可能被賦予的過關狀態
+        el.classList.remove("draggable", "jump");
+        el.style.cursor = "";
     });
     
-    // 重新建置上方的答題點點並載入公園第一題
+    // 5. 🔥 喚醒公園專屬寵物，並放到草地左右側！
+    const catEl = document.getElementById("cat");
+    catEl.style.display = "block";
+    catEl.style.left = "15%";
+    catEl.style.top = "75%";
+    
+    const dogEl = document.getElementById("dog");
+    dogEl.style.display = "block";
+    dogEl.style.left = "75%";
+    dogEl.style.top = "75%";
+    
+    // 重新部署畫面上方點點並載入公園第一題
     buildDots();
     resizeItems();
     loadQuestion(0);
