@@ -92,7 +92,7 @@ h1 {
     50% { transform: scale(1.08, 0.92) translateY(-30px); }
 }
 
-/* ── 玩具在房間的初始位置（三隻熊漂亮排排站） ── */
+/* ── 玩具在房間的初始位置 ── */
 #bear        { left: 42%; top: 70%; }
 #bear_green  { left: 70%; top: 81%; } 
 #bear_yellow { left: 73%; top: 50%; } 
@@ -344,14 +344,12 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 <div class="scene" id="scene">
     <img class="bg" id="game-bg" src="room_background.png">
 
-    <!-- 第一關專屬玩具 -->
     <img id="bear"        class="item" src="bear_v3.png">
     <img id="bear_green"  class="item" src="bear_green.png">
     <img id="bear_yellow" class="item" src="bear_yellow.png"> 
     <img id="car"  class="item" src="car.png">
     <img id="ball" class="item" src="ball.png">
     
-    <!-- 🔥 第二關專屬寵物 (一開始先隱藏) -->
     <img id="cat"  class="item" src="cat.png" style="display: none;">
     <img id="dog"  class="item" src="dog.png" style="display: none;">
 
@@ -366,12 +364,13 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <div class="hotspot" id="hs-car"></div>
     <div class="hotspot" id="hs-ball"></div>
     
-    <!-- 公園專屬熱區 (稍後由 JS 定義位置) -->
     <div class="hotspot" id="hs-slide"></div>
     <div class="hotspot" id="hs-tree"></div>
     <div class="hotspot" id="hs-swing"></div>
     <div class="hotspot" id="hs-seesaw"></div>
     <div class="hotspot" id="hs-sandbox"></div>
+    
+    <div class="hotspot" id="hs-dog"></div>
 </div>
 
 <div id="message"></div>
@@ -784,7 +783,7 @@ function resizeItems() {
     const bgImg = scene.querySelector(".bg");
     const h = bgImg.naturalWidth > 0 ? w * (bgImg.naturalHeight / bgImg.naturalWidth) : scene.offsetHeight;
     
-    // 🔥 保留 0.08 比例，並加入貓狗大小 (可依需求調整 0.12/0.15)
+    // 🔥 保留 0.08 比例，並加入貓狗大小 (可依需求調整尺寸 0.12 / 0.15)
     const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12, cat: 0.12, dog: 0.15 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
@@ -808,7 +807,6 @@ document.getElementById("start-btn").addEventListener("click", () => {
 
 // ═══════════════════════════════════════════════
 // 🔥 終極外掛：公園關卡 (Stage 2) 獨立設定區
-// 不碰第一關，進入第二關時隱藏房間玩具，啟動專屬寵物！
 // ═══════════════════════════════════════════════
 const HOTSPOT_DEFS_PARK = {
     "hs-sun":     { left: 5,  top: 5,  width: 12, height: 20 }, // 太陽
@@ -817,22 +815,25 @@ const HOTSPOT_DEFS_PARK = {
     "hs-tree":    { left: 20, top: 2,  width: 30, height: 52 }, // 大樹
     "hs-swing":   { left: 50, top: 27, width: 23, height: 32 }, // 鞦韆
     "hs-seesaw":  { left: 35, top: 56, width: 23, height: 16 }, // 蹺蹺板
-    "hs-sandbox": { left: 73, top: 54, width: 24, height: 16 }  // 沙坑
+    "hs-sandbox": { left: 73, top: 54, width: 24, height: 16 }, // 沙坑
+    
+    // 🔥 新增：狗狗專屬隱形點擊熱區（完美覆蓋在狗狗身上）
+    "hs-dog":     { left: 74, top: 74, width: 16, height: 22 }
 };
 
 const questions_park = [
     // --- 環境單字點擊題 ---
-    { type: "tap", question: "Can you find the slide? 🛝", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox"] },
-    { type: "tap", question: "Where is the swing? 🎡", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox"] },
-    { type: "tap", question: "Can you find the seesaw? ⚖️", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox"] },
-    { type: "tap", question: "Where is the sandbox? ⏳", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree"] },
-    { type: "tap", question: "Can you find the big tree? 🌳", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud"] },
+    { type: "tap", question: "Can you find the slide? 🛝", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-dog"] },
+    { type: "tap", question: "Where is the swing? 🎡", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox","hs-dog"] },
+    { type: "tap", question: "Can you find the seesaw? ⚖️", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox","hs-dog"] },
+    { type: "tap", question: "Where is the sandbox? ⏳", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree","hs-dog"] },
+    { type: "tap", question: "Can you find the big tree? 🌳", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud","hs-dog"] },
     
-    // --- 🔥 寵物專屬空間拖曳題 ---
-    // 1. 把貓咪放在蹺蹺板上 (Zone與吸附點已對齊公園場景)
-    { type: "drag", itemId: "cat", question: "Can you put the cat ON the seesaw? 🐈", audio: "p_drag_cat.mp3", zone: { left: 20, right: 50, top: 40, bottom: 70 }, snap: { left: 36, top: 45 } },
-    // 2. 把狗狗放在大樹下 
-    { type: "drag", itemId: "dog", question: "Can you put the dog UNDER the big tree? 🐕", audio: "p_drag_dog.mp3", zone: { left: 10, right: 40, top: 35, bottom: 70 }, snap: { left: 25, top: 50 } }
+    // --- 🔥 狗狗尋找題 (Tap) 記得準備新音檔 p_find_dog.mp3 ---
+    { type: "tap", question: "Can you find the dog? 🐕", audio: "p_find_dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud"] },
+    
+    // --- 🔥 貓咪拖曳題 (Drag) 已經改為 IN the sandbox ---
+    { type: "drag", itemId: "cat", question: "Can you put the cat IN the sandbox? 🐈", audio: "p_drag_cat.mp3", zone: { left: 70, right: 98, top: 50, bottom: 85 }, snap: { left: 81, top: 58 } }
 ];
 
 document.getElementById("next-stage-btn").addEventListener("click", () => {
