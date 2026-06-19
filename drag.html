@@ -100,7 +100,7 @@ h1 {
 #ball        { left: 90%; top: 88%; }
 
 /* ── 🔥 新增：寵物在公園的預設 CSS 位置（解決放手失敗時飛走消失的 Bug） ── */
-#cat         { left: 15%; top: 75%; display: none; }
+#cat         { left: 15%; top: 68%; display: none; }
 #dog         { left: 75%; top: 75%; display: none; }
 
 /* ── 圈選熱區 ── */
@@ -786,7 +786,7 @@ function resizeItems() {
     // 🔥 修正修正點 3：高度直接採用容器的 offsetHeight，與 pointerup 完美對齊
     const h = scene.offsetHeight;
 
-    const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12, cat: 0.12, dog: 0.15 };
+    const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12, cat: 0.1, dog: 0.15 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -834,7 +834,7 @@ const questions_park = [
     { type: "tap", question: "Can you find the dog?", audio: "p_find_dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud"] },
     
     // 🐈 貓咪拖曳題：完美對齊沙坑百分比區間，Hitbox 容錯率大放寬！
-    { type: "drag", itemId: "cat", question: "Can you put the cat IN the sandbox?", audio: "p_drag_cat.mp3", zone: { left: 68, right: 100, top: 48, bottom: 95 }, snap: { left: 81, top: 58 } }
+    { type: "drag", itemId: "cat", question: "Can you put the cat IN the sandbox?", audio: "p_drag_cat.mp3", zone: { left: 68, right: 100, top: 48, bottom: 95 }, snap: { left: 81, top: 47 } }
 ];
 
 document.getElementById("next-stage-btn").addEventListener("click", () => {
