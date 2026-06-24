@@ -71,12 +71,10 @@ h1 {
     user-select: none;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: block; 
-    -webkit-user-drag: none; /* 禁用 Webkit 瀏覽器的內建圖片拖拽行為 */
-    user-drag: none;         /* 禁用標準瀏覽器的內建圖片拖拽行為 */
+    -webkit-user-drag: none; 
+    user-drag: none;         
 }
-.item.draggable {
-    cursor: grab;
-}
+.item.draggable { cursor: grab; }
 .item.dragging {
     transform: scale(1.15);
     filter: drop-shadow(0 10px 15px rgba(14, 165, 233, 0.4));
@@ -92,16 +90,45 @@ h1 {
     50% { transform: scale(1.08, 0.92) translateY(-30px); }
 }
 
-/* ── 玩具在房間的初始位置（三隻熊漂亮排排站） ── */
+/* ── 玩具在房間的初始位置 ── */
 #bear        { left: 42%; top: 70%; }
 #bear_green  { left: 70%; top: 81%; } 
 #bear_yellow { left: 73%; top: 50%; } 
 #car         { left: 30%; top: 68%; }
 #ball        { left: 90%; top: 88%; }
 
-/* ── 🔥 新增：寵物在公園的預設 CSS 位置（解決放手失敗時飛走消失的 Bug） ── */
+/* ── 寵物在公園的預設 CSS 位置 ── */
 #cat         { left: 15%; top: 68%; display: none; }
 #dog         { left: 75%; top: 75%; display: none; }
+
+/* ── 🌟 新增：導護員小男孩與嘴巴動畫 ── */
+#guide-character {
+    position: absolute;
+    left: 2%;       /* 放在畫面左下角 */
+    bottom: -2%;    /* 微調讓他貼著畫面底端 */
+    width: 18%;     /* 小男孩佔畫面的比例 */
+    z-index: 200;   /* 確保他在最上層 */
+    pointer-events: none; /* 不會擋住後面的玩具點擊 */
+}
+#guide-body { width: 100%; display: block; }
+
+#char-mouth {
+    position: absolute;
+    /* 👇 這裡的數據你需要自己微調，對齊小人的臉部 👇 */
+    width: 32%;     
+    left: 34%;      
+    top: 36%;       
+    transform-origin: center;
+}
+
+/* 嘴巴開合動畫：只縮放 Y 軸，製造講話感 */
+@keyframes talk {
+    0%, 100% { transform: scaleY(1); }
+    50%      { transform: scaleY(0.2); }
+}
+.talking {
+    animation: talk 0.2s infinite; /* 無限快速開合 */
+}
 
 /* ── 圈選熱區 ── */
 .hotspot {
@@ -348,6 +375,11 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 <div class="scene" id="scene">
     <img class="bg" id="game-bg" src="room_background.png">
 
+    <div id="guide-character">
+        <img src="guide_base.png" id="guide-body">
+        <img src="guide_mouth.png" id="char-mouth">
+    </div>
+
     <img id="bear"        class="item" src="bear_v3.png">
     <img id="bear_green"  class="item" src="bear_green.png">
     <img id="bear_yellow" class="item" src="bear_yellow.png"> 
@@ -373,7 +405,6 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <div class="hotspot" id="hs-swing"></div>
     <div class="hotspot" id="hs-seesaw"></div>
     <div class="hotspot" id="hs-sandbox"></div>
-    
     <div class="hotspot" id="hs-dog"></div>
 </div>
 
@@ -446,26 +477,28 @@ const questions = [
 const CORRECT_SOUNDS = ["correct1.mp3", "correct2.mp3", "correct3.mp3"];
 const WRONG_SOUNDS   = ["wrong1.mp3"];
 
+// ── 🌟 新增：會觸發說話動畫的播放函數 ──
 function playSound(file) {
     if (!file || file === "") return; 
     const audio = new Audio(file);
-    audio.play().catch(() => {}); 
+    const mouthEl = document.getElementById("char-mouth");
+
+    // 當語音開始播放，幫嘴巴加上 talking 動畫
+    audio.play().then(() => {
+        if(mouthEl) mouthEl.classList.add("talking");
+    }).catch(() => {}); 
+    
+    // 當語音播放結束，自動把 talking 動畫拿掉
+    audio.onended = () => {
+        if(mouthEl) mouthEl.classList.remove("talking");
+    };
 }
 
-function playCorrect() {
-    const file = CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)];
-    playSound(file);
-}
-
-function playWrong() {
-    const file = WRONG_SOUNDS[Math.floor(Math.random() * WRONG_SOUNDS.length)];
-    playSound(file);
-}
+function playCorrect() { playSound(CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)]); }
+function playWrong() { playSound(WRONG_SOUNDS[Math.floor(Math.random() * WRONG_SOUNDS.length)]); }
 
 function playQuestion(n) {
-    if (n < questions.length && questions[n].audio) {
-        playSound(questions[n].audio);
-    }
+    if (n < questions.length && questions[n].audio) { playSound(questions[n].audio); }
 }
 
 let currentQ   = 0;
@@ -486,18 +519,14 @@ const progressEl = document.getElementById("progress");
 function buildDots() {
     progressEl.innerHTML = "";
     questions.forEach((_, i) => {
-        const d = document.createElement("div");
-        d.className = "dot";
-        d.id = "dot" + i;
-        progressEl.appendChild(d);
+        const d = document.createElement("div"); d.className = "dot"; d.id = "dot" + i; progressEl.appendChild(d);
     });
 }
 
 function updateDots(current) {
     questions.forEach((_, i) => {
         const dot = document.getElementById("dot" + i);
-        if (!dot) return;
-        dot.className = "dot";
+        if (!dot) return; dot.className = "dot";
         if (i < current)   dot.classList.add("done");
         if (i === current) dot.classList.add("active");
     });
@@ -506,140 +535,72 @@ function updateDots(current) {
 function applyHotspotPositions() {
     Object.entries(HOTSPOT_DEFS).forEach(([id, pos]) => {
         const el = document.getElementById(id);
-        if (el) {
-            el.style.left   = pos.left   + "%";
-            el.style.top    = pos.top    + "%";
-            el.style.width  = pos.width  + "%";
-            el.style.height = pos.height + "%";
-        }
+        if (el) { el.style.left = pos.left + "%"; el.style.top = pos.top + "%"; el.style.width = pos.width + "%"; el.style.height = pos.height + "%"; }
     });
 }
 
 function loadQuestion(n) {
-    document.querySelectorAll(".hotspot").forEach(el => {
-        el.classList.remove("active", "correct", "wrong");
-        el.style.pointerEvents = "auto"; 
-    });
-    
+    document.querySelectorAll(".hotspot").forEach(el => { el.classList.remove("active", "correct", "wrong"); el.style.pointerEvents = "auto"; });
     document.querySelectorAll(".item").forEach(el => el.classList.remove("draggable"));
-    
-    msgEl.textContent = "";
-    tapLocked = false;
+    msgEl.textContent = ""; tapLocked = false;
 
     if (n >= questions.length) {
-        if (!isStage2) {
-            document.getElementById("next-stage-screen").style.display = "flex";
-            return;
-        }
-
-        document.body.classList.add("finished");
-        document.querySelector(".header-area").style.display = "none";
-        finishEl.style.display   = "flex";
-        dataBtn.style.display    = "flex";
-        updateDots(questions.length);
-        return;
+        if (!isStage2) { document.getElementById("next-stage-screen").style.display = "flex"; return; }
+        document.body.classList.add("finished"); document.querySelector(".header-area").style.display = "none";
+        finishEl.style.display = "flex"; dataBtn.style.display = "flex"; updateDots(questions.length); return;
     }
 
-    const q = questions[n];
-    questionEl.textContent   = q.question;
-    updateDots(n);
-    
+    const q = questions[n]; questionEl.textContent = q.question; updateDots(n);
     setTimeout(() => playQuestion(n), 300);
-
-    qStartTime = Date.now();
-    qAttempts  = 0;
+    qStartTime = Date.now(); qAttempts = 0;
 
     if (q.type === "drag") {
         document.querySelectorAll(".hotspot").forEach(hsEl => hsEl.style.pointerEvents = "none");
-
         const el = document.getElementById(q.itemId);
-        if (el) {
-            if (el.style.cursor !== "default") {
-                el.classList.add("draggable");
-            }
-        }
+        if (el) { if (el.style.cursor !== "default") { el.classList.add("draggable"); } }
     } else {
-        [...q.targets, ...q.decoys].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.classList.add("active");
-        });
+        [...q.targets, ...q.decoys].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add("active"); });
     }
 }
 
-document.getElementById("replay-btn").addEventListener("click", () => {
-    playQuestion(currentQ);
-});
+document.getElementById("replay-btn").addEventListener("click", () => { playQuestion(currentQ); });
 
 // ── 拖曳邏輯 ──
 document.querySelectorAll(".item").forEach(item => {
     item.addEventListener("pointerdown", (e) => {
-        const q = questions[currentQ];
-        if (!q || q.type !== "drag") return;
-        if (item.id !== q.itemId) return;
+        const q = questions[currentQ]; if (!q || q.type !== "drag") return; if (item.id !== q.itemId) return;
         if (item.style.cursor === "default") return;
-
-        dragging   = true;
-        activeItem = item;
-        offsetX    = e.offsetX;
-        offsetY    = e.offsetY;
-        item.classList.add("dragging"); 
-        item.setPointerCapture(e.pointerId);
+        dragging = true; activeItem = item; offsetX = e.offsetX; offsetY = e.offsetY; item.classList.add("dragging"); item.setPointerCapture(e.pointerId);
     });
 });
 
 window.addEventListener("pointermove", (e) => {
     if (!dragging || !activeItem) return;
     const rect = scene.getBoundingClientRect();
-    activeItem.style.left = (e.clientX - rect.left - offsetX) + "px";
-    activeItem.style.top  = (e.clientY - rect.top  - offsetY) + "px";
+    activeItem.style.left = (e.clientX - rect.left - offsetX) + "px"; activeItem.style.top  = (e.clientY - rect.top  - offsetY) + "px";
 });
 
 window.addEventListener("pointerup", () => {
     if (!dragging || !activeItem) return;
-    dragging = false;
-    activeItem.classList.remove("dragging");
+    dragging = false; activeItem.classList.remove("dragging");
 
     const q    = questions[currentQ];
     const rect = scene.getBoundingClientRect();
-    const W = rect.width;
-    
-    // 🔥 修正修正點 1：直接使用 W 和容器實際渲染高度 H，100% 消除因圖片素材解析度不同產生的 Y 軸判定落差
-    const H = rect.height;
+    const W = rect.width; const H = rect.height;
 
-    const itemL = parseFloat(activeItem.style.left) || 0;
-    const itemT = parseFloat(activeItem.style.top)  || 0;
-    const cx = ((itemL + activeItem.offsetWidth  / 2) / W) * 100;
-    const cy = ((itemT + activeItem.offsetHeight / 2) / H) * 100;
-
-    const z = q.zone;
-    const inZone = cx > z.left && cx < z.right && cy > z.top && cy < z.bottom;
+    const itemL = parseFloat(activeItem.style.left) || 0; const itemT = parseFloat(activeItem.style.top)  || 0;
+    const cx = ((itemL + activeItem.offsetWidth  / 2) / W) * 100; const cy = ((itemT + activeItem.offsetHeight / 2) / H) * 100;
+    const z = q.zone; const inZone = cx > z.left && cx < z.right && cy > z.top && cy < z.bottom;
 
     if (inZone) {
-        const targetToy = activeItem; 
-        targetToy.style.transition = "left 0.3s ease, top 0.3s ease";
-        targetToy.style.left   = (q.snap.left / 100 * W) + "px";
-        targetToy.style.top    = (q.snap.top  / 100 * H) + "px";
-        targetToy.style.cursor = "default";
-        targetToy.classList.remove("draggable");
-        
-        recordResult(currentQ);
-        playCorrect();
-        msgEl.innerHTML = "⭐ Great job!";
-        
+        const targetToy = activeItem; targetToy.style.transition = "left 0.3s ease, top 0.3s ease";
+        targetToy.style.left = (q.snap.left / 100 * W) + "px"; targetToy.style.top = (q.snap.top  / 100 * H) + "px";
+        targetToy.style.cursor = "default"; targetToy.classList.remove("draggable");
+        recordResult(currentQ); playCorrect(); msgEl.innerHTML = "⭐ Great job!";
         setTimeout(() => { targetToy.classList.add("jump"); }, 150);
-
-        setTimeout(() => { 
-            targetToy.classList.remove("jump");
-            currentQ++; 
-            loadQuestion(currentQ); 
-        }, 1100);
+        setTimeout(() => { targetToy.classList.remove("jump"); currentQ++; loadQuestion(currentQ); }, 1100);
     } else {
-        // 🔥 修正點 2：因為在 CSS 頂部加了貓狗的預設位置，這裡清空後會滑順地回彈到公園起點，不會飛走消失！
-        activeItem.style.left = "";
-        activeItem.style.top  = "";
-        qAttempts++;
-        playWrong();
-        msgEl.innerHTML = "❌ Try again!";
+        activeItem.style.left = ""; activeItem.style.top  = ""; qAttempts++; playWrong(); msgEl.innerHTML = "❌ Try again!";
     }
     activeItem = null;
 });
@@ -647,165 +608,73 @@ window.addEventListener("pointerup", () => {
 // ── 圈選邏輯 ──
 document.querySelectorAll(".hotspot").forEach(hs => {
     hs.addEventListener("pointerdown", (e) => {
-        e.stopPropagation();
-        const q = questions[currentQ];
-        if (!q || q.type !== "tap") return;
-        if (tapLocked) return;
-
+        e.stopPropagation(); const q = questions[currentQ]; if (!q || q.type !== "tap") return; if (tapLocked) return;
         const isCorrect = q.targets.includes(hs.id);
         if (isCorrect) {
-            tapLocked = true;
-            hs.classList.add("correct");
-            recordResult(currentQ);
-            playCorrect();
-            msgEl.innerHTML = "⭐ Great job!";
+            tapLocked = true; hs.classList.add("correct"); recordResult(currentQ); playCorrect(); msgEl.innerHTML = "⭐ Great job!";
             setTimeout(() => { currentQ++; loadQuestion(currentQ); }, 900);
         } else {
-            hs.classList.add("wrong");
-            qAttempts++;
-            playWrong();
-            msgEl.innerHTML = "❌ Try again!";
-            setTimeout(() => {
-                hs.classList.remove("wrong");
-                msgEl.textContent = "";
-            }, 600);
+            hs.classList.add("wrong"); qAttempts++; playWrong(); msgEl.innerHTML = "❌ Try again!";
+            setTimeout(() => { hs.classList.remove("wrong"); msgEl.textContent = ""; }, 600);
         }
     });
 });
 
-buildDots();
-applyHotspotPositions();
+buildDots(); applyHotspotPositions();
 
 function recordResult(n) {
     const seconds = ((Date.now() - qStartTime) / 1000).toFixed(1);
-    qResults.push({
-        question: (isStage2 ? "🛝 " : "🏠 ") + questions[n].question,
-        seconds:  parseFloat(seconds),
-        attempts: qAttempts,
-    });
+    qResults.push({ question: (isStage2 ? "🛝 " : "🏠 ") + questions[n].question, seconds: parseFloat(seconds), attempts: qAttempts });
 }
 
 // ── 星星報表核心邏輯 ──
-const dataBtn   = document.getElementById("data-btn");
-const dataPanel = document.getElementById("data-panel");
-const dataTbody = document.getElementById("data-tbody");
-
-function getStars(num) {
-    let stars = "";
-    for (let i = 1; i <= 5; i++) { stars += i <= num ? "★" : "☆"; }
-    return stars;
-}
+const dataBtn   = document.getElementById("data-btn"); const dataPanel = document.getElementById("data-panel"); const dataTbody = document.getElementById("data-tbody");
+function getStars(num) { let stars = ""; for (let i = 1; i <= 5; i++) { stars += i <= num ? "★" : "☆"; } return stars; }
 
 dataBtn.addEventListener("click", () => {
-    finishEl.style.display = "none";
-    dataTbody.innerHTML = "";
-    
-    let totalSeconds = 0;
-    let totalAttempts = 0;
-    let dragAttempts = 0;
-    
-    qResults.forEach((r, idx) => {
-        totalSeconds += r.seconds;
-        totalAttempts += r.attempts;
-        if (r.question.includes("put")) dragAttempts += r.attempts;
-    });
-
-    const totalQuestions = qResults.length || 1;
-    const avgTime = totalSeconds / totalQuestions;
-
-    let vocRating = 5;
-    if (totalAttempts > 0 && totalAttempts <= 2) vocRating = 4;
-    else if (totalAttempts > 2 && totalAttempts <= 4) vocRating = 3;
-    else if (totalAttempts > 4) vocRating = 2;
-
+    finishEl.style.display = "none"; dataTbody.innerHTML = "";
+    let totalSeconds = 0, totalAttempts = 0, dragAttempts = 0;
+    qResults.forEach((r, idx) => { totalSeconds += r.seconds; totalAttempts += r.attempts; if (r.question.includes("put")) dragAttempts += r.attempts; });
+    const avgTime = totalSeconds / (qResults.length || 1);
+    let vocRating = 5; if (totalAttempts > 0 && totalAttempts <= 2) vocRating = 4; else if (totalAttempts > 2 && totalAttempts <= 4) vocRating = 3; else if (totalAttempts > 4) vocRating = 2;
     let listeningRating = vocRating; 
+    let speedRating = 5; if (avgTime > 3 && avgTime <= 6) speedRating = 4; else if (avgTime > 6 && avgTime <= 10) speedRating = 3; else if (avgTime > 10) speedRating = 2;
+    let directionRating = 5; if (dragAttempts === 1) directionRating = 4; else if (dragAttempts > 1 && dragAttempts <= 3) directionRating = 3; else if (dragAttempts > 3) directionRating = 2;
 
-    let speedRating = 5;
-    if (avgTime > 3 && avgTime <= 6) speedRating = 4;
-    else if (avgTime > 6 && avgTime <= 10) speedRating = 3;
-    else if (avgTime > 10) speedRating = 2;
-
-    let directionRating = 5;
-    if (dragAttempts === 1) directionRating = 4;
-    else if (dragAttempts > 1 && dragAttempts <= 3) directionRating = 3;
-    else if (dragAttempts > 3) directionRating = 2;
-
-    const reportHeader = document.querySelector('.report-header');
-    reportHeader.innerHTML = `
+    document.querySelector('.report-header').innerHTML = `
         <h2>📝 幼兒英語聽力與認知 analysis</h2>
         <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
         <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin-top: 15px; border: 1px solid #e2e8f0; text-align: left;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
-                <span style="font-weight: bold; color: #475569;">Listening Skills</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(listeningRating)}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
-                <span style="font-weight: bold; color: #475569;">Vocabulary</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(vocRating)}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
-                <span style="font-weight: bold; color: #475569;">Response Speed</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(speedRating)}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 15px;">
-                <span style="font-weight: bold; color: #475569;">Following Directions</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(directionRating)}</span>
-            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;"> <span style="font-weight: bold; color: #475569;">Listening Skills</span> <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(listeningRating)}</span> </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;"> <span style="font-weight: bold; color: #475569;">Vocabulary</span> <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(vocRating)}</span> </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;"> <span style="font-weight: bold; color: #475569;">Response Speed</span> <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(speedRating)}</span> </div>
+            <div style="display: flex; justify-content: space-between; font-size: 15px;"> <span style="font-weight: bold; color: #475569;">Following Directions</span> <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(directionRating)}</span> </div>
         </div>
-        <div style="margin-top: 20px; padding: 12px; background: rgba(239, 71, 111, 0.08); border-radius: 12px; border: 1px dashed #ef476f;">
-            <div style="font-size: 13px; color: #64748b; font-weight: bold; text-transform: uppercase;">Recommended Level</div>
-            <div style="font-weight: 900; color: #ef476f; font-size: 26px; margin-top: 4px; letter-spacing: 1px;">Starter B</div>
-        </div>
-    `;
-
+        <div style="margin-top: 20px; padding: 12px; background: rgba(239, 71, 111, 0.08); border-radius: 12px; border: 1px dashed #ef476f;"> <div style="font-size: 13px; color: #64748b; font-weight: bold; text-transform: uppercase;">Recommended Level</div> <div style="font-weight: 900; color: #ef476f; font-size: 26px; margin-top: 4px; letter-spacing: 1px;">Starter B</div> </div> `;
     qResults.forEach(r => {
-        const tr = document.createElement("tr");
-        let statusHtml = r.attempts === 0 ? `<span class="badge perfect">錯誤 0 次</span>` : `<span class="badge learning">錯誤 ${r.attempts} 次</span>`;
-        let speedIcon = r.seconds < 3 ? '⚡' : (r.seconds < 6 ? '👍' : '🐢');
-        tr.innerHTML = `
-            <td style="font-weight: 700;">${r.question}</td>
-            <td><span class="speed">${speedIcon} ${r.seconds}s</span></td>
-            <td>${statusHtml}</td>
-        `;
+        const tr = document.createElement("tr"); let statusHtml = r.attempts === 0 ? `<span class="badge perfect">錯誤 0 次</span>` : `<span class="badge learning">錯誤 ${r.attempts} 次</span>`; let speedIcon = r.seconds < 3 ? '⚡' : (r.seconds < 6 ? '👍' : '🐢');
+        tr.innerHTML = ` <td style="font-weight: 700;">${r.question}</td> <td><span class="speed">${speedIcon} ${r.seconds}s</span></td> <td>${statusHtml}</td> `;
         dataTbody.appendChild(tr);
     });
     dataPanel.classList.add("show");
 });
 
-document.getElementById("close-btn").addEventListener("click", () => {
-    dataPanel.classList.remove("show");
-    finishEl.style.display = "flex";
-});
-
-resizeItems();
+document.getElementById("close-btn").addEventListener("click", () => { dataPanel.classList.remove("show"); finishEl.style.display = "flex"; });
 window.addEventListener("resize", resizeItems);
 
 function resizeItems() {
-    const w = scene.offsetWidth;
+    const w = scene.offsetWidth; const h = scene.offsetHeight;
     
-    // 🔥 修正修正點 3：高度直接採用容器的 offsetHeight，與 pointerup 完美對齊
-    const h = scene.offsetHeight;
-
-    const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12, cat: 0.9, dog: 0.15 };
+    // 🔥 把貓咪比例修回 0.12 囉！
+    const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12, cat: 0.12, dog: 0.15 };
     Object.entries(sizes).forEach(([id, ratio]) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const placed = el.style.cursor === "default";
-        el.style.width = (w * ratio) + "px";
-        if (placed) {
-            const q = questions.find(q => q.type === "drag" && q.itemId === id);
-            if (q) {
-                el.style.left = (q.snap.left / 100 * w) + "px";
-                el.style.top  = (q.snap.top  / 100 * h) + "px";
-            }
-        }
+        const el = document.getElementById(id); if (!el) return;
+        const placed = el.style.cursor === "default"; el.style.width = (w * ratio) + "px";
+        if (placed) { const q = questions.find(q => q.type === "drag" && q.itemId === id); if (q) { el.style.left = (q.snap.left / 100 * w) + "px"; el.style.top  = (q.snap.top  / 100 * h) + "px"; } }
     });
 }
 
-document.getElementById("start-btn").addEventListener("click", () => {
-    document.getElementById("start-screen").style.display = "none";
-    loadQuestion(0);
-});
+document.getElementById("start-btn").addEventListener("click", () => { document.getElementById("start-screen").style.display = "none"; loadQuestion(0); });
 
 // ═══════════════════════════════════════════════
 // 🔥 終極外掛：公園關卡 (Stage 2) 獨立設定區
@@ -818,8 +687,6 @@ const HOTSPOT_DEFS_PARK = {
     "hs-swing":   { left: 50, top: 27, width: 23, height: 32 }, 
     "hs-seesaw":  { left: 35, top: 56, width: 23, height: 16 }, 
     "hs-sandbox": { left: 73, top: 54, width: 24, height: 16 }, 
-    
-    // 狗狗專屬隱形點擊熱區
     "hs-dog":     { left: 74, top: 74, width: 16, height: 22 }
 };
 
@@ -829,48 +696,24 @@ const questions_park = [
     { type: "tap", question: "Can you find the seesaw?", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox","hs-dog"] },
     { type: "tap", question: "Where is the sandbox?", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree","hs-dog"] },
     { type: "tap", question: "Can you find the big tree?", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud","hs-dog"] },
-    
-    // 狗狗尋找題 (Tap)
     { type: "tap", question: "Can you find the dog?", audio: "p_find_dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud"] },
-    
-    // 🐈 貓咪拖曳題：完美對齊沙坑百分比區間，Hitbox 容錯率大放寬！
     { type: "drag", itemId: "cat", question: "Can you put the cat IN the sandbox?", audio: "p_drag_cat.mp3", zone: { left: 68, right: 100, top: 48, bottom: 95 }, snap: { left: 81, top: 43 } }
 ];
 
 document.getElementById("next-stage-btn").addEventListener("click", () => {
     document.getElementById("next-stage-screen").style.display = "none";
-    isStage2 = true;
-    currentQ = 0;
+    isStage2 = true; currentQ = 0;
     
     document.getElementById("game-bg").src = "park.jpeg";
+    questions.length = 0; questions.push(...questions_park);
+    Object.assign(HOTSPOT_DEFS, HOTSPOT_DEFS_PARK); applyHotspotPositions();
     
-    questions.length = 0;
-    questions.push(...questions_park);
+    document.querySelectorAll(".item").forEach(el => { el.style.display = "none"; el.classList.remove("draggable", "jump"); el.style.cursor = ""; });
     
-    Object.assign(HOTSPOT_DEFS, HOTSPOT_DEFS_PARK);
-    applyHotspotPositions();
+    const catEl = document.getElementById("cat"); catEl.style.display = "block"; catEl.style.left = "15%"; catEl.style.top = "75%";
+    const dogEl = document.getElementById("dog"); dogEl.style.display = "block"; dogEl.style.left = "75%"; dogEl.style.top = "75%";
     
-    // 隱藏第一關的舊玩具
-    document.querySelectorAll(".item").forEach(el => {
-        el.style.display = "none";
-        el.classList.remove("draggable", "jump");
-        el.style.cursor = "";
-    });
-    
-    // 喚醒公園寵物並回到初始起點
-    const catEl = document.getElementById("cat");
-    catEl.style.display = "block";
-    catEl.style.left = "15%";
-    catEl.style.top = "75%";
-    
-    const dogEl = document.getElementById("dog");
-    dogEl.style.display = "block";
-    dogEl.style.left = "75%";
-    dogEl.style.top = "75%";
-    
-    buildDots();
-    resizeItems();
-    loadQuestion(0);
+    buildDots(); resizeItems(); loadQuestion(0);
 });
 </script>
 </body>
