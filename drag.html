@@ -484,12 +484,20 @@ function playSound(file) {
     if (!file || file === "") return; 
     const audio = new Audio(file);
     const mouthEl = document.getElementById("char-mouth");
-    audio.play().then(() => {
-        if(mouthEl) mouthEl.classList.add("talking");
-    }).catch(() => {}); 
+
+    // 不管音檔有沒有成功，先讓嘴巴動
+    if(mouthEl) mouthEl.classList.add("talking");
+
+    audio.play().catch(() => {}); 
+    
     audio.onended = () => {
         if(mouthEl) mouthEl.classList.remove("talking");
     };
+    
+    // 保險：5秒後強制停止
+    setTimeout(() => {
+        if(mouthEl) mouthEl.classList.remove("talking");
+    }, 5000);
 }
 
 function playCorrect() {
