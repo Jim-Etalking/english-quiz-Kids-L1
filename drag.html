@@ -104,9 +104,25 @@ h1 {
 #dog         { left: 75%; top: 75%; display: none; }
 
 /* ── 導護員小男孩 ── */
-#guide-character { position: absolute; left: -10%; bottom: 0%; width: 18%; z-index: 200; pointer-events: none; }
+#guide-character {
+    position: fixed;
+    left: calc(50% - min(100vw, 75dvh * 1456 / 816) / 2 - 5%);
+    bottom: 0%;
+    width: 10%;
+    z-index: 200;
+    pointer-events: none;
+}
+#guide-inner {          /* ← 新增一個內層來定位嘴巴 */
+    position: relative;
+}
 #guide-body { width: 100%; display: block; }
-#char-mouth { position: absolute; width: 15%; left: -2%; top: 30%; transform-origin: top center; }
+#char-mouth { 
+    position: absolute; 
+    width: 15%; 
+    left: 38%;      /* ← 臉的中間 */
+    top: 28%; 
+    transform-origin: top center; 
+}
 @keyframes talk { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.2); } }
 .talking { animation: talk 0.2s infinite; }
 
@@ -389,8 +405,10 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 </div>
 
 <div id="guide-character">
-    <img src="guide_base2.png" id="guide-body">
-    <img src="guide_mouth2.png" id="char-mouth">
+    <div id="guide-inner">
+        <img src="guide_base2.png" id="guide-body">
+        <img src="guide_mouth2.png" id="char-mouth">
+    </div>
 </div>
 
 <div id="message"></div>
