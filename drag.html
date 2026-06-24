@@ -118,13 +118,16 @@ h1 {
 #guide-body { width: 100%; display: block; }
 #char-mouth { 
     position: absolute; 
-    width: 50%; 
+    width: 15%; 
     left: 42%;      /* ← 臉的中間 */
     top: 30%; 
     transform-origin: top center; 
 }
-@keyframes talk { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.2); } }
-.talking { animation: talk 0.2s infinite; }
+@keyframes talk { 
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(3px); } 
+}
+.talking { animation: talk 0.15s infinite; }
 
 /* ── 圈選熱區 ── */
 .hotspot {
