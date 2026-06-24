@@ -104,9 +104,9 @@ h1 {
 #dog         { left: 75%; top: 75%; display: none; }
 
 /* ── 導護員小男孩 ── */
-#guide-character { position: absolute; left: -5%; bottom: 0%; width: 18%; z-index: 200; pointer-events: none; }
+#guide-character { position: absolute; left: -10%; bottom: 0%; width: 18%; z-index: 200; pointer-events: none; }
 #guide-body { width: 100%; display: block; }
-#char-mouth { position: absolute; width: 10%; left: 28%; top: 25%; transform-origin: top center; }
+#char-mouth { position: absolute; width: 15%; left: -2%; top: 30%; transform-origin: top center; }
 @keyframes talk { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.2); } }
 .talking { animation: talk 0.2s infinite; }
 
@@ -386,6 +386,11 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <div class="hotspot" id="hs-sandbox"></div>
     
     <div class="hotspot" id="hs-dog"></div>
+</div>
+
+<div id="guide-character">
+    <img src="guide_base2.png" id="guide-body">
+    <img src="guide_mouth2.png" id="char-mouth">
 </div>
 
 <div id="message"></div>
