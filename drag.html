@@ -778,12 +778,12 @@ document.querySelectorAll(".hotspot").forEach(hs => {
             }
         }
 
-        // 🐶 🔥 隨時點擊狗狗都會發出叫聲（單純發聲不跳躍）
+        // 🐶 隨時點擊狗狗都會發出叫聲
         if (hs.id === "hs-dog") {
             const dogAudio = new Audio("dog_yip.mp3");
             dogAudio.play().catch(() => {});
         }
-        // 🐈 🔥 你只要在這裡補上這 4 行即可！
+        // 🐈 隨時點擊貓咪都會發出叫聲
         if (hs.id === "hs-cat") {
             const catAudio = new Audio("cat_yip.mp3");
             catAudio.play().catch(() => {});
