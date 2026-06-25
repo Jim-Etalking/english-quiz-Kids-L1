@@ -783,6 +783,11 @@ document.querySelectorAll(".hotspot").forEach(hs => {
             const dogAudio = new Audio("dog_yip.mp3");
             dogAudio.play().catch(() => {});
         }
+        // 🐈 🔥 你只要在這裡補上這 4 行即可！
+        if (hs.id === "hs-cat") {
+            const catAudio = new Audio("cat_yip.mp3");
+            catAudio.play().catch(() => {});
+        }
 
         const q = questions[currentQ];
         if (!q || q.type !== "tap") return;
