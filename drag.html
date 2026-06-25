@@ -813,6 +813,11 @@ document.querySelectorAll(".hotspot").forEach(hs => {
         }
     });
 });
+// 🐈 貓咪圖片被點擊或抓起時，發出喵叫聲
+document.getElementById("cat").addEventListener("pointerdown", () => {
+    const catAudio = new Audio("cat_yip.mp3");
+    catAudio.play().catch(() => {});
+});
 
 buildDots();
 applyHotspotPositions();
