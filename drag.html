@@ -476,6 +476,7 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <div class="hotspot" id="hs-swing"></div>
     <div class="hotspot" id="hs-seesaw"></div>
     <div class="hotspot" id="hs-sandbox"></div>
+    <div class="hotspot" id="hs-cat"></div>
     
     <div class="hotspot" id="hs-dog"></div>
 </div>
@@ -964,23 +965,23 @@ const HOTSPOT_DEFS_PARK = {
     "hs-sandbox": { left: 73, top: 54, width: 24, height: 16 }, 
     
     // 狗狗專屬隱形點擊熱區
-    "hs-dog":     { left: 74, top: 74, width: 16, height: 22 }
+    "hs-dog":     { left: 74, top: 74, width: 16, height: 22 },
+    "hs-cat":     { left: 14, top: 74, width: 16, height: 22 }
 };
 
 const questions_park = [
-    { type: "tap", question: "Can you find the slide?", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-dog"] },
-    { type: "tap", question: "Where is the swing?", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox","hs-dog"] },
-    { type: "tap", question: "Can you find the seesaw?", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox","hs-dog"] },
-    { type: "tap", question: "Where is the sandbox?", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree","hs-dog"] },
-    { type: "tap", question: "Can you find the big tree?", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud","hs-dog"] },
+    { type: "tap", question: "Can you find the slide?", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-dog","hs-cat"] },
+    { type: "tap", question: "Where is the swing?", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox","hs-dog","hs-cat"] },
+    { type: "tap", question: "Can you find the seesaw?", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox","hs-dog","hs-cat"] },
+    { type: "tap", question: "Where is the sandbox?", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree","hs-dog","hs-cat"] },
+    { type: "tap", question: "Can you find the big tree?", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud","hs-dog","hs-cat"] },
     
     // 狗狗尋找題 (Tap)
-    { type: "tap", question: "Can you find the dog?", audio: "p_find_dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud"] },
+    { type: "tap", question: "Can you find the dog?", audio: "p_find_dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud","hs-cat"] },
     
-    // 🐈 貓咪拖曳題
+    // 🐈 貓咪拖曳題 (這題不用加 decoys)
     { type: "drag", itemId: "cat", question: "Can you put the cat IN the sandbox?", audio: "p_drag_cat.mp3", zone: { left: 68, right: 100, top: 48, bottom: 95 }, snap: { left: 81, top: 43 } }
 ];
-
 document.getElementById("next-stage-btn").addEventListener("click", () => {
     document.getElementById("next-stage-screen").style.display = "none";
     isStage2 = true;
