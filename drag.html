@@ -71,81 +71,63 @@ h1 {
     user-select: none;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: block; 
-    -webkit-user-drag: none; 
-    user-drag: none;         
+    -webkit-user-drag: none; /* 禁用 Webkit 瀏覽器的內建圖片拖拽行為 */
+    user-drag: none;         /* 禁用標準瀏覽器的內建圖片拖拽行為 */
 }
-.item.draggable { cursor: grab; }
+.item.draggable {
+    cursor: grab;
+}
 .item.dragging {
     transform: scale(1.15);
     filter: drop-shadow(0 10px 15px rgba(14, 165, 233, 0.4));
     cursor: grabbing;
     z-index: 100;
 }
-.item.jump { animation: toyJump 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 2; }
+.item.jump {
+    animation: toyJump 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 2;
+}
 
 @keyframes toyJump {
     0%, 100% { transform: scale(1) translateY(0); }
     50% { transform: scale(1.08, 0.92) translateY(-30px); }
 }
 
-/* ── 玩具在房間的初始位置 ── */
+/* ── 玩具在房間的初始位置（三隻熊漂亮排排站） ── */
 #bear        { left: 42%; top: 70%; }
 #bear_green  { left: 70%; top: 81%; } 
 #bear_yellow { left: 73%; top: 50%; } 
 #car         { left: 30%; top: 68%; }
 #ball        { left: 90%; top: 88%; }
+
+/* ── 🔥 新增：寵物在公園的預設 CSS 位置（解決放手失敗時飛走消失的 Bug） ── */
 #cat         { left: 15%; top: 68%; display: none; }
 #dog         { left: 75%; top: 75%; display: none; }
 
-/* ── 🌟 新增：翹翹板專屬 CSS ── */
-#seesaw-img {
-    position: absolute;
-    /* 👇 如果翹翹板出現的位置歪掉，請微調下面這三個數值 👇 */
-    left: 33%;    
-    top: 50%;     
-    width: 27%;   
-    z-index: 15;  /* 放在背景上面，熱區下面 */
-    pointer-events: none; /* 讓滑鼠穿透，確保點擊能精準打中底下的 hotspot */
-    
-    /* 搖晃的物理支點：底部正中央 */
-    transform-origin: center bottom; 
-}
-@keyframes rockSeesaw {
-    0%   { transform: rotate(0deg); }
-    25%  { transform: rotate(-10deg); } /* 往下壓 */
-    75%  { transform: rotate(10deg); }  /* 往上翹 */
-    100% { transform: rotate(0deg); }   /* 回正 */
-}
-.rocking {
-    animation: rockSeesaw 0.6s ease-in-out;
-}
-
 /* ── 導護員小男孩 ── */
 #guide-character {
-    position: absolute; 
-    left: 2%;         
-    bottom: -1%;      
-    width: 12%;       
-    z-index: 200;     
-    pointer-events: none; 
+    position: fixed;
+    left: calc(50% - min(100vw, 75dvh * 1456 / 816) / 2 - 5%);
+    bottom: 5%;
+    width: 10%;
+    z-index: 200;
+    pointer-events: none;
 }
-#guide-inner { position: relative; width: 100%; height: 100%; }
+#guide-inner {          /* ← 新增一個內層來定位嘴巴 */
+    position: relative;
+}
 #guide-body { width: 100%; display: block; }
 #char-mouth { 
     position: absolute; 
     width: 15%; 
-    left: 37%;      
-    top: 34%; 
-    transform-origin: bottom center; 
+    left: 43%;      /* ← 臉的中間 */
+    top: 31%; 
+    transform-origin: top center; 
 }
 @keyframes talk {
-    0%, 100% { transform: scaleY(1); }       
-    20%      { transform: scaleY(0.3); }     
-    40%      { transform: scaleY(0.8); }     
-    60%      { transform: scaleY(0.15); }    
-    80%      { transform: scaleY(0.6); }     
+    0%, 100% { transform: scaleY(1); }
+    50%      { transform: scaleY(0.5); }
 }
-.talking { animation: talk 0.28s infinite ease-in-out; }
+.talking { animation: talk 0.15s infinite; }
 
 /* ── 圈選熱區 ── */
 .hotspot {
@@ -169,35 +151,188 @@ h1 {
     background: rgba(239,71,111,0.15);
     animation: shake 0.4s ease;
 }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
-@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@keyframes pulse {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.06); }
+    100% { transform: scale(1); }
+}
+@keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%     { transform: translateX(-6px); }
+    75%     { transform: translateX(6px); }
+}
 
-/* ── 訊息與進度 ── */
-#message { font-size: clamp(18px, 3vw, 26px); font-weight: bold; margin: 8px; min-height: 36px; color: #10b981; }
-#progress { display: flex; justify-content: center; gap: 10px; margin: 12px 0 6px; flex-wrap: wrap; }
-.dot { width: 14px; height: 14px; border-radius: 50%; background: #e2e8f0; transition: all 0.3s ease; border: 2px solid #cbd5e1; }
+/* ── 訊息 ── */
+#message {
+    font-size: clamp(18px, 3vw, 26px);
+    font-weight: bold;
+    margin: 8px;
+    min-height: 36px;
+    color: #10b981;
+}
+
+/* ── 進度點 ── */
+#progress {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 12px 0 6px;
+    flex-wrap: wrap;
+}
+.dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    transition: all 0.3s ease;
+    border: 2px solid #cbd5e1;
+}
 .dot.done   { background: #10b981; border-color: #10b981; transform: scale(1.1); }
 .dot.active { background: #f59e0b; border-color: #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.5); }
 
-/* ── 畫面過渡與結算 ── */
-#start-screen { position: fixed; inset: 0; background: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
-#start-btn { font-size: clamp(24px, 4vw, 38px); font-weight: bold; padding: 20px 60px; border-radius: 50px; border: none; background: #f59e0b; color: white; cursor: pointer; box-shadow: 0 8px 0 #b47b05, 0 15px 20px rgba(245,158,11,0.3); transition: transform 0.1s, box-shadow 0.1s; letter-spacing: 2px; }
-#start-btn:active { transform: translateY(6px); box-shadow: 0 2px 0 #b47b05, 0 5px 10px rgba(245,158,11,0.3); }
+/* ── 開始畫面 ── */
+#start-screen {
+    position: fixed;
+    inset: 0;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+#start-btn {
+    font-size: clamp(24px, 4vw, 38px);
+    font-weight: bold;
+    padding: 20px 60px;
+    border-radius: 50px;
+    border: none;
+    background: #f59e0b;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 8px 0 #b47b05, 0 15px 20px rgba(245,158,11,0.3);
+    transition: transform 0.1s, box-shadow 0.1s;
+    letter-spacing: 2px;
+}
+#start-btn:active {
+    transform: translateY(6px);
+    box-shadow: 0 2px 0 #b47b05, 0 5px 10px rgba(245,158,11,0.3);
+}
 
-#next-stage-screen { display: none; position: fixed; inset: 0; background: rgba(248, 250, 252, 0.96); flex-direction: column; align-items: center; justify-content: center; z-index: 998; }
-#next-stage-btn { font-size: clamp(20px, 3.5vw, 32px); font-weight: bold; padding: 18px 45px; border-radius: 50px; border: none; background: #06d6a0; color: white; cursor: pointer; box-shadow: 0 8px 0 #04a379, 0 15px 20px rgba(6, 214, 160, 0.3); transition: all 0.1s; margin-top: 20px; }
-#next-stage-btn:active { transform: translateY(6px); box-shadow: 0 2px 0 #04a379, 0 5px 10px rgba(6, 214, 160, 0.3); }
+/* ── 轉場畫面樣式 ── */
+#next-stage-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(248, 250, 252, 0.96);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 998;
+}
+#next-stage-btn {
+    font-size: clamp(20px, 3.5vw, 32px);
+    font-weight: bold;
+    padding: 18px 45px;
+    border-radius: 50px;
+    border: none;
+    background: #06d6a0;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 8px 0 #04a379, 0 15px 20px rgba(6, 214, 160, 0.3);
+    transition: all 0.1s;
+    margin-top: 20px;
+}
+#next-stage-btn:active {
+    transform: translateY(6px);
+    box-shadow: 0 2px 0 #04a379, 0 5px 10px rgba(6, 214, 160, 0.3);
+}
 
-#finish { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); flex-direction: column; align-items: center; gap: 20px; background: #ffffff; padding: 50px 40px 40px; border-radius: 40px; border: 8px solid #ffd166; box-shadow: 0 25px 50px rgba(255, 166, 0, 0.2), inset 0 0 0 8px #fff9e6; z-index: 999; animation: popBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 90vw; max-width: 450px; }
-.ribbon { position: absolute; top: -25px; background: #ef476f; color: white; padding: 10px 30px; border-radius: 30px; font-size: clamp(18px, 4vw, 24px); font-weight: bold; box-shadow: 0 5px 15px rgba(239, 71, 111, 0.4); }
-.stars { font-size: clamp(40px, 8vw, 60px); letter-spacing: 5px; filter: drop-shadow(0 4px 6px rgba(255, 209, 102, 0.6)); }
-.finish-text { font-size: clamp(22px, 4vw, 32px); color: #06d6a0; font-weight: 900; margin-bottom: 10px; }
-#data-btn { display: none; background: linear-gradient(180deg, #118ab2 0%, #0c637f 100%); color: white; border: none; border-radius: 20px; padding: 16px 36px; font-size: clamp(16px, 3vw, 20px); font-weight: bold; cursor: pointer; box-shadow: 0 8px 0 #073b4c, 0 15px 20px rgba(17, 138, 178, 0.4); transition: all 0.1s ease; display: flex; align-items: center; gap: 10px; }
-#data-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #073b4c, 0 5px 10px rgba(17, 138, 178, 0.4); }
+/* ── 完成畫面 ── */
+#finish {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    background: #ffffff;
+    padding: 50px 40px 40px;
+    border-radius: 40px;
+    border: 8px solid #ffd166;
+    box-shadow: 0 25px 50px rgba(255, 166, 0, 0.2), inset 0 0 0 8px #fff9e6;
+    z-index: 999;
+    animation: popBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 90vw;
+    max-width: 450px;
+}
+.ribbon {
+    position: absolute;
+    top: -25px;
+    background: #ef476f;
+    color: white;
+    padding: 10px 30px;
+    border-radius: 30px;
+    font-size: clamp(18px, 4vw, 24px);
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(239, 71, 111, 0.4);
+}
+.stars {
+    font-size: clamp(40px, 8vw, 60px);
+    letter-spacing: 5px;
+    filter: drop-shadow(0 4px 6px rgba(255, 209, 102, 0.6));
+}
+.finish-text {
+    font-size: clamp(22px, 4vw, 32px);
+    color: #06d6a0;
+    font-weight: 900;
+    margin-bottom: 10px;
+}
+#data-btn {
+    display: none;
+    background: linear-gradient(180deg, #118ab2 0%, #0c637f 100%);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 16px 36px;
+    font-size: clamp(16px, 3vw, 20px);
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 8px 0 #073b4c, 0 15px 20px rgba(17, 138, 178, 0.4);
+    transition: all 0.1s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+#data-btn:active {
+    transform: translateY(8px);
+    box-shadow: 0 0 0 #073b4c, 0 5px 10px rgba(17, 138, 178, 0.4);
+}
 
-#data-panel { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; }
+/* ── 數據面板 ── */
+#data-panel {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
 #data-panel.show { display: flex; animation: fadeIn 0.3s ease; }
-#data-inner { background: #ffffff; border-radius: 24px; padding: 35px 40px; max-width: 600px; width: 90vw; max-height: 85dvh; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.15); }
+#data-inner {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 35px 40px;
+    max-width: 600px;
+    width: 90vw;
+    max-height: 85dvh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+}
 .report-header { text-align: center; margin-bottom: 25px; }
 .report-header h2 { margin: 0 0 8px; font-size: clamp(20px, 4vw, 26px); color: #1e293b; }
 .report-header p { margin: 0; color: #64748b; font-size: 15px; }
@@ -212,7 +347,9 @@ h1 {
 #close-btn { margin-top: 25px; padding: 14px; border-radius: 12px; border: 2px solid #e2e8f0; background: transparent; color: #475569; font-size: 16px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
 #close-btn:hover { background: #f1f5f9; color: #0f172a; }
 
-body.finished .scene, body.finished .header-area, body.finished #progress, body.finished #message { opacity:.25; transition: opacity .5s ease; }
+body.finished .scene, body.finished .header-area, body.finished #progress, body.finished #message {
+    opacity:.25; transition: opacity .5s ease;
+}
 </style>
 </head>
 <body>
@@ -237,26 +374,16 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 <div class="scene" id="scene">
     <img class="bg" id="game-bg" src="room_background.png">
 
-    <!-- 🌟 新增：透明的翹翹板，預設隱藏，只在第二關出現 -->
-    <img id="seesaw-img" src="seesaw.png" style="display: none;">
 
-    <div id="guide-character">
-        <div id="guide-inner">
-            <img src="guide_base2.png" id="guide-body">
-            <img src="guide_mouth2.png" id="char-mouth">
-        </div>
-    </div>
-
-    <!-- 玩具物件 -->
     <img id="bear"        class="item" src="bear_v3.png">
     <img id="bear_green"  class="item" src="bear_green.png">
     <img id="bear_yellow" class="item" src="bear_yellow.png"> 
     <img id="car"  class="item" src="car.png">
     <img id="ball" class="item" src="ball.png">
+    
     <img id="cat"  class="item" src="cat.png">
     <img id="dog"  class="item" src="dog.png">
 
-    <!-- 熱區 -->
     <div class="hotspot" id="hs-sun"></div>
     <div class="hotspot" id="hs-door"></div>
     <div class="hotspot" id="hs-books"></div>
@@ -267,12 +394,21 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <div class="hotspot" id="hs-bear-yellow"></div> 
     <div class="hotspot" id="hs-car"></div>
     <div class="hotspot" id="hs-ball"></div>
+    
     <div class="hotspot" id="hs-slide"></div>
     <div class="hotspot" id="hs-tree"></div>
     <div class="hotspot" id="hs-swing"></div>
     <div class="hotspot" id="hs-seesaw"></div>
     <div class="hotspot" id="hs-sandbox"></div>
+    
     <div class="hotspot" id="hs-dog"></div>
+</div>
+
+<div id="guide-character">
+    <div id="guide-inner">
+        <img src="guide_base2.png" id="guide-body">
+        <img src="guide_mouth2.png" id="char-mouth">
+    </div>
 </div>
 
 <div id="message"></div>
@@ -317,6 +453,7 @@ const HOTSPOT_DEFS = {
     "hs-books":       { left: 68, top: 50, width: 22, height: 48 },
     "hs-window":      { left: 82, top: 8,  width: 17, height: 45 },
     "hs-cloud":       { left: 36, top: 0,  width: 22, height: 18 },
+    
     "hs-bear":        { left: 48, top: 69, width: 15, height: 27 }, 
     "hs-bear-green":  { left: 69, top: 80, width: 10, height: 18 }, 
     "hs-bear-yellow": { left: 72, top: 49, width: 10, height: 18 }, 
@@ -325,14 +462,16 @@ const HOTSPOT_DEFS = {
 };
 
 const questions = [
-    { type: "tap", question: "Can you find the sun?", audio: "q4.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Where is the door?", audio: "q5.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Can you find the books?", audio: "q6.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Where is the window?", audio: "q7.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Can you find the cloud?", audio: "q8.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Touch the BLUE bear!", audio: "q9.mp3", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
-    { type: "tap", question: "Can you find the RED ball?", audio: "q10.mp3", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
-    { type: "tap", question: "Where is the YELLOW window?", audio: "q11.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the sun? ", audio: "q4.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the door? ", audio: "q5.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the books? ", audio: "q6.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the window? ", audio: "q7.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the cloud? ", audio: "q8.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    
+    { type: "tap", question: "Touch the BLUE bear! ", audio: "q9.mp3", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", question: "Can you find the RED ball? ", audio: "q10.mp3", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", question: "Where is the YELLOW window? ", audio: "q11.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    
     { type: "drag", itemId: "bear", question: "Can you put the BLUE bear on the rug?", audio: "q1.mp3", zone: { left: 0, right: 50, top: 55, bottom: 100 }, snap: { left: 8, top: 68 } },
     { type: "drag", itemId: "car", question: "Can you put the car on the table?", audio: "q2.mp3", zone: { left: 44, right: 70, top: 45, bottom: 68 }, snap: { left: 53, top: 54 } },
     { type: "drag", itemId: "ball", question: "Can you put the ball in front of the table?", audio: "q3.mp3", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
@@ -345,95 +484,441 @@ function playSound(file) {
     if (!file || file === "") return; 
     const audio = new Audio(file);
     const mouthEl = document.getElementById("char-mouth");
+
+    // 不管音檔有沒有成功，先讓嘴巴動
     if(mouthEl) mouthEl.classList.add("talking");
+
     audio.play().catch(() => {}); 
-    audio.onended = () => { if(mouthEl) mouthEl.classList.remove("talking"); };
-    setTimeout(() => { if(mouthEl) mouthEl.classList.remove("talking"); }, 5000);
+    
+    audio.onended = () => {
+        if(mouthEl) mouthEl.classList.remove("talking");
+    };
+    
+    // 保險：5秒後強制停止
+    setTimeout(() => {
+        if(mouthEl) mouthEl.classList.remove("talking");
+    }, 5000);
 }
 
-function playCorrect() { playSound(CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)]); }
-function playWrong() { playSound(WRONG_SOUNDS[Math.floor(Math.random() * WRONG_SOUNDS.length)]); }
-function playQuestion(n) { if (n < questions.length && questions[n].audio) { playSound(questions[n].audio); } }
+function playCorrect() {
+    const file = CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)];
+    playSound(file);
+}
 
-let currentQ = 0; let dragging = false; let activeItem = null; let offsetX = 0, offsetY = 0; let tapLocked = false; let qStartTime = 0; let qAttempts = 0; const qResults = []; 
+function playWrong() {
+    const file = WRONG_SOUNDS[Math.floor(Math.random() * WRONG_SOUNDS.length)];
+    playSound(file);
+}
 
-const scene = document.getElementById("scene"); const msgEl = document.getElementById("message"); const finishEl = document.getElementById("finish"); const questionEl = document.getElementById("question"); const progressEl = document.getElementById("progress");
+function playQuestion(n) {
+    if (n < questions.length && questions[n].audio) {
+        playSound(questions[n].audio);
+    }
+}
 
-function buildDots() { progressEl.innerHTML = ""; questions.forEach((_, i) => { const d = document.createElement("div"); d.className = "dot"; d.id = "dot" + i; progressEl.appendChild(d); }); }
-function updateDots(current) { questions.forEach((_, i) => { const dot = document.getElementById("dot" + i); if (!dot) return; dot.className = "dot"; if (i < current) dot.classList.add("done"); if (i === current) dot.classList.add("active"); }); }
-function applyHotspotPositions() { Object.entries(HOTSPOT_DEFS).forEach(([id, pos]) => { const el = document.getElementById(id); if (el) { el.style.left = pos.left + "%"; el.style.top = pos.top + "%"; el.style.width = pos.width + "%"; el.style.height = pos.height + "%"; } }); }
-function loadQuestion(n) { document.querySelectorAll(".hotspot").forEach(el => { el.classList.remove("active", "correct", "wrong"); el.style.pointerEvents = "auto"; }); document.querySelectorAll(".item").forEach(el => el.classList.remove("draggable")); msgEl.textContent = ""; tapLocked = false; if (n >= questions.length) { if (!isStage2) { document.getElementById("next-stage-screen").style.display = "flex"; return; } document.body.classList.add("finished"); document.querySelector(".header-area").style.display = "none"; finishEl.style.display = "flex"; dataBtn.style.display = "flex"; updateDots(questions.length); return; } const q = questions[n]; questionEl.textContent = q.question; updateDots(n); setTimeout(() => playQuestion(n), 300); qStartTime = Date.now(); qAttempts = 0; if (q.type === "drag") { document.querySelectorAll(".hotspot").forEach(hsEl => hsEl.style.pointerEvents = "none"); const el = document.getElementById(q.itemId); if (el) { if (el.style.cursor !== "default") { el.classList.add("draggable"); } } } else { [...q.targets, ...q.decoys].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add("active"); }); } }
-document.getElementById("replay-btn").addEventListener("click", () => { playQuestion(currentQ); });
-document.querySelectorAll(".item").forEach(item => { item.addEventListener("pointerdown", (e) => { const q = questions[currentQ]; if (!q || q.type !== "drag") return; if (item.id !== q.itemId) return; if (item.style.cursor === "default") return; dragging = true; activeItem = item; offsetX = e.offsetX; offsetY = e.offsetY; item.classList.add("dragging"); item.setPointerCapture(e.pointerId); }); });
-window.addEventListener("pointermove", (e) => { if (!dragging || !activeItem) return; const rect = scene.getBoundingClientRect(); activeItem.style.left = (e.clientX - rect.left - offsetX) + "px"; activeItem.style.top = (e.clientY - rect.top - offsetY) + "px"; });
-window.addEventListener("pointerup", () => { if (!dragging || !activeItem) return; dragging = false; activeItem.classList.remove("dragging"); const q = questions[currentQ]; const rect = scene.getBoundingClientRect(); const W = rect.width; const H = rect.height; const itemL = parseFloat(activeItem.style.left) || 0; const itemT = parseFloat(activeItem.style.top) || 0; const cx = ((itemL + activeItem.offsetWidth / 2) / W) * 100; const cy = ((itemT + activeItem.offsetHeight / 2) / H) * 100; const z = q.zone; const inZone = cx > z.left && cx < z.right && cy > z.top && cy < z.bottom; if (inZone) { const targetToy = activeItem; targetToy.style.transition = "left 0.3s ease, top 0.3s ease"; targetToy.style.left = (q.snap.left / 100 * W) + "px"; targetToy.style.top = (q.snap.top / 100 * H) + "px"; targetToy.style.cursor = "default"; targetToy.classList.remove("draggable"); recordResult(currentQ); playCorrect(); msgEl.innerHTML = "⭐ Great job!"; setTimeout(() => { targetToy.classList.add("jump"); }, 150); setTimeout(() => { targetToy.classList.remove("jump"); currentQ++; loadQuestion(currentQ); }, 1100); } else { activeItem.style.left = ""; activeItem.style.top = ""; qAttempts++; playWrong(); msgEl.innerHTML = "❌ Try again!"; } activeItem = null; });
+let currentQ   = 0;
+let dragging   = false;
+let activeItem = null;
+let offsetX = 0, offsetY = 0;
+let tapLocked  = false;
+let qStartTime  = 0;
+let qAttempts   = 0;
+const qResults  = []; 
 
-// ── 圈選邏輯與動畫觸發 ──
-document.querySelectorAll(".hotspot").forEach(hs => { 
-    hs.addEventListener("pointerdown", (e) => { 
-        e.stopPropagation(); 
-        const q = questions[currentQ]; 
-        if (!q || q.type !== "tap") return; 
-        if (tapLocked) return; 
-        
-        const isCorrect = q.targets.includes(hs.id); 
-        if (isCorrect) { 
-            tapLocked = true; 
-            hs.classList.add("correct"); 
-            
-            // 🔥 翹翹板搖晃觸發魔法！
-            if (hs.id === "hs-seesaw") {
-                const seesawEl = document.getElementById("seesaw-img");
-                if (seesawEl) {
-                    seesawEl.classList.add("rocking");
-                    setTimeout(() => seesawEl.classList.remove("rocking"), 600); // 搖完後解除，下次才能再搖
-                }
+const scene      = document.getElementById("scene");
+const msgEl      = document.getElementById("message");
+const finishEl   = document.getElementById("finish");
+const questionEl = document.getElementById("question");
+const progressEl = document.getElementById("progress");
+
+function buildDots() {
+    progressEl.innerHTML = "";
+    questions.forEach((_, i) => {
+        const d = document.createElement("div");
+        d.className = "dot";
+        d.id = "dot" + i;
+        progressEl.appendChild(d);
+    });
+}
+
+function updateDots(current) {
+    questions.forEach((_, i) => {
+        const dot = document.getElementById("dot" + i);
+        if (!dot) return;
+        dot.className = "dot";
+        if (i < current)   dot.classList.add("done");
+        if (i === current) dot.classList.add("active");
+    });
+}
+
+function applyHotspotPositions() {
+    Object.entries(HOTSPOT_DEFS).forEach(([id, pos]) => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.left   = pos.left   + "%";
+            el.style.top    = pos.top    + "%";
+            el.style.width  = pos.width  + "%";
+            el.style.height = pos.height + "%";
+        }
+    });
+}
+
+function loadQuestion(n) {
+    document.querySelectorAll(".hotspot").forEach(el => {
+        el.classList.remove("active", "correct", "wrong");
+        el.style.pointerEvents = "auto"; 
+    });
+    
+    document.querySelectorAll(".item").forEach(el => el.classList.remove("draggable"));
+    
+    msgEl.textContent = "";
+    tapLocked = false;
+
+    if (n >= questions.length) {
+        if (!isStage2) {
+            document.getElementById("next-stage-screen").style.display = "flex";
+            return;
+        }
+
+        document.body.classList.add("finished");
+        document.querySelector(".header-area").style.display = "none";
+        finishEl.style.display   = "flex";
+        dataBtn.style.display    = "flex";
+        updateDots(questions.length);
+        return;
+    }
+
+    const q = questions[n];
+    questionEl.textContent   = q.question;
+    updateDots(n);
+    
+    setTimeout(() => playQuestion(n), 300);
+
+    qStartTime = Date.now();
+    qAttempts  = 0;
+
+    if (q.type === "drag") {
+        document.querySelectorAll(".hotspot").forEach(hsEl => hsEl.style.pointerEvents = "none");
+
+        const el = document.getElementById(q.itemId);
+        if (el) {
+            if (el.style.cursor !== "default") {
+                el.classList.add("draggable");
             }
+        }
+    } else {
+        [...q.targets, ...q.decoys].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add("active");
+        });
+    }
+}
 
-            recordResult(currentQ); 
-            playCorrect(); 
-            msgEl.innerHTML = "⭐ Great job!"; 
-            setTimeout(() => { currentQ++; loadQuestion(currentQ); }, 900); 
-        } else { 
-            hs.classList.add("wrong"); 
-            qAttempts++; 
-            playWrong(); 
-            msgEl.innerHTML = "❌ Try again!"; 
-            setTimeout(() => { hs.classList.remove("wrong"); msgEl.textContent = ""; }, 600); 
-        } 
-    }); 
+document.getElementById("replay-btn").addEventListener("click", () => {
+    playQuestion(currentQ);
 });
 
-buildDots(); applyHotspotPositions();
-function recordResult(n) { const seconds = ((Date.now() - qStartTime) / 1000).toFixed(1); qResults.push({ question: (isStage2 ? "🛝 " : "🏠 ") + questions[n].question, seconds: parseFloat(seconds), attempts: qAttempts, }); }
-const dataBtn = document.getElementById("data-btn"); const dataPanel = document.getElementById("data-panel"); const dataTbody = document.getElementById("data-tbody");
-function getStars(num) { let stars = ""; for (let i = 1; i <= 5; i++) { stars += i <= num ? "★" : "☆"; } return stars; }
-dataBtn.addEventListener("click", () => { finishEl.style.display = "none"; dataTbody.innerHTML = ""; let totalSeconds = 0; let totalAttempts = 0; let dragAttempts = 0; qResults.forEach((r, idx) => { totalSeconds += r.seconds; totalAttempts += r.attempts; if (r.question.includes("put")) dragAttempts += r.attempts; }); const totalQuestions = qResults.length || 1; const avgTime = totalSeconds / totalQuestions; let vocRating = 5; if (totalAttempts > 0 && totalAttempts <= 2) vocRating = 4; else if (totalAttempts > 2 && totalAttempts <= 4) vocRating = 3; else if (totalAttempts > 4) vocRating = 2; let listeningRating = vocRating; let speedRating = 5; if (avgTime > 3 && avgTime <= 6) speedRating = 4; else if (avgTime > 6 && avgTime <= 10) speedRating = 3; else if (avgTime > 10) speedRating = 2; let directionRating = 5; if (dragAttempts === 1) directionRating = 4; else if (dragAttempts > 1 && dragAttempts <= 3) directionRating = 3; else if (dragAttempts > 3) directionRating = 2; document.querySelector('.report-header').innerHTML = ` <h2>📝 幼兒英語聽力與認知 analysis</h2> <p>透過直覺互動，我們觀察到孩子的學習亮點</p> <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin-top: 15px; border: 1px solid #e2e8f0; text-align: left;"> <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;"> <span style="font-weight: bold; color: #475569;">Listening Skills</span> <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(listeningRating)}</span> </div> <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;"> <span style="font-weight: bold; color: #475569;">Vocabulary</span> <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(vocRating)}</span> </div> <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;"> <span style="font-weight: bold; color: #475569;">Response Speed</span> <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(speedRating)}</span> </div> <div style="display: flex; justify-content: space-between; font-size: 15px;"> <span style="font-weight: bold; color: #475569;">Following Directions</span> <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(directionRating)}</span> </div> </div> <div style="margin-top: 20px; padding: 12px; background: rgba(239, 71, 111, 0.08); border-radius: 12px; border: 1px dashed #ef476f;"> <div style="font-size: 13px; color: #64748b; font-weight: bold; text-transform: uppercase;">Recommended Level</div> <div style="font-weight: 900; color: #ef476f; font-size: 26px; margin-top: 4px; letter-spacing: 1px;">Starter</div> </div> `; qResults.forEach(r => { const tr = document.createElement("tr"); let statusHtml = r.attempts === 0 ? `<span class="badge perfect">錯誤 0 次</span>` : `<span class="badge learning">錯誤 ${r.attempts} 次</span>`; let speedIcon = r.seconds < 3 ? '⚡' : (r.seconds < 6 ? '👍' : '🐢'); tr.innerHTML = ` <td style="font-weight: 700;">${r.question}</td> <td><span class="speed">${speedIcon} ${r.seconds}s</span></td> <td>${statusHtml}</td> `; dataTbody.appendChild(tr); }); dataPanel.classList.add("show"); });
-document.getElementById("close-btn").addEventListener("click", () => { dataPanel.classList.remove("show"); finishEl.style.display = "flex"; });
+// ── 拖曳邏輯 ──
+document.querySelectorAll(".item").forEach(item => {
+    item.addEventListener("pointerdown", (e) => {
+        const q = questions[currentQ];
+        if (!q || q.type !== "drag") return;
+        if (item.id !== q.itemId) return;
+        if (item.style.cursor === "default") return;
+
+        dragging   = true;
+        activeItem = item;
+        offsetX    = e.offsetX;
+        offsetY    = e.offsetY;
+        item.classList.add("dragging"); 
+        item.setPointerCapture(e.pointerId);
+    });
+});
+
+window.addEventListener("pointermove", (e) => {
+    if (!dragging || !activeItem) return;
+    const rect = scene.getBoundingClientRect();
+    activeItem.style.left = (e.clientX - rect.left - offsetX) + "px";
+    activeItem.style.top  = (e.clientY - rect.top  - offsetY) + "px";
+});
+
+window.addEventListener("pointerup", () => {
+    if (!dragging || !activeItem) return;
+    dragging = false;
+    activeItem.classList.remove("dragging");
+
+    const q    = questions[currentQ];
+    const rect = scene.getBoundingClientRect();
+    const W = rect.width;
+    
+    // 🔥 修正修正點 1：直接使用 W 和容器實際渲染高度 H，100% 消除因圖片素材解析度不同產生的 Y 軸判定落差
+    const H = rect.height;
+
+    const itemL = parseFloat(activeItem.style.left) || 0;
+    const itemT = parseFloat(activeItem.style.top)  || 0;
+    const cx = ((itemL + activeItem.offsetWidth  / 2) / W) * 100;
+    const cy = ((itemT + activeItem.offsetHeight / 2) / H) * 100;
+
+    const z = q.zone;
+    const inZone = cx > z.left && cx < z.right && cy > z.top && cy < z.bottom;
+
+    if (inZone) {
+        const targetToy = activeItem; 
+        targetToy.style.transition = "left 0.3s ease, top 0.3s ease";
+        targetToy.style.left   = (q.snap.left / 100 * W) + "px";
+        targetToy.style.top    = (q.snap.top  / 100 * H) + "px";
+        targetToy.style.cursor = "default";
+        targetToy.classList.remove("draggable");
+        
+        recordResult(currentQ);
+        playCorrect();
+        msgEl.innerHTML = "⭐ Great job!";
+        
+        setTimeout(() => { targetToy.classList.add("jump"); }, 150);
+
+        setTimeout(() => { 
+            targetToy.classList.remove("jump");
+            currentQ++; 
+            loadQuestion(currentQ); 
+        }, 1100);
+    } else {
+        // 🔥 修正點 2：因為在 CSS 頂部加了貓狗的預設位置，這裡清空後會滑順地回彈到公園起點，不會飛走消失！
+        activeItem.style.left = "";
+        activeItem.style.top  = "";
+        qAttempts++;
+        playWrong();
+        msgEl.innerHTML = "❌ Try again!";
+    }
+    activeItem = null;
+});
+
+// ── 圈選邏輯 ──
+document.querySelectorAll(".hotspot").forEach(hs => {
+    hs.addEventListener("pointerdown", (e) => {
+        e.stopPropagation();
+        const q = questions[currentQ];
+        if (!q || q.type !== "tap") return;
+        if (tapLocked) return;
+
+        const isCorrect = q.targets.includes(hs.id);
+        if (isCorrect) {
+            tapLocked = true;
+            hs.classList.add("correct");
+            recordResult(currentQ);
+            playCorrect();
+            msgEl.innerHTML = "⭐ Great job!";
+            setTimeout(() => { currentQ++; loadQuestion(currentQ); }, 900);
+        } else {
+            hs.classList.add("wrong");
+            qAttempts++;
+            playWrong();
+            msgEl.innerHTML = "❌ Try again!";
+            setTimeout(() => {
+                hs.classList.remove("wrong");
+                msgEl.textContent = "";
+            }, 600);
+        }
+    });
+});
+
+buildDots();
+applyHotspotPositions();
+
+function recordResult(n) {
+    const seconds = ((Date.now() - qStartTime) / 1000).toFixed(1);
+    qResults.push({
+        question: (isStage2 ? "🛝 " : "🏠 ") + questions[n].question,
+        seconds:  parseFloat(seconds),
+        attempts: qAttempts,
+    });
+}
+
+// ── 星星報表核心邏輯 ──
+const dataBtn   = document.getElementById("data-btn");
+const dataPanel = document.getElementById("data-panel");
+const dataTbody = document.getElementById("data-tbody");
+
+function getStars(num) {
+    let stars = "";
+    for (let i = 1; i <= 5; i++) { stars += i <= num ? "★" : "☆"; }
+    return stars;
+}
+
+dataBtn.addEventListener("click", () => {
+    finishEl.style.display = "none";
+    dataTbody.innerHTML = "";
+    
+    let totalSeconds = 0;
+    let totalAttempts = 0;
+    let dragAttempts = 0;
+    
+    qResults.forEach((r, idx) => {
+        totalSeconds += r.seconds;
+        totalAttempts += r.attempts;
+        if (r.question.includes("put")) dragAttempts += r.attempts;
+    });
+
+    const totalQuestions = qResults.length || 1;
+    const avgTime = totalSeconds / totalQuestions;
+
+    let vocRating = 5;
+    if (totalAttempts > 0 && totalAttempts <= 2) vocRating = 4;
+    else if (totalAttempts > 2 && totalAttempts <= 4) vocRating = 3;
+    else if (totalAttempts > 4) vocRating = 2;
+
+    let listeningRating = vocRating; 
+
+    let speedRating = 5;
+    if (avgTime > 3 && avgTime <= 6) speedRating = 4;
+    else if (avgTime > 6 && avgTime <= 10) speedRating = 3;
+    else if (avgTime > 10) speedRating = 2;
+
+    let directionRating = 5;
+    if (dragAttempts === 1) directionRating = 4;
+    else if (dragAttempts > 1 && dragAttempts <= 3) directionRating = 3;
+    else if (dragAttempts > 3) directionRating = 2;
+
+    const reportHeader = document.querySelector('.report-header');
+    reportHeader.innerHTML = `
+        <h2>📝 幼兒英語聽力與認知 analysis</h2>
+        <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin-top: 15px; border: 1px solid #e2e8f0; text-align: left;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
+                <span style="font-weight: bold; color: #475569;">Listening Skills</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(listeningRating)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
+                <span style="font-weight: bold; color: #475569;">Vocabulary</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(vocRating)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
+                <span style="font-weight: bold; color: #475569;">Response Speed</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(speedRating)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 15px;">
+                <span style="font-weight: bold; color: #475569;">Following Directions</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(directionRating)}</span>
+            </div>
+        </div>
+        <div style="margin-top: 20px; padding: 12px; background: rgba(239, 71, 111, 0.08); border-radius: 12px; border: 1px dashed #ef476f;">
+            <div style="font-size: 13px; color: #64748b; font-weight: bold; text-transform: uppercase;">Recommended Level</div>
+            <div style="font-weight: 900; color: #ef476f; font-size: 26px; margin-top: 4px; letter-spacing: 1px;">Starter</div>
+        </div>
+    `;
+
+    qResults.forEach(r => {
+        const tr = document.createElement("tr");
+        let statusHtml = r.attempts === 0 ? `<span class="badge perfect">錯誤 0 次</span>` : `<span class="badge learning">錯誤 ${r.attempts} 次</span>`;
+        let speedIcon = r.seconds < 3 ? '⚡' : (r.seconds < 6 ? '👍' : '🐢');
+        tr.innerHTML = `
+            <td style="font-weight: 700;">${r.question}</td>
+            <td><span class="speed">${speedIcon} ${r.seconds}s</span></td>
+            <td>${statusHtml}</td>
+        `;
+        dataTbody.appendChild(tr);
+    });
+    dataPanel.classList.add("show");
+});
+
+document.getElementById("close-btn").addEventListener("click", () => {
+    dataPanel.classList.remove("show");
+    finishEl.style.display = "flex";
+});
+
 resizeItems();
 window.addEventListener("resize", resizeItems);
-function resizeItems() { const w = scene.offsetWidth; const h = scene.offsetHeight; const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12, cat: 0.10, dog: 0.15 }; Object.entries(sizes).forEach(([id, ratio]) => { const el = document.getElementById(id); if (!el) return; const placed = el.style.cursor === "default"; el.style.width = (w * ratio) + "px"; if (placed) { const q = questions.find(q => q.type === "drag" && q.itemId === id); if (q) { el.style.left = (q.snap.left / 100 * w) + "px"; el.style.top = (q.snap.top / 100 * h) + "px"; } } }); }
-document.getElementById("start-btn").addEventListener("click", () => { document.getElementById("start-screen").style.display = "none"; loadQuestion(0); });
-const HOTSPOT_DEFS_PARK = { "hs-sun": { left: 5, top: 5, width: 12, height: 20 }, "hs-cloud": { left: 51, top: 6, width: 15, height: 15 }, "hs-slide": { left: 5, top: 22, width: 25, height: 40 }, "hs-tree": { left: 20, top: 2, width: 30, height: 52 }, "hs-swing": { left: 50, top: 27, width: 23, height: 32 }, "hs-seesaw": { left: 35, top: 56, width: 23, height: 16 }, "hs-sandbox": { left: 73, top: 54, width: 24, height: 16 }, "hs-dog": { left: 74, top: 74, width: 16, height: 22 } };
-const questions_park = [ { type: "tap", question: "Can you find the slide?", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-dog"] }, { type: "tap", question: "Where is the swing?", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox","hs-dog"] }, { type: "tap", question: "Can you find the seesaw?", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox","hs-dog"] }, { type: "tap", question: "Where is the sandbox?", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree","hs-dog"] }, { type: "tap", question: "Can you find the big tree?", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud","hs-dog"] }, { type: "tap", question: "Can you find the dog?", audio: "p_find_dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud"] }, { type: "drag", itemId: "cat", question: "Can you put the cat IN the sandbox?", audio: "p_drag_cat.mp3", zone: { left: 68, right: 100, top: 48, bottom: 95 }, snap: { left: 81, top: 43 } } ];
 
-// 進入第二關時，讓隱藏的透明翹翹板顯示出來
-document.getElementById("next-stage-btn").addEventListener("click", () => { 
-    document.getElementById("next-stage-screen").style.display = "none"; 
-    isStage2 = true; currentQ = 0; 
-    document.getElementById("game-bg").src = "park.jpeg"; 
+function resizeItems() {
+    const w = scene.offsetWidth;
     
-    // 🔥 顯示翹翹板圖層！
-    const seesawEl = document.getElementById("seesaw-img");
-    if(seesawEl) seesawEl.style.display = "block";
+    // 🔥 修正修正點 3：高度直接採用容器的 offsetHeight，與 pointerup 完美對齊
+    const h = scene.offsetHeight;
 
-    questions.length = 0; questions.push(...questions_park); 
-    Object.assign(HOTSPOT_DEFS, HOTSPOT_DEFS_PARK); applyHotspotPositions(); 
+    const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12, cat: 0.10, dog: 0.15 };
+    Object.entries(sizes).forEach(([id, ratio]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const placed = el.style.cursor === "default";
+        el.style.width = (w * ratio) + "px";
+        if (placed) {
+            const q = questions.find(q => q.type === "drag" && q.itemId === id);
+            if (q) {
+                el.style.left = (q.snap.left / 100 * w) + "px";
+                el.style.top  = (q.snap.top  / 100 * h) + "px";
+            }
+        }
+    });
+}
+
+document.getElementById("start-btn").addEventListener("click", () => {
+    document.getElementById("start-screen").style.display = "none";
+    loadQuestion(0);
+});
+
+// ═══════════════════════════════════════════════
+// 🔥 終極外掛：公園關卡 (Stage 2) 獨立設定區
+// ═══════════════════════════════════════════════
+const HOTSPOT_DEFS_PARK = {
+    "hs-sun":     { left: 5,  top: 5,  width: 12, height: 20 }, 
+    "hs-cloud":   { left: 51, top: 6,  width: 15, height: 15 }, 
+    "hs-slide":   { left: 5,  top: 22, width: 25, height: 40 }, 
+    "hs-tree":    { left: 20, top: 2,  width: 30, height: 52 }, 
+    "hs-swing":   { left: 50, top: 27, width: 23, height: 32 }, 
+    "hs-seesaw":  { left: 35, top: 56, width: 23, height: 16 }, 
+    "hs-sandbox": { left: 73, top: 54, width: 24, height: 16 }, 
     
-    document.querySelectorAll(".item").forEach(el => { el.style.display = "none"; el.classList.remove("draggable", "jump"); el.style.cursor = ""; }); 
-    const catEl = document.getElementById("cat"); catEl.style.display = "block"; catEl.style.left = "15%"; catEl.style.top = "75%"; 
-    const dogEl = document.getElementById("dog"); dogEl.style.display = "block"; dogEl.style.left = "75%"; dogEl.style.top = "75%"; 
-    buildDots(); resizeItems(); loadQuestion(0); 
+    // 狗狗專屬隱形點擊熱區
+    "hs-dog":     { left: 74, top: 74, width: 16, height: 22 }
+};
+
+const questions_park = [
+    { type: "tap", question: "Can you find the slide?", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-dog"] },
+    { type: "tap", question: "Where is the swing?", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox","hs-dog"] },
+    { type: "tap", question: "Can you find the seesaw?", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox","hs-dog"] },
+    { type: "tap", question: "Where is the sandbox?", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree","hs-dog"] },
+    { type: "tap", question: "Can you find the big tree?", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud","hs-dog"] },
+    
+    // 狗狗尋找題 (Tap)
+    { type: "tap", question: "Can you find the dog?", audio: "p_find_dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud"] },
+    
+    // 🐈 貓咪拖曳題：完美對齊沙坑百分比區間，Hitbox 容錯率大放寬！
+    { type: "drag", itemId: "cat", question: "Can you put the cat IN the sandbox?", audio: "p_drag_cat.mp3", zone: { left: 68, right: 100, top: 48, bottom: 95 }, snap: { left: 81, top: 43 } }
+];
+
+document.getElementById("next-stage-btn").addEventListener("click", () => {
+    document.getElementById("next-stage-screen").style.display = "none";
+    isStage2 = true;
+    currentQ = 0;
+    
+    document.getElementById("game-bg").src = "park.jpeg";
+    
+    questions.length = 0;
+    questions.push(...questions_park);
+    
+    Object.assign(HOTSPOT_DEFS, HOTSPOT_DEFS_PARK);
+    applyHotspotPositions();
+    
+    // 隱藏第一關的舊玩具
+    document.querySelectorAll(".item").forEach(el => {
+        el.style.display = "none";
+        el.classList.remove("draggable", "jump");
+        el.style.cursor = "";
+    });
+    
+    // 喚醒公園寵物並回到初始起點
+    const catEl = document.getElementById("cat");
+    catEl.style.display = "block";
+    catEl.style.left = "15%";
+    catEl.style.top = "75%";
+    
+    const dogEl = document.getElementById("dog");
+    dogEl.style.display = "block";
+    dogEl.style.left = "75%";
+    dogEl.style.top = "75%";
+    
+    buildDots();
+    resizeItems();
+    loadQuestion(0);
 });
 </script>
 </body>
