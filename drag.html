@@ -764,17 +764,24 @@ window.addEventListener("pointerup", () => {
 });
 
 // ── 圈選與隨時搖晃邏輯 ──
+// ── 圈選與隨時獨立動畫 / 音效邏輯 ──
 document.querySelectorAll(".hotspot").forEach(hs => {
     hs.addEventListener("pointerdown", (e) => {
         e.stopPropagation();
         
-        // 🔥 隨時點擊翹翹板都會晃動，綁定在木板(#seesaw-board)上
+        // 🎢 隨時點擊翹翹板都會晃動
         if (hs.id === "hs-seesaw") {
             const boardEl = document.getElementById("seesaw-board");
             if (boardEl && !boardEl.classList.contains("rocking")) {
                 boardEl.classList.add("rocking");
                 setTimeout(() => boardEl.classList.remove("rocking"), 600);
             }
+        }
+
+        // 🐶 🔥 隨時點擊狗狗都會發出叫聲（單純發聲不跳躍）
+        if (hs.id === "hs-dog") {
+            const dogAudio = new Audio("dog_yip.mp3");
+            dogAudio.play().catch(() => {});
         }
 
         const q = questions[currentQ];
