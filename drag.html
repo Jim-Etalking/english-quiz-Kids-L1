@@ -111,17 +111,26 @@ h1 {
 #cat         { left: 15%; top: 68%; display: none; }
 #dog         { left: 75%; top: 75%; display: none; }
 
-/* ── 🎡 翹翹板獨立圖層與物理動畫 ── */
-#seesaw-img {
+/* ── 🎡 分離版翹翹板：底座 (不會動) ── */
+#seesaw-base {
     position: absolute;
-    /* 這裡的 left, top, width 請依據你修好的圖對齊背景 */
-    left: 35%;    
-    top: 55%;     
-    width: 23%;   
-    z-index: 15;  
-    pointer-events: none; /* 讓滑鼠穿透，點擊會落在底下的 hotspot 上 */
+    left: 33%;    /* 👇 請根據你切圖的大小微調左右 */
+    top: 55%;     /* 👇 請根據你切圖的大小微調上下 */
+    width: 27%;   /* 👇 請微調比例，確保跟背景草地吻合 */
+    z-index: 14;  /* 放在木板下方 */
+    pointer-events: none; 
+}
+
+/* ── 🎡 分離版翹翹板：木板 (會搖晃) ── */
+#seesaw-board {
+    position: absolute;
+    left: 33%;    /* ⚠️ 必須跟底座的 left 完全一樣，才能對齊 */
+    top: 55%;     /* ⚠️ 必須跟底座的 top 完全一樣，才能對齊 */
+    width: 27%;   /* ⚠️ 必須跟底座的 width 完全一樣，才能對齊 */
+    z-index: 15;  /* 疊在底座上方 */
+    pointer-events: none; 
     
-    /* 🔥 物理支點：一高一低旋轉的軸心 (如果是單純木板用 center center，含底座可用 center 70%) */
+    /* 🔥 物理支點：木板的正中央 */
     transform-origin: center center; 
 }
 
@@ -129,7 +138,7 @@ h1 {
     0%   { transform: rotate(0deg); }
     25%  { transform: rotate(-12deg); } /* 左邊下壓，右邊翹起 */
     75%  { transform: rotate(12deg); }  /* 右邊下壓，左邊翹起 */
-    100% { transform: rotate(0deg); }   /* 回復水平 */
+    100% { transform: rotate(0deg); }   /* 回正 */
 }
 
 .rocking {
@@ -434,7 +443,8 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 <div class="scene" id="scene">
     <img class="bg" id="game-bg" src="room_background.png">
 
-    <img id="seesaw-img" src="seesaw.png" style="display: none;">
+    <img id="seesaw-base" src="seesaw_back.png" style="display: none;">
+    <img id="seesaw-board" src="seesaw_board.png" style="display: none;">
 
     <img id="bear"        class="item" src="bear_v3.png">
     <img id="bear_green"  class="item" src="bear_green.png">
@@ -748,18 +758,17 @@ window.addEventListener("pointerup", () => {
     activeItem = null;
 });
 
-// ── 圈選與獨立動畫邏輯 ──
+// ── 圈選與隨時搖晃邏輯 ──
 document.querySelectorAll(".hotspot").forEach(hs => {
     hs.addEventListener("pointerdown", (e) => {
         e.stopPropagation();
         
-        // 🔥 突破點：隨時點擊翹翹板都會晃動 (就算不是在考翹翹板那題)
+        // 🔥 隨時點擊翹翹板都會晃動，綁定在木板(#seesaw-board)上
         if (hs.id === "hs-seesaw") {
-            const seesawEl = document.getElementById("seesaw-img");
-            // 確保它現在沒有在搖，才讓它開始搖 (避免連點鬼畜)
-            if (seesawEl && !seesawEl.classList.contains("rocking")) {
-                seesawEl.classList.add("rocking");
-                setTimeout(() => seesawEl.classList.remove("rocking"), 600);
+            const boardEl = document.getElementById("seesaw-board");
+            if (boardEl && !boardEl.classList.contains("rocking")) {
+                boardEl.classList.add("rocking");
+                setTimeout(() => boardEl.classList.remove("rocking"), 600);
             }
         }
 
@@ -957,9 +966,11 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
     
     document.getElementById("game-bg").src = "park.jpeg";
     
-    // 🔥 切換關卡時，顯示透明的翹翹板
-    const seesawEl = document.getElementById("seesaw-img");
-    if(seesawEl) seesawEl.style.display = "block";
+    // 🔥 切換關卡時，顯示獨立圖層：底座和搖晃木板
+    const baseEl = document.getElementById("seesaw-base");
+    if(baseEl) baseEl.style.display = "block";
+    const boardEl = document.getElementById("seesaw-board");
+    if(boardEl) boardEl.style.display = "block";
     
     questions.length = 0;
     questions.push(...questions_park);
