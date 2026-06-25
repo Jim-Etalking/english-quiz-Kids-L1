@@ -28,12 +28,14 @@ body {
     flex-shrink: 0;
     z-index: 10;
 }
+
 h1 {
     margin: 0;
     color: #4a5568;
     font-size: clamp(16px, 2.5vw, 26px);
     font-weight: 800;
 }
+
 #replay-btn {
     background: #ffffff;
     border: 2px solid #cbd5e1;
@@ -48,7 +50,11 @@ h1 {
     justify-content: center;
     transition: transform 0.1s, background 0.2s;
 }
-#replay-btn:active { transform: scale(0.9); background: #f1f5f9; }
+
+#replay-btn:active { 
+    transform: scale(0.9); 
+    background: #f1f5f9; 
+}
 
 .scene {
     position: relative;
@@ -58,6 +64,7 @@ h1 {
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0,0,0,0.08);
 }
+
 .bg {
     width: 100%;
     display: block;
@@ -71,18 +78,21 @@ h1 {
     user-select: none;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: block; 
-    -webkit-user-drag: none; /* 禁用 Webkit 瀏覽器的內建圖片拖拽行為 */
-    user-drag: none;         /* 禁用標準瀏覽器的內建圖片拖拽行為 */
+    -webkit-user-drag: none; 
+    user-drag: none;         
 }
+
 .item.draggable {
     cursor: grab;
 }
+
 .item.dragging {
     transform: scale(1.15);
     filter: drop-shadow(0 10px 15px rgba(14, 165, 233, 0.4));
     cursor: grabbing;
     z-index: 100;
 }
+
 .item.jump {
     animation: toyJump 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 2;
 }
@@ -92,42 +102,77 @@ h1 {
     50% { transform: scale(1.08, 0.92) translateY(-30px); }
 }
 
-/* ── 玩具在房間的初始位置（三隻熊漂亮排排站） ── */
+/* ── 玩具與寵物的初始位置 ── */
 #bear        { left: 42%; top: 70%; }
 #bear_green  { left: 70%; top: 81%; } 
 #bear_yellow { left: 73%; top: 50%; } 
 #car         { left: 30%; top: 68%; }
 #ball        { left: 90%; top: 88%; }
-
-/* ── 🔥 新增：寵物在公園的預設 CSS 位置（解決放手失敗時飛走消失的 Bug） ── */
 #cat         { left: 15%; top: 68%; display: none; }
 #dog         { left: 75%; top: 75%; display: none; }
 
-/* ── 導護員小男孩 ── */
+/* ── 🌟 新增：翹翹板專屬動畫與位置 ── */
+#seesaw-img {
+    position: absolute;
+    left: 33%;    /* 如果翹翹板出現的位置歪掉，微調這個數值 */
+    top: 50%;     /* 如果翹翹板太高或太低，微調這個數值 */
+    width: 27%;   /* 翹翹板的大小比例 */
+    z-index: 15;  /* 放在背景上面，熱區下面 */
+    pointer-events: none; /* 讓滑鼠穿透，確保點擊能精準打中底下的 hotspot */
+    transform-origin: center bottom; /* 搖晃的物理支點：底部正中央 */
+}
+
+@keyframes rockSeesaw {
+    0%   { transform: rotate(0deg); }
+    25%  { transform: rotate(-10deg); } /* 往下壓 */
+    75%  { transform: rotate(10deg); }  /* 往上翹 */
+    100% { transform: rotate(0deg); }   /* 回正 */
+}
+
+.rocking {
+    animation: rockSeesaw 0.6s ease-in-out;
+}
+
+/* ── 🌟 導護員小男孩 ── */
 #guide-character {
-    position: fixed;
-    left: calc(50% - min(100vw, 75dvh * 1456 / 816) / 2 - 5%);
-    bottom: 5%;
-    width: 10%;
-    z-index: 200;
-    pointer-events: none;
+    position: absolute; 
+    left: 2%;         
+    bottom: -1%;      
+    width: 12%;       
+    z-index: 200;     
+    pointer-events: none; 
 }
-#guide-inner {          /* ← 新增一個內層來定位嘴巴 */
-    position: relative;
+
+#guide-inner { 
+    position: relative; 
+    width: 100%; 
+    height: 100%; 
 }
-#guide-body { width: 100%; display: block; }
+
+#guide-body { 
+    width: 100%; 
+    display: block; 
+}
+
 #char-mouth { 
     position: absolute; 
     width: 15%; 
-    left: 43%;      /* ← 臉的中間 */
-    top: 31%; 
-    transform-origin: top center; 
+    left: 37%;      
+    top: 34%; 
+    transform-origin: bottom center; 
 }
+
 @keyframes talk {
-    0%, 100% { transform: scaleY(1); }
-    50%      { transform: scaleY(0.5); }
+    0%, 100% { transform: scaleY(1); }       
+    20%      { transform: scaleY(0.3); }     
+    40%      { transform: scaleY(0.8); }     
+    60%      { transform: scaleY(0.15); }    
+    80%      { transform: scaleY(0.6); }     
 }
-.talking { animation: talk 0.15s infinite; }
+
+.talking { 
+    animation: talk 0.28s infinite ease-in-out; 
+}
 
 /* ── 圈選熱區 ── */
 .hotspot {
@@ -139,23 +184,30 @@ h1 {
     border: 3px dashed transparent;
     z-index: 50; 
 }
-.hotspot.active { display: block; }
+
+.hotspot.active { 
+    display: block; 
+}
+
 .hotspot.correct {
     border: 5px solid #10b981;
     background: rgba(16,185,129,0.15);
     animation: pulse 0.4s ease;
     cursor: default;
 }
+
 .hotspot.wrong {
     border: 5px solid #ef476f;
     background: rgba(239,71,111,0.15);
     animation: shake 0.4s ease;
 }
+
 @keyframes pulse {
     0%   { transform: scale(1); }
     50%  { transform: scale(1.06); }
     100% { transform: scale(1); }
 }
+
 @keyframes shake {
     0%,100% { transform: translateX(0); }
     25%     { transform: translateX(-6px); }
@@ -179,15 +231,27 @@ h1 {
     margin: 12px 0 6px;
     flex-wrap: wrap;
 }
+
 .dot {
-    width: 14px; height: 14px;
+    width: 14px; 
+    height: 14px;
     border-radius: 50%;
     background: #e2e8f0;
     transition: all 0.3s ease;
     border: 2px solid #cbd5e1;
 }
-.dot.done   { background: #10b981; border-color: #10b981; transform: scale(1.1); }
-.dot.active { background: #f59e0b; border-color: #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.5); }
+
+.dot.done { 
+    background: #10b981; 
+    border-color: #10b981; 
+    transform: scale(1.1); 
+}
+
+.dot.active { 
+    background: #f59e0b; 
+    border-color: #f59e0b; 
+    box-shadow: 0 0 10px rgba(245,158,11,0.5); 
+}
 
 /* ── 開始畫面 ── */
 #start-screen {
@@ -200,6 +264,7 @@ h1 {
     justify-content: center;
     z-index: 999;
 }
+
 #start-btn {
     font-size: clamp(24px, 4vw, 38px);
     font-weight: bold;
@@ -213,6 +278,7 @@ h1 {
     transition: transform 0.1s, box-shadow 0.1s;
     letter-spacing: 2px;
 }
+
 #start-btn:active {
     transform: translateY(6px);
     box-shadow: 0 2px 0 #b47b05, 0 5px 10px rgba(245,158,11,0.3);
@@ -229,6 +295,7 @@ h1 {
     justify-content: center;
     z-index: 998;
 }
+
 #next-stage-btn {
     font-size: clamp(20px, 3.5vw, 32px);
     font-weight: bold;
@@ -242,6 +309,7 @@ h1 {
     transition: all 0.1s;
     margin-top: 20px;
 }
+
 #next-stage-btn:active {
     transform: translateY(6px);
     box-shadow: 0 2px 0 #04a379, 0 5px 10px rgba(6, 214, 160, 0.3);
@@ -267,6 +335,7 @@ h1 {
     width: 90vw;
     max-width: 450px;
 }
+
 .ribbon {
     position: absolute;
     top: -25px;
@@ -278,17 +347,20 @@ h1 {
     font-weight: bold;
     box-shadow: 0 5px 15px rgba(239, 71, 111, 0.4);
 }
+
 .stars {
     font-size: clamp(40px, 8vw, 60px);
     letter-spacing: 5px;
     filter: drop-shadow(0 4px 6px rgba(255, 209, 102, 0.6));
 }
+
 .finish-text {
     font-size: clamp(22px, 4vw, 32px);
     color: #06d6a0;
     font-weight: 900;
     margin-bottom: 10px;
 }
+
 #data-btn {
     display: none;
     background: linear-gradient(180deg, #118ab2 0%, #0c637f 100%);
@@ -305,6 +377,7 @@ h1 {
     align-items: center;
     gap: 10px;
 }
+
 #data-btn:active {
     transform: translateY(8px);
     box-shadow: 0 0 0 #073b4c, 0 5px 10px rgba(17, 138, 178, 0.4);
@@ -321,7 +394,12 @@ h1 {
     align-items: center;
     justify-content: center;
 }
-#data-panel.show { display: flex; animation: fadeIn 0.3s ease; }
+
+#data-panel.show { 
+    display: flex; 
+    animation: fadeIn 0.3s ease; 
+}
+
 #data-inner {
     background: #ffffff;
     border-radius: 24px;
@@ -333,22 +411,41 @@ h1 {
     flex-direction: column;
     box-shadow: 0 25px 50px rgba(0,0,0,0.15);
 }
+
 .report-header { text-align: center; margin-bottom: 25px; }
 .report-header h2 { margin: 0 0 8px; font-size: clamp(20px, 4vw, 26px); color: #1e293b; }
 .report-header p { margin: 0; color: #64748b; font-size: 15px; }
+
 .table-container { overflow-y: auto; border-radius: 12px; border: 1px solid #e2e8f0; }
 #data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 #data-table th { background: #f8fafc; padding: 14px 16px; text-align: left; color: #475569; font-weight: 700; border-bottom: 2px solid #e2e8f0; position: sticky; top: 0; }
 #data-table td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+
 .badge { padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; white-space: nowrap; }
 .badge.perfect { background: #dcfce7; color: #166534; }
 .badge.learning { background: #fef9c3; color: #854d0e; }
 .speed { font-weight: 600; color: #0ea5e9; white-space: nowrap; }
-#close-btn { margin-top: 25px; padding: 14px; border-radius: 12px; border: 2px solid #e2e8f0; background: transparent; color: #475569; font-size: 16px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+
+#close-btn { 
+    margin-top: 25px; 
+    padding: 14px; 
+    border-radius: 12px; 
+    border: 2px solid #e2e8f0; 
+    background: transparent; 
+    color: #475569; 
+    font-size: 16px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    transition: all 0.2s; 
+}
 #close-btn:hover { background: #f1f5f9; color: #0f172a; }
 
-body.finished .scene, body.finished .header-area, body.finished #progress, body.finished #message {
-    opacity:.25; transition: opacity .5s ease;
+body.finished .scene, 
+body.finished .header-area, 
+body.finished #progress, 
+body.finished #message {
+    opacity:.25; 
+    transition: opacity .5s ease;
 }
 </style>
 </head>
@@ -374,15 +471,23 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 <div class="scene" id="scene">
     <img class="bg" id="game-bg" src="room_background.png">
 
+    <img id="seesaw-img" src="seesaw.png" style="display: none;">
+
+    <div id="guide-character">
+        <div id="guide-inner">
+            <img src="guide_base2.png" id="guide-body">
+            <img src="guide_mouth2.png" id="char-mouth">
+        </div>
+    </div>
 
     <img id="bear"        class="item" src="bear_v3.png">
     <img id="bear_green"  class="item" src="bear_green.png">
     <img id="bear_yellow" class="item" src="bear_yellow.png"> 
-    <img id="car"  class="item" src="car.png">
-    <img id="ball" class="item" src="ball.png">
+    <img id="car"         class="item" src="car.png">
+    <img id="ball"        class="item" src="ball.png">
     
-    <img id="cat"  class="item" src="cat.png">
-    <img id="dog"  class="item" src="dog.png">
+    <img id="cat"         class="item" src="cat.png">
+    <img id="dog"         class="item" src="dog.png">
 
     <div class="hotspot" id="hs-sun"></div>
     <div class="hotspot" id="hs-door"></div>
@@ -402,13 +507,6 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <div class="hotspot" id="hs-sandbox"></div>
     
     <div class="hotspot" id="hs-dog"></div>
-</div>
-
-<div id="guide-character">
-    <div id="guide-inner">
-        <img src="guide_base2.png" id="guide-body">
-        <img src="guide_mouth2.png" id="char-mouth">
-    </div>
 </div>
 
 <div id="message"></div>
@@ -485,16 +583,17 @@ function playSound(file) {
     const audio = new Audio(file);
     const mouthEl = document.getElementById("char-mouth");
 
-    // 不管音檔有沒有成功，先讓嘴巴動
+    // 開始講話動畫
     if(mouthEl) mouthEl.classList.add("talking");
 
     audio.play().catch(() => {}); 
     
+    // 講完自動停止動畫
     audio.onended = () => {
         if(mouthEl) mouthEl.classList.remove("talking");
     };
     
-    // 保險：5秒後強制停止
+    // 保險機制：最多講5秒強制停止
     setTimeout(() => {
         if(mouthEl) mouthEl.classList.remove("talking");
     }, 5000);
@@ -650,8 +749,6 @@ window.addEventListener("pointerup", () => {
     const q    = questions[currentQ];
     const rect = scene.getBoundingClientRect();
     const W = rect.width;
-    
-    // 🔥 修正修正點 1：直接使用 W 和容器實際渲染高度 H，100% 消除因圖片素材解析度不同產生的 Y 軸判定落差
     const H = rect.height;
 
     const itemL = parseFloat(activeItem.style.left) || 0;
@@ -682,7 +779,6 @@ window.addEventListener("pointerup", () => {
             loadQuestion(currentQ); 
         }, 1100);
     } else {
-        // 🔥 修正點 2：因為在 CSS 頂部加了貓狗的預設位置，這裡清空後會滑順地回彈到公園起點，不會飛走消失！
         activeItem.style.left = "";
         activeItem.style.top  = "";
         qAttempts++;
@@ -704,6 +800,17 @@ document.querySelectorAll(".hotspot").forEach(hs => {
         if (isCorrect) {
             tapLocked = true;
             hs.classList.add("correct");
+            
+            // 🔥 新增：當答對且點擊的是翹翹板時，觸發搖晃動畫
+            if (hs.id === "hs-seesaw") {
+                const seesawEl = document.getElementById("seesaw-img");
+                if (seesawEl) {
+                    seesawEl.classList.add("rocking");
+                    // 0.6秒後移除 class，以便下次還能再觸發
+                    setTimeout(() => seesawEl.classList.remove("rocking"), 600);
+                }
+            }
+
             recordResult(currentQ);
             playCorrect();
             msgEl.innerHTML = "⭐ Great job!";
@@ -830,8 +937,6 @@ window.addEventListener("resize", resizeItems);
 
 function resizeItems() {
     const w = scene.offsetWidth;
-    
-    // 🔥 修正修正點 3：高度直接採用容器的 offsetHeight，與 pointerup 完美對齊
     const h = scene.offsetHeight;
 
     const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12, cat: 0.10, dog: 0.15 };
@@ -891,6 +996,10 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
     currentQ = 0;
     
     document.getElementById("game-bg").src = "park.jpeg";
+    
+    // 🔥 切換關卡時，顯示透明的翹翹板
+    const seesawEl = document.getElementById("seesaw-img");
+    if(seesawEl) seesawEl.style.display = "block";
     
     questions.length = 0;
     questions.push(...questions_park);
