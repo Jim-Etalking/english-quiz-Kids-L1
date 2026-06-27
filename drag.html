@@ -468,11 +468,8 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <!-- 🐦 🌟 解決不拍翅膀的魔法 1：偷偷預載圖片 -->
     <img src="bird_up.png" style="display: none;">
 
-    <img id="seesaw-base" src="seesaw_back.png" style="display: none;">
-    <img id="seesaw-board" src="seesaw_board.png" style="display: none;">
-
-    <img id="seesaw-base" src="seesaw_back.png" style="display: none;">
-    <img id="seesaw-board" src="seesaw_board.png" style="display: none;">
+    <img id="seesaw-base" data-src="seesaw_back.png" style="display: none;">
+    <img id="seesaw-board" data-src="seesaw_board.png" style="display: none;">
 
     <img id="bear"        class="item" src="bear_v3.png">
     <img id="bear_green"  class="item" src="bear_green.png">
@@ -581,7 +578,9 @@ const questions = [
 
 const CORRECT_SOUNDS = ["correct1.mp3", "correct2.mp3", "correct3.mp3"];
 const WRONG_SOUNDS   = ["wrong1.mp3"];
-
+// 預先建立常用音效物件，避免每次播放都重新發送網路請求
+const correctAudioPool = CORRECT_SOUNDS.map(f => new Audio(f));
+const wrongAudioPool   = WRONG_SOUNDS.map(f => new Audio(f));
 function playSound(file) {
     if (!file || file === "") return; 
     const audio = new Audio(file);
@@ -601,13 +600,27 @@ function playSound(file) {
 }
 
 function playCorrect() {
-    const file = CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)];
-    playSound(file);
+    playPooledSound(correctAudioPool);
 }
 
 function playWrong() {
-    const file = WRONG_SOUNDS[Math.floor(Math.random() * WRONG_SOUNDS.length)];
-    playSound(file);
+    playPooledSound(wrongAudioPool);
+}
+
+function playPooledSound(pool) {
+    const audio = pool[Math.floor(Math.random() * pool.length)];
+    const mouthEl = document.getElementById("char-mouth");
+    if (mouthEl) mouthEl.classList.add("talking");
+
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+
+    audio.onended = () => {
+        if (mouthEl) mouthEl.classList.remove("talking");
+    };
+    setTimeout(() => {
+        if (mouthEl) mouthEl.classList.remove("talking");
+    }, 5000);
 }
 
 function playQuestion(n) {
@@ -887,6 +900,27 @@ document.getElementById("cat").addEventListener("pointerdown", () => {
 
 buildDots();
 applyHotspotPositions();
+    // ── 載入中狀態：避免使用者在背景圖還沒下載完就按 START ──
+const bgImgEl = document.getElementById("game-bg");
+const startBtnEl = document.getElementById("start-btn");
+
+function unlockStartBtn() {
+    startBtnEl.disabled = false;
+    startBtnEl.textContent = "START";
+    startBtnEl.style.opacity = "1";
+}
+
+startBtnEl.disabled = true;
+startBtnEl.textContent = "Loading...";
+startBtnEl.style.opacity = "0.6";
+
+if (bgImgEl.complete && bgImgEl.naturalWidth > 0) {
+    // 圖片已經是瀏覽器快取，直接解鎖
+    unlockStartBtn();
+} else {
+    bgImgEl.onload = unlockStartBtn;
+    bgImgEl.onerror = unlockStartBtn; // 萬一圖片壞了也不要卡死使用者
+}
 
 function recordResult(n) {
     const seconds = ((Date.now() - qStartTime) / 1000).toFixed(1);
@@ -1088,11 +1122,17 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
         birdEl.src = "bird_down.png"; 
     }
 
-    // 🎡 顯示獨立圖層：底座和搖晃木板
+    // 🎡 顯示獨立圖層：底座和搖晃木板（這裡才真正開始下載圖片）
     const baseEl = document.getElementById("seesaw-base");
-    if(baseEl) baseEl.style.display = "block";
+    if(baseEl) {
+        if (!baseEl.src || baseEl.src === "") baseEl.src = baseEl.dataset.src;
+        baseEl.style.display = "block";
+    }
     const boardEl = document.getElementById("seesaw-board");
-    if(boardEl) boardEl.style.display = "block";
+    if(boardEl) {
+        if (!boardEl.src || boardEl.src === "") boardEl.src = boardEl.dataset.src;
+        boardEl.style.display = "block";
+    }
     
     questions.length = 0;
     questions.push(...questions_park);
