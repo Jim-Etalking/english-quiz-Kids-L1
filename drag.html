@@ -835,9 +835,9 @@ document.querySelectorAll(".hotspot").forEach(hs => {
 
                     // 2. 改變座標：飛向溜滑梯頂端 (圖片跟熱區一起飛)
                     birdEl.style.left = "10%";
-                    birdEl.style.top = "18%";
+                    birdEl.style.top = "15%";
                     hs.style.left = "10%";
-                    hs.style.top = "18%";
+                    hs.style.top = "15%";
                     
                     // 🌟 幫小鳥外掛拋物線動畫！
                     birdEl.classList.add("flying-arc");
@@ -1002,7 +1002,9 @@ function resizeItems() {
 
 document.getElementById("start-btn").addEventListener("click", () => {
     document.getElementById("start-screen").style.display = "none";
-    loadQuestion(0);
+    //loadQuestion(0);
+    // 🚀 開發者密技：讓程式自動幫你按「進入第二關」的按鈕
+    document.getElementById("next-stage-btn").click();
 });
 
 // ═══════════════════════════════════════════════
@@ -1042,7 +1044,7 @@ const questions_park = [
 document.getElementById("next-stage-btn").addEventListener("click", () => {
     document.getElementById("next-stage-screen").style.display = "none";
     isStage2 = true;
-    currentQ = 0;
+    currentQ = 5;
     
     document.getElementById("game-bg").src = "park.jpeg";
     
