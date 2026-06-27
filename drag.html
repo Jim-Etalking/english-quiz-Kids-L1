@@ -165,7 +165,18 @@ h1 {
 }
 
 #guide-body { width: 100%; display: block; }
-
+/* ── 🐦 飛鳥專屬動畫設定 ── */
+#bird {
+    position: absolute;
+    z-index: 20; 
+    pointer-events: none; /* 讓底層的熱區負責接收點擊 */
+    /* 飛行時花 1.5 秒平滑移動 */
+    transition: left 1.5s ease-in-out, top 1.5s ease-in-out;
+}
+#hs-bird {
+    /* 熱區也要跟著鳥一起飛過去 */
+    transition: left 1.5s ease-in-out, top 1.5s ease-in-out; 
+}
 #char-mouth { 
     position: absolute; 
     width: 15%; 
@@ -479,6 +490,7 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
     <div class="hotspot" id="hs-cat"></div>
     
     <div class="hotspot" id="hs-dog"></div>
+    <div class="hotspot" id="hs-bird"></div>
 </div>
 
 <div id="guide-character">
@@ -798,6 +810,30 @@ document.querySelectorAll(".hotspot").forEach(hs => {
         if (isCorrect) {
             tapLocked = true;
             hs.classList.add("correct");
+            // 🐦 🔥 新增：小鳥被答對時的飛行魔法
+            if (hs.id === "hs-bird") {
+                const birdEl = document.getElementById("bird");
+                if (birdEl) {
+                    // 1. 啟動拍翅膀動畫 (每 0.1 秒切換一次圖片)
+                    let isUp = true;
+                    const flapInterval = setInterval(() => {
+                        isUp = !isUp;
+                        birdEl.src = isUp ? "bird_up.png" : "bird_down.png";
+                    }, 100);
+
+                    // 2. 改變座標：飛向溜滑梯頂端 (圖片跟熱區一起飛)
+                    birdEl.style.left = "10%";
+                    birdEl.style.top = "18%";
+                    hs.style.left = "10%";
+                    hs.style.top = "18%";
+
+                    // 3. 1.5秒後到達目的地，停止拍翅膀並收合
+                    setTimeout(() => {
+                        clearInterval(flapInterval);
+                        birdEl.src = "bird_down.png"; 
+                    }, 1500);
+                }
+            }
             recordResult(currentQ);
             playCorrect();
             msgEl.innerHTML = "⭐ Great job!";
@@ -931,7 +967,7 @@ function resizeItems() {
     const w = scene.offsetWidth;
     const h = scene.offsetHeight;
 
-    const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12, cat: 0.07, dog: 0.15 };
+    const sizes = { bear: 0.25, bear_green: 0.08, bear_yellow: 0.08, car: 0.10, ball: 0.12, cat: 0.07, dog: 0.15, bird: 0.10 };
     Object.entries(sizes).forEach(([id, ratio]) => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -963,6 +999,7 @@ const HOTSPOT_DEFS_PARK = {
     "hs-swing":   { left: 50, top: 27, width: 23, height: 32 }, 
     "hs-seesaw":  { left: 38, top: 60, width: 23, height: 16 }, 
     "hs-sandbox": { left: 73, top: 54, width: 24, height: 16 }, 
+    "hs-bird":    { left: 80, top: 15, width: 12, height: 16 },
     
     // 狗狗專屬隱形點擊熱區
     "hs-dog":     { left: 74, top: 74, width: 16, height: 22 },
@@ -970,14 +1007,17 @@ const HOTSPOT_DEFS_PARK = {
 };
 
 const questions_park = [
-    { type: "tap", question: "Can you find the slide?", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-dog","hs-cat"] },
-    { type: "tap", question: "Where is the swing?", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox","hs-dog","hs-cat"] },
-    { type: "tap", question: "Can you find the seesaw?", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox","hs-dog","hs-cat"] },
-    { type: "tap", question: "Where is the sandbox?", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree","hs-dog","hs-cat"] },
-    { type: "tap", question: "Can you find the big tree?", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud","hs-dog","hs-cat"] },
+    { type: "tap", question: "Can you find the slide?", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", question: "Where is the swing?", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", question: "Can you find the seesaw?", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", question: "Where is the sandbox?", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", question: "Can you find the big tree?", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud","hs-dog","hs-cat","hs-bird"] },
+    
+    // 🐦 🔥 新增：青鳥尋找題 (這裡把所有其他東西設為干擾項)
+    { type: "tap", question: "Can you find the blue bird?", audio: "p_find_bird.mp3", targets: ["hs-bird"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud","hs-dog","hs-cat"] },
     
     // 狗狗尋找題 (Tap)
-    { type: "tap", question: "Can you find the dog?", audio: "p_find_dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud","hs-cat"] },
+    { type: "tap", question: "Can you find the dog?", audio: "p_find_dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud","hs-cat","hs-bird"] },
     
     // 🐈 貓咪拖曳題 (這題不用加 decoys)
     { type: "drag", itemId: "cat", question: "Can you put the cat IN the sandbox?", audio: "p_drag_cat.mp3", zone: { left: 68, right: 100, top: 48, bottom: 95 }, snap: { left: 81, top: 43 } }
@@ -988,7 +1028,25 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
     currentQ = 0;
     
     document.getElementById("game-bg").src = "park.jpeg";
+    // 喚醒公園寵物並回到初始起點
+    const catEl = document.getElementById("cat");
+    catEl.style.display = "block";
+    catEl.style.left = "15%";
+    catEl.style.top = "75%";
     
+    const dogEl = document.getElementById("dog");
+    dogEl.style.display = "block";
+    dogEl.style.left = "75%";
+    dogEl.style.top = "75%";
+
+    // 🔥 喚醒青鳥並設在起點
+    const birdEl = document.getElementById("bird");
+    if (birdEl) {
+        birdEl.style.display = "block";
+        birdEl.style.left = "80%";
+        birdEl.style.top = "15%";
+        birdEl.src = "bird_down.png"; 
+    }
     // 🔥 切換關卡時，顯示獨立圖層：底座和搖晃木板
     const baseEl = document.getElementById("seesaw-base");
     if(baseEl) baseEl.style.display = "block";
@@ -1007,17 +1065,6 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
         el.classList.remove("draggable", "jump");
         el.style.cursor = "";
     });
-    
-    // 喚醒公園寵物並回到初始起點
-    const catEl = document.getElementById("cat");
-    catEl.style.display = "block";
-    catEl.style.left = "15%";
-    catEl.style.top = "75%";
-    
-    const dogEl = document.getElementById("dog");
-    dogEl.style.display = "block";
-    dogEl.style.left = "75%";
-    dogEl.style.top = "75%";
     
     buildDots();
     resizeItems();
