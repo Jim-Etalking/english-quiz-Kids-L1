@@ -1028,18 +1028,27 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
     currentQ = 0;
     
     document.getElementById("game-bg").src = "park.jpeg";
-    // 喚醒公園寵物並回到初始起點
+    
+    // 🧹 1. 先把所有玩具（包含貓狗鳥）強制隱藏並還原狀態
+    document.querySelectorAll(".item").forEach(el => {
+        el.style.display = "none";
+        el.classList.remove("draggable", "jump");
+        el.style.cursor = "";
+    });
+
+    // 🐈 2. 再單獨喚醒貓咪並定位
     const catEl = document.getElementById("cat");
     catEl.style.display = "block";
     catEl.style.left = "15%";
     catEl.style.top = "75%";
     
+    // 🐶 3. 再單獨喚醒狗狗並定位
     const dogEl = document.getElementById("dog");
     dogEl.style.display = "block";
     dogEl.style.left = "75%";
     dogEl.style.top = "75%";
 
-    // 🔥 喚醒青鳥並設在起點
+    // 🐦 🔥 4. 再單獨喚醒青鳥並定位
     const birdEl = document.getElementById("bird");
     if (birdEl) {
         birdEl.style.display = "block";
@@ -1047,7 +1056,8 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
         birdEl.style.top = "15%";
         birdEl.src = "bird_down.png"; 
     }
-    // 🔥 切換關卡時，顯示獨立圖層：底座和搖晃木板
+
+    // 🎡 顯示獨立圖層：底座和搖晃木板
     const baseEl = document.getElementById("seesaw-base");
     if(baseEl) baseEl.style.display = "block";
     const boardEl = document.getElementById("seesaw-board");
@@ -1058,13 +1068,6 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
     
     Object.assign(HOTSPOT_DEFS, HOTSPOT_DEFS_PARK);
     applyHotspotPositions();
-    
-    // 隱藏第一關的舊玩具
-    document.querySelectorAll(".item").forEach(el => {
-        el.style.display = "none";
-        el.classList.remove("draggable", "jump");
-        el.style.cursor = "";
-    });
     
     buildDots();
     resizeItems();
