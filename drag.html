@@ -163,6 +163,14 @@ h1 {
 #guide-inner { 
     position: relative; 
 }
+    /* 手機直立畫面：改成貼在螢幕左下角，不再用場景寬度去算位置 */
+@media (max-width: 700px) {
+    #guide-character {
+        left: 1%;
+        bottom: 1%;
+        width: 18%;
+    }
+}
 
 #guide-body { width: 100%; display: block; }
 /* ── 🐦 飛鳥專屬動畫設定 ── */
@@ -690,6 +698,7 @@ function loadQuestion(n) {
     if (n >= questions.length) {
         if (!isStage2) {
             document.getElementById("next-stage-screen").style.display = "flex";
+            preloadStage2Assets();
             return;
         }
 
@@ -926,7 +935,52 @@ startBtnEl.style.opacity = "0.6";
 
 // img[src] 只會抓到「現在就有 src」的圖片，公園關卡(data-src)不會被算進去
 waitForImages('img[src]').then(unlockStartBtn);
+// ── 第二關素材預載：轉場畫面出現時就開始背景下載 ──
+const nextStageBtnEl = document.getElementById("next-stage-btn");
+let stage2Preloaded = false;
 
+function preloadStage2Assets() {
+    if (stage2Preloaded) return;
+    stage2Preloaded = true;
+
+    nextStageBtnEl.disabled = true;
+    nextStageBtnEl.textContent = "Loading...";
+    nextStageBtnEl.style.opacity = "0.6";
+
+    const parkBg = new Image();
+    const baseImg = document.getElementById("seesaw-base");
+    const boardImg = document.getElementById("seesaw-board");
+
+    const promises = [];
+
+    promises.push(new Promise(resolve => {
+        parkBg.onload = resolve;
+        parkBg.onerror = resolve;
+        parkBg.src = "park.jpeg";
+    }));
+
+    promises.push(new Promise(resolve => {
+        const img = new Image();
+        img.onload = resolve;
+        img.onerror = resolve;
+        img.src = baseImg.dataset.src;
+    }));
+
+    promises.push(new Promise(resolve => {
+        const img = new Image();
+        img.onload = resolve;
+        img.onerror = resolve;
+        img.src = boardImg.dataset.src;
+    }));
+
+    Promise.all(promises).then(() => {
+        // 把預載好的網址記下來，等真正進公園時直接套用，不會重新下載
+        window.__parkBgLoaded = parkBg.src;
+        nextStageBtnEl.disabled = false;
+        nextStageBtnEl.textContent = "Go to the Park! ➔";
+        nextStageBtnEl.style.opacity = "1";
+    });
+}
 function recordResult(n) {
     const seconds = ((Date.now() - qStartTime) / 1000).toFixed(1);
     qResults.push({
