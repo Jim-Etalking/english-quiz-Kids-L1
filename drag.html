@@ -173,10 +173,6 @@ h1 {
     /* 飛行時花 1.5 秒平滑移動 */
     transition: left 1.5s ease-in-out, top 1.5s ease-in-out;
 }
-#hs-bird {
-    /* 熱區也要跟著鳥一起飛過去 */
-    transition: left 1.5s ease-in-out, top 1.5s ease-in-out; 
-}
 
 /* ── 🐦 飛鳥拋物線與轉頭魔法 ── */
 @keyframes birdArc {
@@ -822,39 +818,49 @@ document.querySelectorAll(".hotspot").forEach(hs => {
         if (isCorrect) {
             tapLocked = true;
             hs.classList.add("correct");
+            
+            // ⏳ 設定一個變數：預設 0.9 秒後進入下一題
+            let nextQDelay = 900; 
+
             // 🐦 🔥 新增：小鳥被答對時的飛行魔法
             if (hs.id === "hs-bird") {
+                // 鳥飛得比較久，我們讓下一題耐心等 1.6 秒再出來
+                nextQDelay = 1600; 
+
                 const birdEl = document.getElementById("bird");
                 if (birdEl) {
-                    // 1. 啟動拍翅膀動畫 (每 0.1 秒切換一次圖片)
+                    // 1. 啟動拍翅膀動畫
                     let isUp = true;
                     const flapInterval = setInterval(() => {
                         isUp = !isUp;
                         birdEl.src = isUp ? "bird_up.png" : "bird_down.png";
                     }, 100);
 
-                    // 2. 改變座標：飛向溜滑梯頂端 (圖片跟熱區一起飛)
+                    // 2. 改變座標：只有「鳥的圖片」飛過去，綠色熱區留在樹上！
                     birdEl.style.left = "10%";
                     birdEl.style.top = "15%";
-                    hs.style.left = "10%";
-                    hs.style.top = "15%";
-                    
-                    // 🌟 幫小鳥外掛拋物線動畫！
                     birdEl.classList.add("flying-arc");
 
-                    // 3. 1.5秒後到達目的地，停止拍翅膀並收合
+                    // 3. 1.5秒後到達目的地
                     setTimeout(() => {
                         clearInterval(flapInterval);
                         birdEl.src = "bird_down.png"; 
-                        // 🌟 降落後移除拋物線狀態
                         birdEl.classList.remove("flying-arc"); 
+                        
+                        // 🌟 降落後，才瞬間把「隱形熱區」移到溜滑梯上合體
+                        hs.style.left = "10%";
+                        hs.style.top = "15%";
                     }, 1500);
                 }
             }
+            
             recordResult(currentQ);
             playCorrect();
             msgEl.innerHTML = "⭐ Great job!";
-            setTimeout(() => { currentQ++; loadQuestion(currentQ); }, 900);
+            
+            // 使用我們剛剛設定的延遲時間進入下一題
+            setTimeout(() => { currentQ++; loadQuestion(currentQ); }, nextQDelay); 
+            
         } else {
             hs.classList.add("wrong");
             qAttempts++;
