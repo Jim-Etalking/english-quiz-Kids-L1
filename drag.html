@@ -177,6 +177,17 @@ h1 {
     /* 熱區也要跟著鳥一起飛過去 */
     transition: left 1.5s ease-in-out, top 1.5s ease-in-out; 
 }
+
+/* ── 🐦 飛鳥拋物線與轉頭魔法 ── */
+@keyframes birdArc {
+    /* 加上 scaleX(-1) 讓鳥在起飛瞬間自動轉向左邊 */
+    0%   { transform: scaleX(-1) translateY(0); }
+    50%  { transform: scaleX(-1) translateY(-100px); } /* 飛到一半拋高 100px */
+    100% { transform: scaleX(-1) translateY(0); }
+}
+.flying-arc {
+    animation: birdArc 1.5s ease-in-out; 
+}
 #char-mouth { 
     position: absolute; 
     width: 15%; 
@@ -827,11 +838,16 @@ document.querySelectorAll(".hotspot").forEach(hs => {
                     birdEl.style.top = "18%";
                     hs.style.left = "10%";
                     hs.style.top = "18%";
+                    
+                    // 🌟 幫小鳥外掛拋物線動畫！
+                    birdEl.classList.add("flying-arc");
 
                     // 3. 1.5秒後到達目的地，停止拍翅膀並收合
                     setTimeout(() => {
                         clearInterval(flapInterval);
                         birdEl.src = "bird_down.png"; 
+                        // 🌟 降落後移除拋物線狀態
+                        birdEl.classList.remove("flying-arc"); 
                     }, 1500);
                 }
             }
