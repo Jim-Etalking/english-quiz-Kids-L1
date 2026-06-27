@@ -1008,9 +1008,9 @@ function resizeItems() {
 
 document.getElementById("start-btn").addEventListener("click", () => {
     document.getElementById("start-screen").style.display = "none";
-    //loadQuestion(0);
+    loadQuestion(0);
     // 🚀 開發者密技：讓程式自動幫你按「進入第二關」的按鈕
-    document.getElementById("next-stage-btn").click();
+    //document.getElementById("next-stage-btn").click();
 });
 
 // ═══════════════════════════════════════════════
@@ -1050,7 +1050,7 @@ const questions_park = [
 document.getElementById("next-stage-btn").addEventListener("click", () => {
     document.getElementById("next-stage-screen").style.display = "none";
     isStage2 = true;
-    currentQ = 5;
+    currentQ = 0;
     
     document.getElementById("game-bg").src = "park.jpeg";
     
