@@ -900,8 +900,7 @@ document.getElementById("cat").addEventListener("pointerdown", () => {
 
 buildDots();
 applyHotspotPositions();
-    // ── 載入中狀態：避免使用者在背景圖還沒下載完就按 START ──
-const bgImgEl = document.getElementById("game-bg");
+    // ── 載入中狀態：等所有第一關圖片都載完才能按 START ──
 const startBtnEl = document.getElementById("start-btn");
 
 function unlockStartBtn() {
@@ -910,17 +909,23 @@ function unlockStartBtn() {
     startBtnEl.style.opacity = "1";
 }
 
+function waitForImages(selector) {
+    const imgs = Array.from(document.querySelectorAll(selector));
+    return Promise.all(imgs.map(img => {
+        if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+        return new Promise(resolve => {
+            img.addEventListener('load', resolve, { once: true });
+            img.addEventListener('error', resolve, { once: true }); // 萬一某張壞了也不要卡死
+        });
+    }));
+}
+
 startBtnEl.disabled = true;
 startBtnEl.textContent = "Loading...";
 startBtnEl.style.opacity = "0.6";
 
-if (bgImgEl.complete && bgImgEl.naturalWidth > 0) {
-    // 圖片已經是瀏覽器快取，直接解鎖
-    unlockStartBtn();
-} else {
-    bgImgEl.onload = unlockStartBtn;
-    bgImgEl.onerror = unlockStartBtn; // 萬一圖片壞了也不要卡死使用者
-}
+// img[src] 只會抓到「現在就有 src」的圖片，公園關卡(data-src)不會被算進去
+waitForImages('img[src]').then(unlockStartBtn);
 
 function recordResult(n) {
     const seconds = ((Date.now() - qStartTime) / 1000).toFixed(1);
