@@ -1018,7 +1018,7 @@ const HOTSPOT_DEFS_PARK = {
     "hs-swing":   { left: 50, top: 27, width: 23, height: 32 }, 
     "hs-seesaw":  { left: 38, top: 60, width: 23, height: 16 }, 
     "hs-sandbox": { left: 73, top: 54, width: 24, height: 16 }, 
-    "hs-bird":    { left: 80, top: 15, width: 12, height: 16 },
+    "hs-bird":    { left: 65, top: 20, width: 12, height: 16 },
     
     // 狗狗專屬隱形點擊熱區
     "hs-dog":     { left: 74, top: 74, width: 16, height: 22 },
@@ -1071,8 +1071,8 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
     const birdEl = document.getElementById("bird");
     if (birdEl) {
         birdEl.style.display = "block";
-        birdEl.style.left = "80%";
-        birdEl.style.top = "15%";
+        birdEl.style.left = "65%";
+        birdEl.style.top = "20%";
         birdEl.src = "bird_down.png"; 
     }
 
