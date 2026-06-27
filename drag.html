@@ -465,6 +465,11 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 
 <div class="scene" id="scene">
     <img class="bg" id="game-bg" src="room_background.png">
+    <!-- 🐦 🌟 解決不拍翅膀的魔法 1：偷偷預載圖片 -->
+    <img src="bird_up.png" style="display: none;">
+
+    <img id="seesaw-base" src="seesaw_back.png" style="display: none;">
+    <img id="seesaw-board" src="seesaw_board.png" style="display: none;">
 
     <img id="seesaw-base" src="seesaw_back.png" style="display: none;">
     <img id="seesaw-board" src="seesaw_board.png" style="display: none;">
@@ -830,7 +835,8 @@ document.querySelectorAll(".hotspot").forEach(hs => {
                 const birdEl = document.getElementById("bird");
                 if (birdEl) {
                     // 1. 啟動拍翅膀動畫
-                    let isUp = true;
+                    birdEl.src = "bird_up.png"; // 🌟 解決不拍翅膀的魔法 2：點擊瞬間立刻抬起翅膀
+                    let isUp = true; 
                     const flapInterval = setInterval(() => {
                         isUp = !isUp;
                         birdEl.src = isUp ? "bird_up.png" : "bird_down.png";
