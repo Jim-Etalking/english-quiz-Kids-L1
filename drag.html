@@ -97,9 +97,33 @@ h1 {
     animation: toyJump 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 2;
 }
 
+.drag-ghost {
+    position: absolute;
+    opacity: 0.55;
+    filter: drop-shadow(0 10px 18px rgba(14, 165, 233, 0.45));
+    pointer-events: none;
+    z-index: 120;
+    transition: left 1s ease-in-out, top 1s ease-in-out;
+}
+
+.drag-target-hint {
+    position: absolute;
+    border: 5px dashed #06d6a0;
+    background: rgba(6, 214, 160, 0.16);
+    border-radius: 24px;
+    pointer-events: none;
+    z-index: 90;
+    animation: targetFlash 0.9s ease-in-out 2;
+}
+
 @keyframes toyJump {
     0%, 100% { transform: scale(1) translateY(0); }
     50% { transform: scale(1.08, 0.92) translateY(-30px); }
+}
+
+@keyframes targetFlash {
+    0%, 100% { opacity: 0.15; transform: scale(0.98); }
+    50% { opacity: 1; transform: scale(1.03); }
 }
 
 /* ── 玩具在房間的初始位置 ── */
@@ -644,6 +668,8 @@ let offsetX = 0, offsetY = 0;
 let tapLocked  = false;
 let qStartTime  = 0;
 let qAttempts   = 0;
+let qHintUsed   = false;
+let qAssisted   = false;
 const qResults  = []; 
 
 const scene      = document.getElementById("scene");
@@ -651,6 +677,83 @@ const msgEl      = document.getElementById("message");
 const finishEl   = document.getElementById("finish");
 const questionEl = document.getElementById("question");
 const progressEl = document.getElementById("progress");
+
+function clearDragHint() {
+    document.querySelectorAll(".drag-ghost, .drag-target-hint").forEach(el => el.remove());
+}
+
+function getDragSnapPosition(q, item, rect) {
+    return {
+        left: (q.snap.left / 100 * rect.width),
+        top: (q.snap.top / 100 * rect.height)
+    };
+}
+
+function showTargetHint(q, rect) {
+    const hint = document.createElement("div");
+    hint.className = "drag-target-hint";
+    hint.style.left = (q.zone.left / 100 * rect.width) + "px";
+    hint.style.top = (q.zone.top / 100 * rect.height) + "px";
+    hint.style.width = ((q.zone.right - q.zone.left) / 100 * rect.width) + "px";
+    hint.style.height = ((q.zone.bottom - q.zone.top) / 100 * rect.height) + "px";
+    scene.appendChild(hint);
+    setTimeout(() => hint.remove(), 1900);
+}
+
+function showDragGhostHint(item, q) {
+    if (!item) return;
+
+    clearDragHint();
+
+    const rect = scene.getBoundingClientRect();
+    showTargetHint(q, rect);
+
+    const ghost = item.cloneNode(true);
+    const itemLeft = item.offsetLeft;
+    const itemTop = item.offsetTop;
+    const snap = getDragSnapPosition(q, item, rect);
+
+    ghost.removeAttribute("id");
+    ghost.className = "drag-ghost";
+    ghost.style.width = item.offsetWidth + "px";
+    ghost.style.left = itemLeft + "px";
+    ghost.style.top = itemTop + "px";
+    ghost.style.display = "block";
+    scene.appendChild(ghost);
+
+    requestAnimationFrame(() => {
+        ghost.style.left = snap.left + "px";
+        ghost.style.top = snap.top + "px";
+    });
+
+    setTimeout(() => ghost.remove(), 1400);
+}
+
+function finishDragQuestion(targetToy, q, assisted = false) {
+    clearDragHint();
+    qAssisted = assisted;
+
+    const rect = scene.getBoundingClientRect();
+    const snap = getDragSnapPosition(q, targetToy, rect);
+
+    targetToy.style.transition = "left 0.3s ease, top 0.3s ease";
+    targetToy.style.left = snap.left + "px";
+    targetToy.style.top = snap.top + "px";
+    targetToy.style.cursor = "default";
+    targetToy.classList.remove("draggable");
+    
+    recordResult(currentQ);
+    playCorrect();
+    msgEl.innerHTML = assisted ? "⭐ Let's try together!" : "⭐ Great job!";
+    
+    setTimeout(() => { targetToy.classList.add("jump"); }, 150);
+
+    setTimeout(() => { 
+        targetToy.classList.remove("jump");
+        currentQ++; 
+        loadQuestion(currentQ); 
+    }, assisted ? 1300 : 1100);
+}
 
 function buildDots() {
     progressEl.innerHTML = "";
@@ -685,6 +788,8 @@ function applyHotspotPositions() {
 }
 
 function loadQuestion(n) {
+    clearDragHint();
+
     document.querySelectorAll(".hotspot").forEach(el => {
         el.classList.remove("active", "correct", "wrong");
         el.style.pointerEvents = "auto"; 
@@ -718,6 +823,8 @@ function loadQuestion(n) {
 
     qStartTime = Date.now();
     qAttempts  = 0;
+    qHintUsed  = false;
+    qAssisted  = false;
 
     if (q.type === "drag") {
         document.querySelectorAll(".hotspot").forEach(hsEl => hsEl.style.pointerEvents = "none");
@@ -783,30 +890,28 @@ window.addEventListener("pointerup", () => {
     const inZone = cx > z.left && cx < z.right && cy > z.top && cy < z.bottom;
 
     if (inZone) {
-        const targetToy = activeItem; 
-        targetToy.style.transition = "left 0.3s ease, top 0.3s ease";
-        targetToy.style.left   = (q.snap.left / 100 * W) + "px";
-        targetToy.style.top    = (q.snap.top  / 100 * H) + "px";
-        targetToy.style.cursor = "default";
-        targetToy.classList.remove("draggable");
-        
-        recordResult(currentQ);
-        playCorrect();
-        msgEl.innerHTML = "⭐ Great job!";
-        
-        setTimeout(() => { targetToy.classList.add("jump"); }, 150);
-
-        setTimeout(() => { 
-            targetToy.classList.remove("jump");
-            currentQ++; 
-            loadQuestion(currentQ); 
-        }, 1100);
+        finishDragQuestion(activeItem, q);
     } else {
+        qAttempts++;
+
+        if (qAttempts >= 3) {
+            qAssisted = true;
+            finishDragQuestion(activeItem, q, true);
+            activeItem = null;
+            return;
+        }
+
         activeItem.style.left = "";
         activeItem.style.top  = "";
-        qAttempts++;
         playWrong();
-        msgEl.innerHTML = "❌ Try again!";
+
+        if (qAttempts === 2) {
+            qHintUsed = true;
+            msgEl.innerHTML = "👀 Look here!";
+            setTimeout(() => showDragGhostHint(activeItem || document.getElementById(q.itemId), q), 120);
+        } else {
+            msgEl.innerHTML = "❌ Try again!";
+        }
     }
     activeItem = null;
 });
@@ -991,6 +1096,8 @@ function recordResult(n) {
         type: q.type,
         difficulty: q.difficulty || 1,
         skill: q.skill || "vocabulary",
+        hintUsed: qHintUsed,
+        assisted: qAssisted,
     });
 }
 
@@ -1025,8 +1132,9 @@ function scoreResult(result) {
     const maxScore = result.difficulty || 1;
     const errorFactor = getErrorFactor(result.attempts);
     const timeFactor = getTimeFactor(result.type, result.seconds);
-    const score = maxScore * errorFactor * timeFactor;
-    return { score, maxScore, errorFactor, timeFactor };
+    const supportFactor = result.assisted ? 0.35 : (result.hintUsed ? 0.9 : 1);
+    const score = maxScore * errorFactor * timeFactor * supportFactor;
+    return { score, maxScore, errorFactor, timeFactor, supportFactor };
 }
 
 function getPercent(results) {
@@ -1135,9 +1243,10 @@ dataBtn.addEventListener("click", () => {
         const scored = scoreResult(r);
         const itemPercent = Math.round((scored.score / scored.maxScore) * 100);
         const tr = document.createElement("tr");
+        const supportLabel = r.assisted ? "｜協助完成" : (r.hintUsed ? "｜提示" : "");
         let statusHtml = r.attempts <= 1
-            ? `<span class="badge perfect">錯誤 ${r.attempts} 次｜${itemPercent}%</span>`
-            : `<span class="badge learning">錯誤 ${r.attempts} 次｜${itemPercent}%</span>`;
+            ? `<span class="badge perfect">錯誤 ${r.attempts} 次${supportLabel}｜${itemPercent}%</span>`
+            : `<span class="badge learning">錯誤 ${r.attempts} 次${supportLabel}｜${itemPercent}%</span>`;
         let speedIcon = r.seconds < 3 ? '⚡' : (r.seconds < 6 ? '👍' : '🐢');
         tr.innerHTML = `
             <td style="font-weight: 700;">${r.question}</td>
