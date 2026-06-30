@@ -569,19 +569,19 @@ const HOTSPOT_DEFS = {
 };
 
 const questions = [
-    { type: "tap", question: "Can you find the sun? ", audio: "assets/audio/questions/room/q04.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Where is the door? ", audio: "assets/audio/questions/room/q05.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Can you find the books? ", audio: "assets/audio/questions/room/q06.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Where is the window? ", audio: "assets/audio/questions/room/q07.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Can you find the cloud? ", audio: "assets/audio/questions/room/q08.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", difficulty: 1, skill: "vocabulary", question: "Can you find the sun? ", audio: "assets/audio/questions/room/q04.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", difficulty: 1, skill: "vocabulary", question: "Where is the door? ", audio: "assets/audio/questions/room/q05.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", difficulty: 1, skill: "vocabulary", question: "Can you find the books? ", audio: "assets/audio/questions/room/q06.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", difficulty: 1, skill: "vocabulary", question: "Where is the window? ", audio: "assets/audio/questions/room/q07.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", difficulty: 1, skill: "vocabulary", question: "Can you find the cloud? ", audio: "assets/audio/questions/room/q08.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
     
-    { type: "tap", question: "Touch the BLUE bear! ", audio: "assets/audio/questions/room/q09.mp3", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
-    { type: "tap", question: "Can you find the RED ball? ", audio: "assets/audio/questions/room/q10.mp3", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
-    { type: "tap", question: "Where is the YELLOW window? ", audio: "assets/audio/questions/room/q11.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", difficulty: 2, skill: "vocabulary", question: "Touch the BLUE bear! ", audio: "assets/audio/questions/room/q09.mp3", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", difficulty: 2, skill: "vocabulary", question: "Can you find the RED ball? ", audio: "assets/audio/questions/room/q10.mp3", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", difficulty: 2, skill: "vocabulary", question: "Where is the YELLOW window? ", audio: "assets/audio/questions/room/q11.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
     
-    { type: "drag", itemId: "bear", question: "Can you put the BLUE bear on the rug?", audio: "assets/audio/questions/room/q01.mp3", zone: { left: 0, right: 50, top: 55, bottom: 100 }, snap: { left: 8, top: 68 } },
-    { type: "drag", itemId: "car", question: "Can you put the car on the table?", audio: "assets/audio/questions/room/q02.mp3", zone: { left: 44, right: 70, top: 45, bottom: 68 }, snap: { left: 53, top: 54 } },
-    { type: "drag", itemId: "ball", question: "Can you put the ball in front of the table?", audio: "assets/audio/questions/room/q03.mp3", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
+    { type: "drag", difficulty: 3, skill: "directions", itemId: "bear", question: "Can you put the BLUE bear on the rug?", audio: "assets/audio/questions/room/q01.mp3", zone: { left: 0, right: 50, top: 55, bottom: 100 }, snap: { left: 8, top: 68 } },
+    { type: "drag", difficulty: 3, skill: "directions", itemId: "car", question: "Can you put the car on the table?", audio: "assets/audio/questions/room/q02.mp3", zone: { left: 44, right: 70, top: 45, bottom: 68 }, snap: { left: 53, top: 54 } },
+    { type: "drag", difficulty: 3, skill: "directions", itemId: "ball", question: "Can you put the ball in front of the table?", audio: "assets/audio/questions/room/q03.mp3", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
 ];
 
 const CORRECT_SOUNDS = ["assets/audio/effects/correct-01.mp3", "assets/audio/effects/correct-02.mp3", "assets/audio/effects/correct-03.mp3"];
@@ -983,10 +983,14 @@ function preloadStage2Assets() {
 }
 function recordResult(n) {
     const seconds = ((Date.now() - qStartTime) / 1000).toFixed(1);
+    const q = questions[n];
     qResults.push({
-        question: (isStage2 ? "🛝 " : "🏠 ") + questions[n].question,
+        question: (isStage2 ? "🛝 " : "🏠 ") + q.question,
         seconds:  parseFloat(seconds),
         attempts: qAttempts,
+        type: q.type,
+        difficulty: q.difficulty || 1,
+        skill: q.skill || "vocabulary",
     });
 }
 
@@ -994,6 +998,86 @@ function recordResult(n) {
 const dataBtn   = document.getElementById("data-btn");
 const dataPanel = document.getElementById("data-panel");
 const dataTbody = document.getElementById("data-tbody");
+
+function getErrorFactor(attempts) {
+    if (attempts <= 0) return 1;
+    if (attempts === 1) return 0.9;
+    if (attempts === 2) return 0.75;
+    if (attempts === 3) return 0.55;
+    return 0.4;
+}
+
+function getTimeFactor(type, seconds) {
+    if (type === "drag") {
+        if (seconds <= 6) return 1;
+        if (seconds <= 12) return 0.9;
+        if (seconds <= 18) return 0.75;
+        return 0.6;
+    }
+
+    if (seconds <= 4) return 1;
+    if (seconds <= 8) return 0.9;
+    if (seconds <= 12) return 0.75;
+    return 0.6;
+}
+
+function scoreResult(result) {
+    const maxScore = result.difficulty || 1;
+    const errorFactor = getErrorFactor(result.attempts);
+    const timeFactor = getTimeFactor(result.type, result.seconds);
+    const score = maxScore * errorFactor * timeFactor;
+    return { score, maxScore, errorFactor, timeFactor };
+}
+
+function getPercent(results) {
+    const totals = results.reduce((acc, result) => {
+        const scored = scoreResult(result);
+        acc.score += scored.score;
+        acc.maxScore += scored.maxScore;
+        return acc;
+    }, { score: 0, maxScore: 0 });
+
+    if (!totals.maxScore) return 0;
+    return Math.round((totals.score / totals.maxScore) * 100);
+}
+
+function getRatingFromPercent(percent) {
+    if (percent >= 90) return 5;
+    if (percent >= 75) return 4;
+    if (percent >= 60) return 3;
+    if (percent >= 45) return 2;
+    return 1;
+}
+
+function getRecommendedPlacement(overallPercent, directionPercent) {
+    if (overallPercent >= 75 && directionPercent >= 65) {
+        return {
+            level: "Starter",
+            note: "建議進入第三關，進一步判斷 Starter / L1。",
+            color: "#06d6a0",
+            bg: "rgba(6, 214, 160, 0.08)",
+            border: "#06d6a0"
+        };
+    }
+
+    if (overallPercent >= 60) {
+        return {
+            level: "Pre-Starter Plus",
+            note: "接近 Starter，建議先補強方位指令與穩定度。",
+            color: "#f59e0b",
+            bg: "rgba(245, 158, 11, 0.1)",
+            border: "#f59e0b"
+        };
+    }
+
+    return {
+        level: "Pre-Starter",
+        note: "建議先從基礎單字辨識與簡短聽力指令開始。",
+        color: "#ef476f",
+        bg: "rgba(239, 71, 111, 0.08)",
+        border: "#ef476f"
+    };
+}
 
 function getStars(num) {
     let stars = "";
@@ -1005,35 +1089,18 @@ dataBtn.addEventListener("click", () => {
     finishEl.style.display = "none";
     dataTbody.innerHTML = "";
     
-    let totalSeconds = 0;
-    let totalAttempts = 0;
-    let dragAttempts = 0;
-    
-    qResults.forEach((r, idx) => {
-        totalSeconds += r.seconds;
-        totalAttempts += r.attempts;
-        if (r.question.includes("put")) dragAttempts += r.attempts;
-    });
+    const vocabularyResults = qResults.filter(r => r.skill === "vocabulary");
+    const directionResults = qResults.filter(r => r.skill === "directions");
+    const overallPercent = getPercent(qResults);
+    const vocabularyPercent = getPercent(vocabularyResults);
+    const directionPercent = getPercent(directionResults);
+    const speedPercent = Math.round(qResults.reduce((sum, r) => sum + getTimeFactor(r.type, r.seconds), 0) / (qResults.length || 1) * 100);
+    const placement = getRecommendedPlacement(overallPercent, directionPercent);
 
-    const totalQuestions = qResults.length || 1;
-    const avgTime = totalSeconds / totalQuestions;
-
-    let vocRating = 5;
-    if (totalAttempts > 0 && totalAttempts <= 2) vocRating = 4;
-    else if (totalAttempts > 2 && totalAttempts <= 4) vocRating = 3;
-    else if (totalAttempts > 4) vocRating = 2;
-
-    let listeningRating = vocRating; 
-
-    let speedRating = 5;
-    if (avgTime > 3 && avgTime <= 6) speedRating = 4;
-    else if (avgTime > 6 && avgTime <= 10) speedRating = 3;
-    else if (avgTime > 10) speedRating = 2;
-
-    let directionRating = 5;
-    if (dragAttempts === 1) directionRating = 4;
-    else if (dragAttempts > 1 && dragAttempts <= 3) directionRating = 3;
-    else if (dragAttempts > 3) directionRating = 2;
+    const listeningRating = getRatingFromPercent(overallPercent);
+    const vocRating = getRatingFromPercent(vocabularyPercent);
+    const speedRating = getRatingFromPercent(speedPercent);
+    const directionRating = getRatingFromPercent(directionPercent);
 
     const reportHeader = document.querySelector('.report-header');
     reportHeader.innerHTML = `
@@ -1042,30 +1109,35 @@ dataBtn.addEventListener("click", () => {
         <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin-top: 15px; border: 1px solid #e2e8f0; text-align: left;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
                 <span style="font-weight: bold; color: #475569;">Listening Skills</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(listeningRating)}</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(listeningRating)} ${overallPercent}%</span>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
                 <span style="font-weight: bold; color: #475569;">Vocabulary</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(vocRating)}</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(vocRating)} ${vocabularyPercent}%</span>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
                 <span style="font-weight: bold; color: #475569;">Response Speed</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(speedRating)}</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(speedRating)} ${speedPercent}%</span>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 15px;">
                 <span style="font-weight: bold; color: #475569;">Following Directions</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(directionRating)}</span>
+                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(directionRating)} ${directionPercent}%</span>
             </div>
         </div>
-        <div style="margin-top: 20px; padding: 12px; background: rgba(239, 71, 111, 0.08); border-radius: 12px; border: 1px dashed #ef476f;">
+        <div style="margin-top: 20px; padding: 12px; background: ${placement.bg}; border-radius: 12px; border: 1px dashed ${placement.border};">
             <div style="font-size: 13px; color: #64748b; font-weight: bold; text-transform: uppercase;">Recommended Level</div>
-            <div style="font-weight: 900; color: #ef476f; font-size: 26px; margin-top: 4px; letter-spacing: 1px;">Starter</div>
+            <div style="font-weight: 900; color: ${placement.color}; font-size: 26px; margin-top: 4px; letter-spacing: 1px;">${placement.level}</div>
+            <div style="font-size: 14px; color: #475569; margin-top: 6px; line-height: 1.4;">${placement.note}</div>
         </div>
     `;
 
     qResults.forEach(r => {
+        const scored = scoreResult(r);
+        const itemPercent = Math.round((scored.score / scored.maxScore) * 100);
         const tr = document.createElement("tr");
-        let statusHtml = r.attempts === 0 ? `<span class="badge perfect">錯誤 0 次</span>` : `<span class="badge learning">錯誤 ${r.attempts} 次</span>`;
+        let statusHtml = r.attempts <= 1
+            ? `<span class="badge perfect">錯誤 ${r.attempts} 次｜${itemPercent}%</span>`
+            : `<span class="badge learning">錯誤 ${r.attempts} 次｜${itemPercent}%</span>`;
         let speedIcon = r.seconds < 3 ? '⚡' : (r.seconds < 6 ? '👍' : '🐢');
         tr.innerHTML = `
             <td style="font-weight: 700;">${r.question}</td>
@@ -1131,20 +1203,20 @@ const HOTSPOT_DEFS_PARK = {
 };
 
 const questions_park = [
-    { type: "tap", question: "Can you find the slide?", audio: "assets/audio/questions/park/find-slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
-    { type: "tap", question: "Where is the swing?", audio: "assets/audio/questions/park/find-swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
-    { type: "tap", question: "Can you find the seesaw?", audio: "assets/audio/questions/park/find-seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
-    { type: "tap", question: "Where is the sandbox?", audio: "assets/audio/questions/park/find-sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree","hs-dog","hs-cat","hs-bird"] },
-    { type: "tap", question: "Can you find the big tree?", audio: "assets/audio/questions/park/find-tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", difficulty: 1, skill: "vocabulary", question: "Can you find the slide?", audio: "assets/audio/questions/park/find-slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", difficulty: 1, skill: "vocabulary", question: "Where is the swing?", audio: "assets/audio/questions/park/find-swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", difficulty: 2, skill: "vocabulary", question: "Can you find the seesaw?", audio: "assets/audio/questions/park/find-seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", difficulty: 2, skill: "vocabulary", question: "Where is the sandbox?", audio: "assets/audio/questions/park/find-sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", difficulty: 1, skill: "vocabulary", question: "Can you find the big tree?", audio: "assets/audio/questions/park/find-tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud","hs-dog","hs-cat","hs-bird"] },
     
     // 🐦 🔥 新增：青鳥尋找題 (這裡把所有其他東西設為干擾項)
-    { type: "tap", question: "Can you find the blue bird?", audio: "assets/audio/questions/park/find-bird.mp3", targets: ["hs-bird"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud","hs-dog","hs-cat"] },
+    { type: "tap", difficulty: 2, skill: "vocabulary", question: "Can you find the blue bird?", audio: "assets/audio/questions/park/find-bird.mp3", targets: ["hs-bird"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud","hs-dog","hs-cat"] },
     
     // 狗狗尋找題 (Tap)
-    { type: "tap", question: "Can you find the dog?", audio: "assets/audio/questions/park/find-dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud","hs-cat","hs-bird"] },
+    { type: "tap", difficulty: 2, skill: "vocabulary", question: "Can you find the dog?", audio: "assets/audio/questions/park/find-dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud","hs-cat","hs-bird"] },
     
     // 🐈 貓咪拖曳題 (這題不用加 decoys)
-    { type: "drag", itemId: "cat", question: "Can you put the cat IN the sandbox?", audio: "assets/audio/questions/park/drag-cat.mp3", zone: { left: 68, right: 100, top: 48, bottom: 95 }, snap: { left: 78, top: 46 } }
+    { type: "drag", difficulty: 3, skill: "directions", itemId: "cat", question: "Can you put the cat IN the sandbox?", audio: "assets/audio/questions/park/drag-cat.mp3", zone: { left: 68, right: 100, top: 48, bottom: 95 }, snap: { left: 78, top: 46 } }
 ];
 document.getElementById("next-stage-btn").addEventListener("click", () => {
     document.getElementById("next-stage-screen").style.display = "none";
