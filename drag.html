@@ -1161,6 +1161,8 @@ function getRecommendedPlacement(overallPercent, directionPercent) {
     if (overallPercent >= 75 && directionPercent >= 65) {
         return {
             level: "Starter",
+            summary: "The child shows stable understanding of basic vocabulary and simple classroom-style instructions.",
+            nextStep: "Continue to Stage 3 to check Starter / L1 readiness.",
             note: "建議進入第三關，進一步判斷 Starter / L1。",
             color: "#06d6a0",
             bg: "rgba(6, 214, 160, 0.08)",
@@ -1171,6 +1173,8 @@ function getRecommendedPlacement(overallPercent, directionPercent) {
     if (overallPercent >= 60) {
         return {
             level: "Pre-Starter Plus",
+            summary: "The child is close to Starter, but responses are not yet fully stable across all task types.",
+            nextStep: "Review object words and placement commands before moving to Stage 3.",
             note: "接近 Starter，建議先補強方位指令與穩定度。",
             color: "#f59e0b",
             bg: "rgba(245, 158, 11, 0.1)",
@@ -1180,11 +1184,34 @@ function getRecommendedPlacement(overallPercent, directionPercent) {
 
     return {
         level: "Pre-Starter",
+        summary: "The child is still building confidence with basic listening and object recognition.",
+        nextStep: "Start with basic vocabulary review and short one-step listening practice.",
         note: "建議先從基礎單字辨識與簡短聽力指令開始。",
         color: "#ef476f",
         bg: "rgba(239, 71, 111, 0.08)",
         border: "#ef476f"
     };
+}
+
+function getSupportSummary(results) {
+    const hints = results.filter(r => r.hintUsed && !r.assisted).length;
+    const assisted = results.filter(r => r.assisted).length;
+
+    if (!hints && !assisted) {
+        return "Completed independently without hints or assisted placement.";
+    }
+
+    const parts = [];
+    if (hints) parts.push(`${hints} task${hints > 1 ? "s" : ""} used a visual hint`);
+    if (assisted) parts.push(`${assisted} task${assisted > 1 ? "s" : ""} needed assisted placement`);
+    return parts.join("; ") + ".";
+}
+
+function getAttemptSummary(results) {
+    const totalAttempts = results.reduce((sum, r) => sum + r.attempts, 0);
+    if (totalAttempts === 0) return "No incorrect attempts recorded.";
+    if (totalAttempts <= 3) return "A few incorrect attempts were recorded, within the expected range for young learners.";
+    return "Several incorrect attempts were recorded; review is recommended before moving up.";
 }
 
 function getStars(num) {
@@ -1209,33 +1236,51 @@ dataBtn.addEventListener("click", () => {
     const vocRating = getRatingFromPercent(vocabularyPercent);
     const speedRating = getRatingFromPercent(speedPercent);
     const directionRating = getRatingFromPercent(directionPercent);
+    const supportSummary = getSupportSummary(qResults);
+    const attemptSummary = getAttemptSummary(qResults);
 
     const reportHeader = document.querySelector('.report-header');
     reportHeader.innerHTML = `
-        <h2>📝 幼兒英語聽力與認知 analysis</h2>
-        <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
-        <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin-top: 15px; border: 1px solid #e2e8f0; text-align: left;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
-                <span style="font-weight: bold; color: #475569;">Listening Skills</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(listeningRating)} ${overallPercent}%</span>
+        <h2>Placement Report</h2>
+        <p>ROOM + PARK listening and interaction checkpoint</p>
+        <div style="margin-top: 18px; padding: 18px 20px; background: ${placement.bg}; border: 1px solid ${placement.border}; border-radius: 16px; text-align: left;">
+            <div style="font-size: 12px; color: #64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;">Recommended Level</div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin-top: 6px; flex-wrap: wrap;">
+                <div style="font-weight: 900; color: ${placement.color}; font-size: clamp(28px, 6vw, 40px); line-height: 1;">${placement.level}</div>
+                <div style="font-weight: 900; color: #0f172a; font-size: clamp(24px, 5vw, 34px); line-height: 1;">${overallPercent}<span style="font-size: 16px; color: #64748b;">/100</span></div>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
-                <span style="font-weight: bold; color: #475569;">Vocabulary</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(vocRating)} ${vocabularyPercent}%</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
-                <span style="font-weight: bold; color: #475569;">Response Speed</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(speedRating)} ${speedPercent}%</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 15px;">
-                <span style="font-weight: bold; color: #475569;">Following Directions</span>
-                <span style="color: #f59e0b; font-weight: bold; letter-spacing: 2px;">${getStars(directionRating)} ${directionPercent}%</span>
-            </div>
+            <div style="font-size: 14px; color: #334155; margin-top: 10px; line-height: 1.45;">${placement.summary}</div>
+            <div style="font-size: 14px; color: #475569; margin-top: 6px; line-height: 1.45;"><strong>Next Step:</strong> ${placement.nextStep}</div>
+            <div style="font-size: 13px; color: #64748b; margin-top: 8px; line-height: 1.45;">${placement.note}</div>
         </div>
-        <div style="margin-top: 20px; padding: 12px; background: ${placement.bg}; border-radius: 12px; border: 1px dashed ${placement.border};">
-            <div style="font-size: 13px; color: #64748b; font-weight: bold; text-transform: uppercase;">Recommended Level</div>
-            <div style="font-weight: 900; color: ${placement.color}; font-size: 26px; margin-top: 4px; letter-spacing: 1px;">${placement.level}</div>
-            <div style="font-size: 14px; color: #475569; margin-top: 6px; line-height: 1.4;">${placement.note}</div>
+        <div style="background: #f8fafc; padding: 18px 20px; border-radius: 16px; margin-top: 14px; border: 1px solid #e2e8f0; text-align: left;">
+            <div style="font-size: 13px; color: #64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Skill Snapshot</div>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px;">
+                    <div style="font-size: 12px; color: #64748b; font-weight: 700;">Listening Skills</div>
+                    <div style="color: #f59e0b; font-weight: 900; letter-spacing: 1px; margin-top: 4px;">${getStars(listeningRating)}</div>
+                    <div style="font-size: 20px; color: #0f172a; font-weight: 900; margin-top: 2px;">${overallPercent}%</div>
+                </div>
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px;">
+                    <div style="font-size: 12px; color: #64748b; font-weight: 700;">Vocabulary</div>
+                    <div style="color: #f59e0b; font-weight: 900; letter-spacing: 1px; margin-top: 4px;">${getStars(vocRating)}</div>
+                    <div style="font-size: 20px; color: #0f172a; font-weight: 900; margin-top: 2px;">${vocabularyPercent}%</div>
+                </div>
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px;">
+                    <div style="font-size: 12px; color: #64748b; font-weight: 700;">Response Speed</div>
+                    <div style="color: #f59e0b; font-weight: 900; letter-spacing: 1px; margin-top: 4px;">${getStars(speedRating)}</div>
+                    <div style="font-size: 20px; color: #0f172a; font-weight: 900; margin-top: 2px;">${speedPercent}%</div>
+                </div>
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px;">
+                    <div style="font-size: 12px; color: #64748b; font-weight: 700;">Following Directions</div>
+                    <div style="color: #f59e0b; font-weight: 900; letter-spacing: 1px; margin-top: 4px;">${getStars(directionRating)}</div>
+                    <div style="font-size: 20px; color: #0f172a; font-weight: 900; margin-top: 2px;">${directionPercent}%</div>
+                </div>
+            </div>
+            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 13px; color: #475569; line-height: 1.45;">
+                <div><strong>Attempt Summary:</strong> ${attemptSummary}</div>
+                <div style="margin-top: 4px;"><strong>Support Summary:</strong> ${supportSummary}</div>
+            </div>
         </div>
     `;
 
@@ -1243,10 +1288,11 @@ dataBtn.addEventListener("click", () => {
         const scored = scoreResult(r);
         const itemPercent = Math.round((scored.score / scored.maxScore) * 100);
         const tr = document.createElement("tr");
-        const supportLabel = r.assisted ? "｜協助完成" : (r.hintUsed ? "｜提示" : "");
-        let statusHtml = r.attempts <= 1
-            ? `<span class="badge perfect">錯誤 ${r.attempts} 次${supportLabel}｜${itemPercent}%</span>`
-            : `<span class="badge learning">錯誤 ${r.attempts} 次${supportLabel}｜${itemPercent}%</span>`;
+        const supportLabel = r.assisted ? "Assisted" : (r.hintUsed ? "Hint used" : "Independent");
+        const attemptLabel = r.attempts === 0 ? "No misses" : `${r.attempts} miss${r.attempts > 1 ? "es" : ""}`;
+        let statusHtml = r.attempts <= 1 && !r.assisted
+            ? `<span class="badge perfect">${supportLabel}｜${attemptLabel}｜${itemPercent}%</span>`
+            : `<span class="badge learning">${supportLabel}｜${attemptLabel}｜${itemPercent}%</span>`;
         let speedIcon = r.seconds < 3 ? '⚡' : (r.seconds < 6 ? '👍' : '🐢');
         tr.innerHTML = `
             <td style="font-weight: 700;">${r.question}</td>

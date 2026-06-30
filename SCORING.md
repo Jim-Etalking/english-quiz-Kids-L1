@@ -92,6 +92,8 @@ ROOM + PARK 完成後，系統會計算：
 - Vocabulary：非拖曳題的詞彙與物件辨識
 - Response Speed：反應時間穩定度
 - Following Directions：拖曳與方位指令題
+- Attempt Summary：整體錯誤次數觀察
+- Support Summary：是否使用提示或需要協助完成
 
 推薦等級使用以下規則：
 

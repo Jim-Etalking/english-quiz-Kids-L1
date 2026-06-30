@@ -70,6 +70,7 @@ SCORING.md
 - 每題加入難度權重，區分簡單題、中等題與拖曳方位題。
 - 報表改為依照加權分數推薦 Pre-Starter、Pre-Starter Plus 或 Starter。
 - 拖曳題加入提示與協助機制，避免孩子卡在不懂拖曳指令的題目。
+- 報表新增 Overall Score、Next Step、Skill Snapshot、Attempt Summary 與 Support Summary。
 - Starter 結果會建議進入第三關，用來進一步判斷 Starter / L1。
 
 ### 2026-06-30
