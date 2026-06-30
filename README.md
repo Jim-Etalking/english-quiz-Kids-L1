@@ -4,7 +4,7 @@
 
 ## 專案內容
 
-- `index.html`：早期版本或備用頁面。
+- `index.html`：早期版本/備用頁面。
 - `drag.html`：目前主要互動遊戲頁面。
 - `assets/images/`：圖片素材。
 - `assets/audio/`：題目語音與互動音效。
