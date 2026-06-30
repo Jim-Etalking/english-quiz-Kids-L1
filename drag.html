@@ -433,6 +433,7 @@ h1 {
     display: none;
     position: fixed;
     inset: 0;
+    padding: 18px;
     background: rgba(15, 23, 42, 0.7);
     backdrop-filter: blur(5px);
     z-index: 2000;
@@ -445,17 +446,22 @@ h1 {
 #data-inner {
     background: #ffffff;
     border-radius: 24px;
-    padding: 35px 40px;
-    max-width: 600px;
+    overflow: hidden;
+    max-width: 680px;
     width: 90vw;
-    max-height: 85dvh;
+    max-height: calc(100dvh - 36px);
     display: flex;
     flex-direction: column;
     box-shadow: 0 25px 50px rgba(0,0,0,0.15);
 }
 
+.report-scroll {
+    overflow-y: auto;
+    padding: 28px 40px 22px;
+}
+
 .report-header { text-align: center; margin-bottom: 25px; }
-.report-header h2 { margin: 0 0 8px; font-size: clamp(20px, 4vw, 26px); color: #1e293b; }
+.report-header h2 { margin: 0 0 8px; font-size: clamp(24px, 4vw, 34px); color: #1e293b; }
 .report-header p { margin: 0; color: #64748b; font-size: 15px; }
 
 .table-container { overflow-y: auto; border-radius: 12px; border: 1px solid #e2e8f0; }
@@ -468,8 +474,22 @@ h1 {
 .badge.learning { background: #fef9c3; color: #854d0e; }
 .speed { font-weight: 600; color: #0ea5e9; white-space: nowrap; }
 
-#close-btn { margin-top: 25px; padding: 14px; border-radius: 12px; border: 2px solid #e2e8f0; background: transparent; color: #475569; font-size: 16px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+#report-actions {
+    flex-shrink: 0;
+    padding: 14px 40px 18px;
+    border-top: 1px solid #e2e8f0;
+    background: #ffffff;
+}
+
+#close-btn { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #e2e8f0; background: transparent; color: #475569; font-size: 16px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
 #close-btn:hover { background: #f1f5f9; color: #0f172a; }
+
+@media (max-width: 700px) {
+    #data-panel { padding: 10px; align-items: flex-start; }
+    #data-inner { width: 100%; max-height: calc(100dvh - 20px); border-radius: 20px; }
+    .report-scroll { padding: 22px 20px 18px; }
+    #report-actions { padding: 12px 20px 14px; }
+}
 
 body.finished .scene, body.finished .header-area, body.finished #progress, body.finished #message {
     opacity:.25; transition: opacity .5s ease;
@@ -555,23 +575,27 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 
 <div id="data-panel">
   <div id="data-inner">
-    <div class="report-header">
-        <h2>📝 幼兒英語聽力與認知 analysis</h2>
-        <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
+    <div class="report-scroll">
+        <div class="report-header">
+            <h2>📝 幼兒英語聽力與認知 analysis</h2>
+            <p>透過直覺互動，我們觀察到孩子的學習亮點</p>
+        </div>
+        <div class="table-container">
+            <table id="data-table">
+              <thead>
+                <tr>
+                  <th>單字 / 聽力指令</th>
+                  <th>反應速度</th>
+                  <th>理解力指標</th>
+                </tr>
+              </thead>
+              <tbody id="data-tbody"></tbody>
+            </table>
+        </div>
     </div>
-    <div class="table-container">
-        <table id="data-table">
-          <thead>
-            <tr>
-              <th>單字 / 聽力指令</th>
-              <th>反應速度</th>
-              <th>理解力指標</th>
-            </tr>
-          </thead>
-          <tbody id="data-tbody"></tbody>
-        </table>
+    <div id="report-actions">
+        <button id="close-btn">完成並關閉</button>
     </div>
-    <button id="close-btn">完成並關閉</button>
   </div>
 </div>
 
@@ -1255,7 +1279,7 @@ dataBtn.addEventListener("click", () => {
         </div>
         <div style="background: #f8fafc; padding: 18px 20px; border-radius: 16px; margin-top: 14px; border: 1px solid #e2e8f0; text-align: left;">
             <div style="font-size: 13px; color: #64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Skill Snapshot</div>
-            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
                 <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px;">
                     <div style="font-size: 12px; color: #64748b; font-weight: 700;">Listening Skills</div>
                     <div style="color: #f59e0b; font-weight: 900; letter-spacing: 1px; margin-top: 4px;">${getStars(listeningRating)}</div>
