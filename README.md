@@ -69,6 +69,7 @@ SCORING.md
 - 新增 `SCORING.md`，記錄目前 ROOM + PARK 的評分邏輯。
 - 每題加入難度權重，區分簡單題、中等題與拖曳方位題。
 - 報表改為依照加權分數推薦 Pre-Starter、Pre-Starter Plus 或 Starter。
+- 拖曳題加入提示與協助機制，避免孩子卡在不懂拖曳指令的題目。
 - Starter 結果會建議進入第三關，用來進一步判斷 Starter / L1。
 
 ### 2026-06-30
