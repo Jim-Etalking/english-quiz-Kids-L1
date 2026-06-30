@@ -472,22 +472,22 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 </div>
 
 <div class="scene" id="scene">
-    <img class="bg" id="game-bg" src="room_background.png">
+    <img class="bg" id="game-bg" src="assets/images/backgrounds/room-background.png">
     <!-- 🐦 🌟 解決不拍翅膀的魔法 1：偷偷預載圖片 -->
-    <img src="bird_up.png" style="display: none;">
+    <img src="assets/images/objects/bird-up.png" style="display: none;">
 
-    <img id="seesaw-base" data-src="seesaw_back.png" style="display: none;">
-    <img id="seesaw-board" data-src="seesaw_board.png" style="display: none;">
+    <img id="seesaw-base" data-src="assets/images/objects/seesaw-back.png" style="display: none;">
+    <img id="seesaw-board" data-src="assets/images/objects/seesaw-board.png" style="display: none;">
 
-    <img id="bear"        class="item" src="bear_v3.png">
-    <img id="bear_green"  class="item" src="bear_green.png">
-    <img id="bear_yellow" class="item" src="bear_yellow.png"> 
-    <img id="car"         class="item" src="car.png">
-    <img id="ball"        class="item" src="ball.png">
+    <img id="bear"        class="item" src="assets/images/objects/bear-blue.png">
+    <img id="bear_green"  class="item" src="assets/images/objects/bear-green.png">
+    <img id="bear_yellow" class="item" src="assets/images/objects/bear-yellow.png"> 
+    <img id="car"         class="item" src="assets/images/objects/car.png">
+    <img id="ball"        class="item" src="assets/images/objects/ball.png">
     
-    <img id="cat"         class="item" src="cat.png">
-    <img id="dog"         class="item" src="dog.png">
-    <img id="bird"        class="item" src="bird_down.png" style="display: none;">
+    <img id="cat"         class="item" src="assets/images/objects/cat.png">
+    <img id="dog"         class="item" src="assets/images/objects/dog.png">
+    <img id="bird"        class="item" src="assets/images/objects/bird-down.png" style="display: none;">
 
     <div class="hotspot" id="hs-sun"></div>
     <div class="hotspot" id="hs-door"></div>
@@ -513,8 +513,8 @@ body.finished .scene, body.finished .header-area, body.finished #progress, body.
 
 <div id="guide-character">
     <div id="guide-inner">
-        <img src="guide_base2.png" id="guide-body">
-        <img src="guide_mouth2.png" id="char-mouth">
+        <img src="assets/images/characters/guide-body.png" id="guide-body">
+        <img src="assets/images/characters/guide-mouth.png" id="char-mouth">
     </div>
 </div>
 
@@ -569,23 +569,23 @@ const HOTSPOT_DEFS = {
 };
 
 const questions = [
-    { type: "tap", question: "Can you find the sun? ", audio: "q4.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Where is the door? ", audio: "q5.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Can you find the books? ", audio: "q6.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Where is the window? ", audio: "q7.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
-    { type: "tap", question: "Can you find the cloud? ", audio: "q8.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the sun? ", audio: "assets/audio/questions/room/q04.mp3", targets: ["hs-sun"], decoys: ["hs-door", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the door? ", audio: "assets/audio/questions/room/q05.mp3", targets: ["hs-door"], decoys: ["hs-sun", "hs-books", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the books? ", audio: "assets/audio/questions/room/q06.mp3", targets: ["hs-books"], decoys: ["hs-sun", "hs-door", "hs-window", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Where is the window? ", audio: "assets/audio/questions/room/q07.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Can you find the cloud? ", audio: "assets/audio/questions/room/q08.mp3", targets: ["hs-cloud"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-window", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
     
-    { type: "tap", question: "Touch the BLUE bear! ", audio: "q9.mp3", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
-    { type: "tap", question: "Can you find the RED ball? ", audio: "q10.mp3", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
-    { type: "tap", question: "Where is the YELLOW window? ", audio: "q11.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
+    { type: "tap", question: "Touch the BLUE bear! ", audio: "assets/audio/questions/room/q09.mp3", targets: ["hs-bear"], decoys: ["hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", question: "Can you find the RED ball? ", audio: "assets/audio/questions/room/q10.mp3", targets: ["hs-ball"], decoys: ["hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-sun", "hs-door", "hs-window", "hs-cloud"] },
+    { type: "tap", question: "Where is the YELLOW window? ", audio: "assets/audio/questions/room/q11.mp3", targets: ["hs-window"], decoys: ["hs-sun", "hs-door", "hs-books", "hs-cloud", "hs-bear", "hs-bear-green", "hs-bear-yellow", "hs-car", "hs-ball"] },
     
-    { type: "drag", itemId: "bear", question: "Can you put the BLUE bear on the rug?", audio: "q1.mp3", zone: { left: 0, right: 50, top: 55, bottom: 100 }, snap: { left: 8, top: 68 } },
-    { type: "drag", itemId: "car", question: "Can you put the car on the table?", audio: "q2.mp3", zone: { left: 44, right: 70, top: 45, bottom: 68 }, snap: { left: 53, top: 54 } },
-    { type: "drag", itemId: "ball", question: "Can you put the ball in front of the table?", audio: "q3.mp3", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
+    { type: "drag", itemId: "bear", question: "Can you put the BLUE bear on the rug?", audio: "assets/audio/questions/room/q01.mp3", zone: { left: 0, right: 50, top: 55, bottom: 100 }, snap: { left: 8, top: 68 } },
+    { type: "drag", itemId: "car", question: "Can you put the car on the table?", audio: "assets/audio/questions/room/q02.mp3", zone: { left: 44, right: 70, top: 45, bottom: 68 }, snap: { left: 53, top: 54 } },
+    { type: "drag", itemId: "ball", question: "Can you put the ball in front of the table?", audio: "assets/audio/questions/room/q03.mp3", zone: { left: 48, right: 74, top: 66, bottom: 90 }, snap: { left: 52, top: 70 } }
 ];
 
-const CORRECT_SOUNDS = ["correct1.mp3", "correct2.mp3", "correct3.mp3"];
-const WRONG_SOUNDS   = ["wrong1.mp3"];
+const CORRECT_SOUNDS = ["assets/audio/effects/correct-01.mp3", "assets/audio/effects/correct-02.mp3", "assets/audio/effects/correct-03.mp3"];
+const WRONG_SOUNDS   = ["assets/audio/effects/wrong-01.mp3"];
 // 預先建立常用音效物件，避免每次播放都重新發送網路請求
 const correctAudioPool = CORRECT_SOUNDS.map(f => new Audio(f));
 const wrongAudioPool   = WRONG_SOUNDS.map(f => new Audio(f));
@@ -828,12 +828,12 @@ document.querySelectorAll(".hotspot").forEach(hs => {
 
         // 🐶 隨時點擊狗狗都會發出叫聲
         if (hs.id === "hs-dog") {
-            const dogAudio = new Audio("dog_yip.mp3");
+            const dogAudio = new Audio("assets/audio/effects/dog-yip.mp3");
             dogAudio.play().catch(() => {});
         }
         // 🐈 隨時點擊貓咪都會發出叫聲
         if (hs.id === "hs-cat") {
-            const catAudio = new Audio("cat_yip.mp3");
+            const catAudio = new Audio("assets/audio/effects/cat-yip.mp3");
             catAudio.play().catch(() => {});
         }
 
@@ -857,11 +857,11 @@ document.querySelectorAll(".hotspot").forEach(hs => {
                 const birdEl = document.getElementById("bird");
                 if (birdEl) {
                     // 1. 啟動拍翅膀動畫
-                    birdEl.src = "bird_up.png"; // 🌟 解決不拍翅膀的魔法 2：點擊瞬間立刻抬起翅膀
+                    birdEl.src = "assets/images/objects/bird-up.png"; // 🌟 解決不拍翅膀的魔法 2：點擊瞬間立刻抬起翅膀
                     let isUp = true; 
                     const flapInterval = setInterval(() => {
                         isUp = !isUp;
-                        birdEl.src = isUp ? "bird_up.png" : "bird_down.png";
+                        birdEl.src = isUp ? "assets/images/objects/bird-up.png" : "assets/images/objects/bird-down.png";
                     }, 100);
 
                     // 2. 改變座標：只有「鳥的圖片」飛過去，綠色熱區留在樹上！
@@ -872,7 +872,7 @@ document.querySelectorAll(".hotspot").forEach(hs => {
                     // 3. 1.5秒後到達目的地
                     setTimeout(() => {
                         clearInterval(flapInterval);
-                        birdEl.src = "bird_down.png"; 
+                        birdEl.src = "assets/images/objects/bird-down.png"; 
                         birdEl.classList.remove("flying-arc"); 
                         
                         // 🌟 降落後，才瞬間把「隱形熱區」移到溜滑梯上合體
@@ -903,7 +903,7 @@ document.querySelectorAll(".hotspot").forEach(hs => {
 });
 // 🐈 貓咪圖片被點擊或抓起時，發出喵叫聲
 document.getElementById("cat").addEventListener("pointerdown", () => {
-    const catAudio = new Audio("cat_yip.mp3");
+    const catAudio = new Audio("assets/audio/effects/cat-yip.mp3");
     catAudio.play().catch(() => {});
 });
 
@@ -956,7 +956,7 @@ function preloadStage2Assets() {
     promises.push(new Promise(resolve => {
         parkBg.onload = resolve;
         parkBg.onerror = resolve;
-        parkBg.src = "park.jpeg";
+        parkBg.src = "assets/images/backgrounds/park-background.jpeg";
     }));
 
     promises.push(new Promise(resolve => {
@@ -1131,27 +1131,27 @@ const HOTSPOT_DEFS_PARK = {
 };
 
 const questions_park = [
-    { type: "tap", question: "Can you find the slide?", audio: "p_slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
-    { type: "tap", question: "Where is the swing?", audio: "p_swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
-    { type: "tap", question: "Can you find the seesaw?", audio: "p_seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
-    { type: "tap", question: "Where is the sandbox?", audio: "p_sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree","hs-dog","hs-cat","hs-bird"] },
-    { type: "tap", question: "Can you find the big tree?", audio: "p_tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", question: "Can you find the slide?", audio: "assets/audio/questions/park/find-slide.mp3", targets: ["hs-slide"], decoys: ["hs-sun","hs-cloud","hs-tree","hs-swing","hs-seesaw","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", question: "Where is the swing?", audio: "assets/audio/questions/park/find-swing.mp3", targets: ["hs-swing"], decoys: ["hs-slide","hs-sun","hs-cloud","hs-tree","hs-seesaw","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", question: "Can you find the seesaw?", audio: "assets/audio/questions/park/find-seesaw.mp3", targets: ["hs-seesaw"], decoys: ["hs-slide","hs-swing","hs-sun","hs-cloud","hs-tree","hs-sandbox","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", question: "Where is the sandbox?", audio: "assets/audio/questions/park/find-sandbox.mp3", targets: ["hs-sandbox"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sun","hs-cloud","hs-tree","hs-dog","hs-cat","hs-bird"] },
+    { type: "tap", question: "Can you find the big tree?", audio: "assets/audio/questions/park/find-tree.mp3", targets: ["hs-tree"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-sun","hs-cloud","hs-dog","hs-cat","hs-bird"] },
     
     // 🐦 🔥 新增：青鳥尋找題 (這裡把所有其他東西設為干擾項)
-    { type: "tap", question: "Can you find the blue bird?", audio: "p_find_bird.mp3", targets: ["hs-bird"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud","hs-dog","hs-cat"] },
+    { type: "tap", question: "Can you find the blue bird?", audio: "assets/audio/questions/park/find-bird.mp3", targets: ["hs-bird"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud","hs-dog","hs-cat"] },
     
     // 狗狗尋找題 (Tap)
-    { type: "tap", question: "Can you find the dog?", audio: "p_find_dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud","hs-cat","hs-bird"] },
+    { type: "tap", question: "Can you find the dog?", audio: "assets/audio/questions/park/find-dog.mp3", targets: ["hs-dog"], decoys: ["hs-slide","hs-swing","hs-seesaw","hs-sandbox","hs-tree","hs-sun","hs-cloud","hs-cat","hs-bird"] },
     
     // 🐈 貓咪拖曳題 (這題不用加 decoys)
-    { type: "drag", itemId: "cat", question: "Can you put the cat IN the sandbox?", audio: "p_drag_cat.mp3", zone: { left: 68, right: 100, top: 48, bottom: 95 }, snap: { left: 78, top: 46 } }
+    { type: "drag", itemId: "cat", question: "Can you put the cat IN the sandbox?", audio: "assets/audio/questions/park/drag-cat.mp3", zone: { left: 68, right: 100, top: 48, bottom: 95 }, snap: { left: 78, top: 46 } }
 ];
 document.getElementById("next-stage-btn").addEventListener("click", () => {
     document.getElementById("next-stage-screen").style.display = "none";
     isStage2 = true;
     currentQ = 0;
     
-    document.getElementById("game-bg").src = "park.jpeg";
+    document.getElementById("game-bg").src = "assets/images/backgrounds/park-background.jpeg";
     
     // 🧹 1. 先把所有玩具（包含貓狗鳥）強制隱藏並還原狀態
     document.querySelectorAll(".item").forEach(el => {
@@ -1178,7 +1178,7 @@ document.getElementById("next-stage-btn").addEventListener("click", () => {
         birdEl.style.display = "block";
         birdEl.style.left = "65%";
         birdEl.style.top = "20%";
-        birdEl.src = "bird_down.png"; 
+        birdEl.src = "assets/images/objects/bird-down.png"; 
     }
 
     // 🎡 顯示獨立圖層：底座和搖晃木板（這裡才真正開始下載圖片）
