@@ -52,7 +52,24 @@ drag.html
 - 答對、答錯、動物叫聲等共用音效放進 `assets/audio/effects/`。
 - 新增或移動素材後，要同步更新 `drag.html` 裡的路徑。
 
+## 評分規則
+
+目前 ROOM + PARK 兩關用來判斷孩子接近 Pre-Starter 或 Starter。評分會考慮題目難度、錯誤次數與反應秒數，並保留小小孩操作時的容錯。
+
+詳細規則請看：
+
+```text
+SCORING.md
+```
+
 ## 改版資訊
+
+### 2026-06-30 評分規則
+
+- 新增 `SCORING.md`，記錄目前 ROOM + PARK 的評分邏輯。
+- 每題加入難度權重，區分簡單題、中等題與拖曳方位題。
+- 報表改為依照加權分數推薦 Pre-Starter、Pre-Starter Plus 或 Starter。
+- Starter 結果會建議進入第三關，用來進一步判斷 Starter / L1。
 
 ### 2026-06-30
 
